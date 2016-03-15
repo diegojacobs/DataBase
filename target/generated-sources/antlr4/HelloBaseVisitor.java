@@ -1,4 +1,5 @@
-// Generated from Hello.g4 by ANTLR 4.5.1
+// Generated from Hello.g4 by ANTLR 4.4
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -16,5 +17,5 @@ public class HelloBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitR(HelloParser.RContext ctx) { return visitChildren(ctx); }
+	@Override public T visitR(@NotNull HelloParser.RContext ctx) { return visitChildren(ctx); }
 }

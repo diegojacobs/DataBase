@@ -1,4 +1,5 @@
-// Generated from Hello.g4 by ANTLR 4.5.1
+// Generated from Hello.g4 by ANTLR 4.4
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -10,10 +11,10 @@ public interface HelloListener extends ParseTreeListener {
 	 * Enter a parse tree produced by {@link HelloParser#r}.
 	 * @param ctx the parse tree
 	 */
-	void enterR(HelloParser.RContext ctx);
+	void enterR(@NotNull HelloParser.RContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link HelloParser#r}.
 	 * @param ctx the parse tree
 	 */
-	void exitR(HelloParser.RContext ctx);
+	void exitR(@NotNull HelloParser.RContext ctx);
 }

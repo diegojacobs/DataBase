@@ -1,4 +1,5 @@
-// Generated from Hello.g4 by ANTLR 4.5.1
+// Generated from Hello.g4 by ANTLR 4.4
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -14,5 +15,5 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitR(HelloParser.RContext ctx);
+	T visitR(@NotNull HelloParser.RContext ctx);
 }

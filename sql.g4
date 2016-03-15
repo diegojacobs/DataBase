@@ -3,7 +3,7 @@ grammar sql;
 //**************************************************************//
 //**************Key SQL Statements and Fragments****************//
 //**************************************************************//
-
+/*
 ALLOCATE_CURSOR: allocate_cursor_statement;
 ALTER_DOMAIN: alter_domain_statement;
 ALTER_TABLE: alter_table_statement;
@@ -51,7 +51,7 @@ SET_SESSION_AUTHORIZATION: set_session_authorization_identifier_statement;
 SET_TIME_ZONE: set_local_time_zone_statement;
 SET_TRANSACTION: set_transaction_statement;
 UPDATE: update_statement_positioned update_statement_searched dynamic_update_statement_positioned;
-Value_expression: value_expression;
+Value_expression: value_expression;*/
 
 //**************************************************************//
 //**Basic Definitions of Characters Used, Tokens, Symbols, Etc.*//
