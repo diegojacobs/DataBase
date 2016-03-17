@@ -3,55 +3,54 @@ grammar sql;
 //**************************************************************//
 //**************Key SQL Statements and Fragments****************//
 //**************************************************************//
-/*
-ALLOCATE_CURSOR: allocate_cursor_statement;
-ALTER_DOMAIN: alter_domain_statement;
-ALTER_TABLE: alter_table_statement;
-CLOSE_cursor: close_statement dynamic_close_statement;
-Column: definition column_definition;
-COMMIT_WORK: commit_statement;
-CONNECT: connect_statement;
-CREATE_ASSERTION: assertion_definition;
-CREATE_CHARACTER_SET: character_set_definition;
-CREATE_COLLATION: collation_definition;
-CREATE_DOMAIN: domain_definition;
-CREATE_SCHEMA: schema_definition;
-CREATE_TABLE: table_definition;
-CREATE_TRANSLATION: translation_definition;
-CREATE_VIEW: view_definition;
-Data_type: data_type;
-DEALLOCATE_PREPARE: deallocate_prepared_statement;
-DECLARE_cursor: declare_cursor dynamic_declare_cursor;
-DECLARE_LOCAL_TEMPORARY_TABLE: temporary_table_declaration;
-DELETE: delete_statement_positioned delete_statement_searched dynamic_delete_statement_positioned;
-DESCRIBE: describe_statement;
-DESCRIPTOR_statements: system_descriptor_statement;
-DISCONNECT: disconnect_statement;
-EXECUTE: execute_statement;
-EXECUTE_IMMEDIAT: execute_immediate_statement;
-FETCH_cursor: fetch_statement dynamic_fetch_statement;
-GET_DIAGNOSTICS: get_diagnostics_statement;
-GRANT: grant_statement;
-INSERT: insert_statement;
-Literal: literal;
-MODULE: module;
-OPEN_cursor: open_statement dynamic_open_statement;
-PREPARE: prepare_statement;
-Preparable_statement: preparable_statement;
-REVOKE: revoke_statement;
-ROLLBACK_WORK: rollback_statement;
-Search_condition: search_condition;
-SELECT: query_specification;
-SET_CATALOG: set_catalog_statement;
-SET_CONNECTION: set_connection_statement;
-SET_CONSTRAINTS: set_constraints_mode_statement;
-SET_NAME: set_names_statement;
-SET_SCHEMA: set_schema_statement;
-SET_SESSION_AUTHORIZATION: set_session_authorization_identifier_statement;
-SET_TIME_ZONE: set_local_time_zone_statement;
-SET_TRANSACTION: set_transaction_statement;
-UPDATE: update_statement_positioned update_statement_searched dynamic_update_statement_positioned;
-Value_expression: value_expression;*/
+
+WHITESPACE : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
+
+fragment A:('a'|'A');
+fragment B:('b'|'B');
+fragment C:('c'|'C');
+fragment D:('d'|'D');
+fragment E:('e'|'E');
+fragment F:('f'|'F');
+fragment G:('g'|'G');
+fragment H:('h'|'H');
+fragment I:('i'|'I');
+fragment J:('j'|'J');
+fragment K:('k'|'K');
+fragment L:('l'|'L');
+fragment M:('m'|'M');
+fragment N:('n'|'N');
+fragment O:('o'|'O');
+fragment P:('p'|'P');
+fragment Q:('q'|'Q');
+fragment R:('r'|'R');
+fragment S:('s'|'S');
+fragment T:('t'|'T');
+fragment U:('u'|'U');
+fragment V:('v'|'V');
+fragment W:('w'|'W');
+fragment X:('x'|'X');
+fragment Y:('y'|'Y');
+fragment Z:('z'|'Z');
+
+ALTER_DOMAIN: A L T E R D O M A I N;
+ALTER_TABLE: A L T E R T A B L E;
+Column: C O L U M N;
+CREATE_TABLE: C R E A T E T A B L E;
+DELETE: D E L E T E;
+EXECUTE: E X E C U T E;
+GET_DIAGNOSTICS: G E T D I A G N O S T I C S;
+INSERT: I N S E R T;
+//Literal: literal;
+PREPARE: P R E P A R E;
+//Preparable_statement: preparable_statement
+//Search_condition: search_condition;
+SELECT: S E L E C T;
+SET_CONSTRAINTS: S E T C O N S T R A I N T S;
+SET_NAME: S E T N A M E;
+SET_SCHEMA: S E T S C H E M A;
+UPDATE: U P D A T E;
+//Value_expression: value_expression;
 
 //**************************************************************//
 //**Basic Definitions of Characters Used, Tokens, Symbols, Etc.*//
@@ -405,29 +404,6 @@ double_period    :   '..';
 //****************************SQL Module************************//
 //**************************************************************//
 
-module    :
-         module_name_clause language_clause module_authorization_clause
-         ( (temporary_table_declaration )* )?
-         (module_contents)* ;
-         
-module_name_clause    : 
-         MODULE ( module_name )? ( module_character_set_specification )?;
-
-module_name    :   identifier;
-
-module_character_set_specification    :   'NAMES ARE' character_set_specification;
-
-language_clause    :   'LANGUAGE' language_name;
-
-language_name    :   'ADA' | 'C'| 'COBOL' | 'FORTRAN' | 'MUMPS' | 'PASCAL' | 'PLI';
-
-module_authorization_clause    : 
-         'SCHEMA' schema_name
-     |     'AUTHORIZATION' module_authorization_identifier
-     |     'SCHEMA' schema_name 'AUTHORIZATION' module_authorization_identifier;
-
-module_authorization_identifier    :   authorization_identifier;
-
 authorization_identifier    :   identifier;
 
 temporary_table_declaration    : 
@@ -712,7 +688,6 @@ unsigned_literal    :   unsigned_numeric_literal | general_literal;
 general_value_specification    : 
          parameter_specification
      | dynamic_parameter_specification
-     | variable_specification
      | 'USER'
      | 'CURRENT_USER' 
      | 'SESSION_USER' 
@@ -726,35 +701,6 @@ parameter_name    :   colon identifier;
 indicator_parameter    :   ( 'INDICATOR' )? parameter_name;
 
 dynamic_parameter_specification    :   question_mark;
-
-variable_specification    :   embedded_variable_name ( indicator_variable )?;
-
-embedded_variable_name    :   colon host_identifier;
-
-host_identifier    : 
-         ada_host_identifier
-     |     c_host_identifier
-     |     cobol_host_identifier
-     |     fortran_host_identifier
-     |     mUMPS_host_identifier
-     |     pascal_host_identifier
-     |     pL_I_host_identifier;
-
-ada_host_identifier    :   ;// See syntax rules
-
-c_host_identifier    :   ;// See syntax rules
-
-cobol_host_identifier    :   ;// See syntax rules
-
-fortran_host_identifier    :   ;// See syntax rules
-
-mUMPS_host_identifier    :   ;// See syntax rules
-
-pascal_host_identifier    :   ;// See syntax rules
-
-pL_I_host_identifier    :   ;// See syntax rules
-
-indicator_variable    :   ( 'INDICATOR' )? embedded_variable_name;
 
 column_reference    :   ( qualifier period )? column_name;
 
@@ -1142,17 +1088,9 @@ referencing_columns    :   reference_column_list;
 //***********************Module contents************************//
 //**************************************************************//
 
-module_contents    :
-         declare_cursor
-     |     dynamic_declare_cursor
-     |     procedure;
-
-declare_cursor    : 
-         'DECLARE' cursor_name ( 'INSENSITIVE' )? ( 'SCROLL' ) 'CURSOR FOR' cursor_specification;
-
 cursor_name    :   identifier;
 
-cursor_specification    :   query_expression ( order_by_clause )? ( updatability_clause )?;
+cursor_specification    :   query_expression ( order_by_clause )?;
 
 order_by_clause    :   'ORDER BY' sort_specification_list;
 
@@ -1163,11 +1101,6 @@ sort_specification    :   sort_key ( collate_clause )? ( ordering_specification 
 sort_key    :   column_name | unsigned_integer;
 
 ordering_specification    :   'ASC' | 'DESC';
-
-updatability_clause    :   'FOR' ( 'READ ONLY' | 'UPDATE' ( 'OF' column_name_list )? );
-
-dynamic_declare_cursor    : 
-         'DECLARE' cursor_name ( 'INSENSITIVE' )? ( 'SCROLL' )? 'CURSOR FOR' statement_name;
 
 statement_name    :   identifier;
 
@@ -1191,8 +1124,6 @@ sql_procedure_statement    :
          sql_schema_statement
      |     sql_data_statement
      |     sql_transaction_statement
-     |     sql_connection_statement
-     |     sql_session_statement
      |     sql_dynamic_statement
      |     sql_diagnostics_statement;
      
@@ -1460,13 +1391,12 @@ fetch_orientation    :
      |     'LAST' 
      |     ( 'ABSOLUTE' | 'RELATIVE' ) simple_value_specification;
 
-simple_value_specification    :   parameter_name | embedded_variable_name | literal;
+simple_value_specification    :   parameter_name | literal;
 
 fetch_target_list    :   target_specification ( ( comma target_specification )* )?;
 
 target_specification    : 
-         parameter_specification
-     |     variable_specification;
+         parameter_specification;
 
 close_statement    :   'CLOSE' cursor_name;
 
@@ -1546,60 +1476,6 @@ commit_statement    :   'COMMIT' ( 'WORK' )?;
 rollback_statement    :   'ROLLBACK' ( 'WORK' )?;
 
 //**************************************************************//
-//*******************Connection Management**********************//
-//**************************************************************//
-
-sql_connection_statement    : 
-         connect_statement
-     |     set_connection_statement
-     |     disconnect_statement;
-
-connect_statement    :   'CONNECT TO' connection_target;
-
-connection_target    :
-         sql_server_name ( 'AS' connection_name )? ( 'USER' user_name )?
-     |     'DEFAULT';
-
-sql_server_name    :   simple_value_specification;
-
-connection_name    :   simple_value_specification;
-
-user_name    :   simple_value_specification;
-
-set_connection_statement    :   'SET CONNECTION' connection_object;
-
-connection_object    :   'DEFAULT' | connection_name;
-
-disconnect_statement    :   'DISCONNECT' disconnect_object;
-
-disconnect_object    :   connection_object | 'ALL' | 'CURRENT';
-
-//**************************************************************//
-//*********************Session Attributes***********************//
-//**************************************************************//
-
-sql_session_statement    : 
-         set_catalog_statement
-     |     set_schema_statement
-     |     set_names_statement
-     |     set_session_authorization_identifier_statement
-     |     set_local_time_zone_statement;
-
-set_catalog_statement    :   'SET CATALOG' value_specification;
-
-value_specification    :   literal | general_value_specification;
-
-set_schema_statement    :   'SET SCHEMA' value_specification;
-
-set_names_statement    :   'SET NAMES' value_specification;
-
-set_session_authorization_identifier_statement    :   'SET SESSION AUTHORIZATION' value_specification;
-
-set_local_time_zone_statement    :   'SET TIME ZONE' set_time_zone_value;
-
-set_time_zone_value    :   interval_value_expression | 'LOCAL';
-
-//**************************************************************//
 //************************Dynamic SQL***************************//
 //**************************************************************//
 
@@ -1677,7 +1553,7 @@ get_count    :   simple_target_specification_1 equals_operator 'COUNT';
 
 simple_target_specification_1    :   simple_target_specification;
 
-simple_target_specification    :   parameter_name | embedded_variable_name;
+simple_target_specification    :   parameter_name;
 
 get_item_information    :   simple_target_specification_2 equals_operator descriptor_item_name;
 
@@ -1786,174 +1662,9 @@ condition_information_item_name    :
      |     'MESSAGE_LENGTH'
      |     'MESSAGE_OCTET_LENGTH';
 
-embedded_sql_host_program    : 
-         embedded_sql_Ada_program
-     |     embedded_sql_C_program
-     |     embedded_sql_Cobol_program
-     |     embedded_sql_Fortran_program
-     |     embedded_sql_MUMPS_program
-     |     embedded_sql_Pascal_program
-     |     embedded_sql_PLI_program;
-	 
-embedded_sql_Ada_program    :   ;//See the syntax rules
-
-embedded_sql_C_program    :   ;//See the syntax rules
-
-embedded_sql_Cobol_program    :   ;//See the syntax rules
-
-embedded_sql_Fortran_program    :   ;//See the syntax rules
-
-embedded_sql_MUMPS_program    :   ;//See the syntax rules
-
-embedded_sql_Pascal_program    :   ;//See the syntax rules
-
-embedded_sql_PLI_program    :   ;//See the syntax rules
-
-embedded_sql_declare_section    : 
-         embedded_sql_begin_declare
-             (embedded_character_set_declaration)?
-             (host_variable_definition*)?
-             embedded_sql_end_declare
-     |     embedded_sql_MUMPS_declare;
-
-embedded_sql_begin_declare    :   sql_prefix 'BEGIN DECLARE SECTION' (sql_terminator)?;
-
-sql: ;
-
-sql_prefix    :   'EXEC SQL' | ampersand sql left_paren;
-
-sql_terminator    :   'END-EXEC' | semicolon | right_paren;
-
-embedded_character_set_declaration    :   'SQL NAMES ARE' character_set_specification;
-
-host_variable_definition    : 
-         ada_variable_definition
-     |     c_variable_definition
-     |     cobol_variable_definition
-     |     fortran_variable_definition
-     |     mumps_variable_definition
-     |     pascal_variable_definition
-     |     pli_variable_definition; //Note that <colon> is written as a literal colon in the ANSI grammar.
-
-ada_variable_definition    :
-         ada_host_identifier ((comma ada_host_identifier)*)? colon
-         ada_type_specification (ada_initial_value)?;
-
-ada_type_specification    :   ada_qualified_type_specification | ada_unqualified_type_specification;
-
-ada_qualified_type_specification    : 
-         'SQL_STANDARD.CHAR' ('CHARACTER SET' ('IS')? character_set_specification)? left_paren '1' double_period length right_paren
-     |     'SQL_STANDARD.BIT' left_paren '1' double_period length right_paren
-     |     'SQL_STANDARD.SMALLINT'
-     |     'SQL_STANDARD.INT'
-     |     'SQL_STANDARD.REAL'
-     |     'SQL_STANDARD.DOUBLE_PRECISION'
-     |     'SQL_STANDARD.SQLCODE_TYPE'
-     |     'SQL_STANDARD.SQLSTATE_TYPE'
-     |     'SQL_STANDARD.INDICATOR_TYPE';
-
-ada_unqualified_type_specification    : 
-         'CHAR' left_paren '1' double_period length right_paren
-     |     'BIT' left_paren '1' double_period length right_paren
-     |     'SMALLINT'
-     |     'INT'
-     |     'REAL'
-     |     'DOUBLE_PRECISION'
-     |     'SQLCODE_TYPE'
-     |     'SQLSTATE_TYPE'
-     |     'INDICATOR_TYPE';
-	 
-ada_initial_value    :   ada_assignment_operator character_representation;
-
-ada_assignment_operator    :   colon equals_operator;
-
-c_variable_definition    :   (c_storage_class)? (c_class_modifier)? c_variable_specification semicolon;
-
-c_storage_class    :   'auto' | 'extern' | 'static';
-
-c_class_modifier    :   'const' | 'volatile';
-
-c_variable_specification    : 
-         c_numeric_variable
-     |     c_character_variable
-     |     c_derived_variable;
-
-c_numeric_variable    : 
-         ('long' | 'short' | 'float' | 'double')
-             c_host_identifier (c_initial_value)?
-             ((comma c_host_identifier (c_initial_value))*)?;
-
-c_initial_value    :   equals_operator character_representation;
-
-c_character_variable    : 
-         'char' ('CHARACTER SET' ('IS')? character_set_specification)?
-             c_host_identifier c_array_specification (c_initial_value)?
-             ((comma c_host_identifier c_array_specification (c_initial_value)? )*)?;
-
-c_array_specification    :   left_bracket length right_bracket;
-
-c_derived_variable    :   c_VARCHAR_variable | c_bit_variable;
-
-c_VARCHAR_variable    : 
-         'VARCHAR' ('CHARACTER SET' ('IS')? character_set_specification)?
-             c_host_identifier c_array_specification (c_initial_value)?
-             ((comma c_host_identifier c_array_specification (c_initial_value)? )*)?;
-
-c_bit_variable    : 
-         'BIT' c_host_identifier c_array_specification (c_initial_value)?
-             ((comma c_host_identifier c_array_specification (c_initial_value)? )*)?;
-
-cobol_variable_definition    : ; /* ...omitted... */
-
-fortran_variable_definition    : ; /* ...omitted... */
-
-mumps_variable_definition    : ; /* ...omitted... */
-
-pascal_variable_definition    : ; /* ...omitted... */
-
-pli_variable_definition    : ; /* ...omitted... */
-
-embedded_sql_end_declare    :   sql_prefix 'END DECLARE SECTION' (sql_terminator)?;
-
-embedded_sql_MUMPS_declare    : 
-     sql_prefix
-     'BEGIN DECLARE SECTION'
-         (embedded_character_set_declaration)?
-         (host_variable_definition*)
-     'END DECLARE SECTION'
-     sql_terminator;
-
-embedded_sql_statement    :   sql_prefix statement_or_declaration (sql_terminator)?;
-
-statement_or_declaration    : 
-         declare_cursor
-     |     dynamic_declare_cursor
-     |     temporary_table_declaration
-     |     embedded_exception_declaration
-     |     sql_procedure_statement;
-
-embedded_exception_declaration    :   'WHENEVER' condition condition_action;
-
-condition    :   'SQLERROR' | 'NOT FOUND';
-
-condition_action    :   'CONTINUE' | go_to;
-
-go_to    :   ('GOTO' | 'GO TO') goto_target;
-
-goto_target    : 
-         host_label_identifier
-     |     unsigned_integer
-     |     host_PLI_label_variable;
-
-host_label_identifier    :   ;//!! See the syntax rules
-
-host_PLI_label_variable    :   ;//!! See the syntax rules
-
 preparable_statement    : 
          preparable_sql_data_statement
      |     preparable_sql_schema_statement
-     |     preparable_sql_transaction_statement
-     |     preparable_sql_session_statement
      |     preparable_sql_implementation_defined_statement;
 
 preparable_sql_data_statement    : 
@@ -1977,18 +1688,12 @@ preparable_dynamic_update_statement_positioned    :
 
 preparable_sql_schema_statement    :   sql_schema_statement;
 
-preparable_sql_transaction_statement    :   sql_transaction_statement;
-
-preparable_sql_session_statement    :   sql_session_statement;
-
 preparable_sql_implementation_defined_statement    :   ;//!! See the syntax rules
 
 direct_sql_statement    : 
          direct_sql_data_statement
      |     sql_schema_statement
      |     sql_transaction_statement
-     |     sql_connection_statement
-     |     sql_session_statement
      |     direct_implementation_defined_statement;
 
 direct_sql_data_statement    : 
@@ -2000,4 +1705,4 @@ direct_sql_data_statement    :
 
 direct_select_statement_multiple_rows    :   query_expression (order_by_clause)?;
 
-direct_implementation_defined_statement    :   ; //!! See the syntax rules
+direct_implementation_defined_statement    :   ;//!! See the syntax rules
