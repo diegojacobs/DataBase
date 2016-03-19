@@ -13,11 +13,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JButton;
 import javax.swing.border.Border;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.undo.UndoManager;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
@@ -27,6 +30,7 @@ import javax.swing.JTextArea;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -38,9 +42,11 @@ import java.io.PrintWriter;
 public class queryView extends JFrame implements ActionListener{
 
 	//private JFrame frame;
-	JMenuItem mntmOpen, mntmSave;
-	JButton btnOpenFile, btnSave;
+	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun;
+	JButton btnOpenFile, btnSave, btnRun;
 	JTextArea textArea;
+	TextLineNumber tln;
+	UndoManager manager;
 	JFileChooser fc;
 	File file;
 	
@@ -80,6 +86,8 @@ public class queryView extends JFrame implements ActionListener{
 		
 		fc = new JFileChooser();
 		
+		manager = new UndoManager();
+		
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		
@@ -87,30 +95,69 @@ public class queryView extends JFrame implements ActionListener{
 		menuBar.add(mnNewMenu);
 		
 		mntmOpen = new JMenuItem("Open");
+		//mntmOpen.setMnemonic(KeyEvent.VK_O);
+		KeyStroke keyStrokeToOpen = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+		mntmOpen.setAccelerator(keyStrokeToOpen);
 		mntmOpen.addActionListener(this);
+		
+		
 		mnNewMenu.add(mntmOpen);
 		
 		mntmSave = new JMenuItem("Save");
+		KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+		mntmSave.setAccelerator(keyStrokeToSave);
 		mntmSave.addActionListener(this);
 		//mntmSave.setEnabled(false);
 		mnNewMenu.add(mntmSave);
 		
+		mntmSaveAs = new JMenuItem("Save As");
+		mntmSaveAs.addActionListener(this);
+		//mntmSave.setEnabled(false);
+		mnNewMenu.add(mntmSaveAs);
+		
 		JMenu mnNewMenu_1 = new JMenu("Edit");
 		menuBar.add(mnNewMenu_1);
 		
-		JMenuItem mntmCut = new JMenuItem("Cut");
+		mntmUndo = new JMenuItem("Undo");
+		//mntmCut.setText("Cut");
+		KeyStroke keyStrokeToUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+		mntmUndo.setAccelerator(keyStrokeToUndo);
+		mntmUndo.addActionListener(this);
+		mnNewMenu_1.add(mntmUndo);
+		
+		mntmRedo = new JMenuItem("Redo");
+		//mntmCut.setText("Cut");
+		KeyStroke keyStrokeToRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
+		mntmRedo.setAccelerator(keyStrokeToRedo);
+		mntmRedo.addActionListener(this);
+		mnNewMenu_1.add(mntmRedo);
+		
+		
+		JMenuItem mntmCut = new JMenuItem(new DefaultEditorKit.CutAction());
+		mntmCut.setText("Cut");
+		KeyStroke keyStrokeToCut = KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK);
+		mntmCut.setAccelerator(keyStrokeToCut);
 		mnNewMenu_1.add(mntmCut);
 		
-		JMenuItem mntmCopy = new JMenuItem("Copy");
+		JMenuItem mntmCopy = new JMenuItem(new DefaultEditorKit.CopyAction());
+		mntmCopy.setText("Copy");
+		KeyStroke keyStrokeToCopy = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
+		mntmCopy.setAccelerator(keyStrokeToCopy);
 		mnNewMenu_1.add(mntmCopy);
 		
-		JMenuItem mntmPaste = new JMenuItem("Paste");
+		JMenuItem mntmPaste = new JMenuItem(new DefaultEditorKit.PasteAction());
+		mntmPaste.setText("Paste");
+		KeyStroke keyStrokeToPaste = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
+		mntmPaste.setAccelerator(keyStrokeToPaste);
 		mnNewMenu_1.add(mntmPaste);
 		
 		JMenu mnQuery = new JMenu("Query");
 		menuBar.add(mnQuery);
 		
-		JMenuItem mntmRun = new JMenuItem("Run");
+		mntmRun = new JMenuItem("Run");
+		mntmRun.addActionListener(this);
+		KeyStroke keyStrokeToRun = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
+		mntmRun.setAccelerator(keyStrokeToRun);
 		mnQuery.add(mntmRun);
 		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -148,7 +195,8 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnSave);
 		
-		JButton btnCut = new JButton("Cut");
+		JButton btnCut = new JButton(new DefaultEditorKit.CutAction());
+		btnCut.setText("Cut");
 		btnCut.setToolTipText("Cut");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/4cutButton.png"));
@@ -161,7 +209,8 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnCut);
 		
-		JButton btnCopy = new JButton("Copy");
+		JButton btnCopy = new JButton(new DefaultEditorKit.CopyAction());
+		btnCopy.setText("Copy");
 		btnCopy.setToolTipText("Copy");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/5copyButton.png"));
@@ -174,7 +223,8 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnCopy);
 		
-		JButton btnPaste = new JButton("Paste");
+		JButton btnPaste = new JButton(new DefaultEditorKit.PasteAction());
+		btnPaste.setText("Paste");
 		btnPaste.setToolTipText("Paste");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/6pasteButton.png"));
@@ -187,7 +237,8 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnPaste);
 		
-		JButton btnRun = new JButton("Run");
+		btnRun = new JButton("Run");
+		btnRun.addActionListener(this);
 		btnRun.setToolTipText("Run");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/1playButton.png"));
@@ -214,8 +265,12 @@ public class queryView extends JFrame implements ActionListener{
 		
 		textArea = new JTextArea();
 		textArea.setTabSize(4);
+		textArea.getDocument().addUndoableEditListener(manager);
+		
+		tln = new TextLineNumber(textArea);
 		
 		scrollPane_1.setViewportView(textArea);
+		scrollPane_1.setRowHeaderView(tln);
 		
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
 		splitPane.setRightComponent(tabbedPane_1);
@@ -235,6 +290,15 @@ public class queryView extends JFrame implements ActionListener{
 		}else if (e.getSource() == mntmSave ||
 				e.getSource() == btnSave){
 			save();
+		}else if (e.getSource() == mntmSaveAs){
+			saveAs();
+		}else if (e.getSource() == mntmUndo){
+			undo();
+		}else if (e.getSource() == mntmRedo){
+			redo();
+		}else if (e.getSource() == mntmRun ||
+				e.getSource() == btnRun){
+			run();
 		}
 		
 	}
@@ -300,6 +364,27 @@ public class queryView extends JFrame implements ActionListener{
         } else {
             //log.append("Save command cancelled by user." + newline);
         }
+	}
+	
+	public void undo(){
+		try{
+			manager.undo();
+		}catch (Exception e){
+			//to do
+		}
+	}
+	
+	
+	public void redo(){
+		try{
+			manager.redo();
+		}catch (Exception e){
+			//to do
+		}
+	}
+	
+	public void run(){
+		System.out.println("Run file");
 	}
 
 }
