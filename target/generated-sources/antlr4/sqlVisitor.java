@@ -328,13 +328,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx);	
+	T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#schema_definition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);	
+	T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code tableDefinitionStatement}
 	 * labeled alternative in {@link sqlParser#sql_schema_definition_statement}.

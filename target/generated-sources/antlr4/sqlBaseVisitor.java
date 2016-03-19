@@ -1,8 +1,4 @@
 // Generated from sql.g4 by ANTLR 4.4
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -358,29 +354,13 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) { return visitChildren(ctx); }
-	
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx)
-	{ 
-		//DataBase new_DB = new DataBase(ctx.ID().getText());
-		Path currentRelativePath = Paths.get("");
-        String path = currentRelativePath.toAbsolutePath().toString();
-        path += "\\data\\"+ctx.ID().getText();
-        File new_directory = new File(path);
-        boolean succes = new_directory.mkdirs();
-        if (! succes)
-        	System.out.println("El directorio no se pudo crear");
-        else
-        	System.out.println("Directorio " + ctx.ID().getText() + " creado exitosamente");
-		return (T) "";
-		//return visitChildren(ctx);		
-	}
-	
+	@Override public T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
