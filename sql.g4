@@ -45,6 +45,7 @@ ALTER : A L T E R;
 RENAME : R E N A M E;
 TO : T O;
 SHOW : S H O W;
+//
 USE : U S E;
 RES_INT : I N T;
 RES_FLOAT : F L O A T;
@@ -87,9 +88,8 @@ fragment MONTH : DIGIT | TWO_DIGITS ;
 fragment DAY : DIGIT | TWO_DIGITS ;
 
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : DIGIT ( DIGIT )* ;
-FLOAT: DIGIT ( DIGIT )* ('.' (DIGIT)* )? ;
-CHAR : '\'' ASCII '\'' ;
+NUM : ('-')? DIGIT ( DIGIT )* ('.' DIGIT(DIGIT)* )?;
+CHAR : '\'' ASCII(ASCII)* '\'' ;
 DATE: '\''YEAR '-' MONTH '-' DAY'\'' ;
 
 WHITESPACE : [\t\r\n\f ]+ -> skip ;
@@ -100,25 +100,22 @@ COMMENT : ( '//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip ;
 
 sql2003Parser : ( sql_executable_statement )+ ;
 
-sql_executable_statement : sql_schema_statement #executableSchemaStatement
-						 | sql_data_statement #executableDataStatement ;
+sql_executable_statement : sql_schema_statement | sql_data_statement ;
 
-sql_schema_statement : sql_schema_definition_statement #schemaStatement
-					 | sql_schema_manipulation_statement #schemaManipulationStatement ;
+sql_schema_statement : sql_schema_definition_statement | sql_schema_manipulation_statement ;
 
-sql_schema_definition_statement : schema_definition #schemaDefinitionStatement
-								| table_definition #tableDefinitionStatement ;
+sql_schema_definition_statement : schema_definition | table_definition ;
 
 sql_schema_manipulation_statement :	
-			drop_schema_statement #manipulationDropSchema
-		|	alter_table_statement #manipulationAlterTable
-		|	drop_table_statement  #manipulationDropTable
-        |   alter_database_statement #manipulationAlterDataBase
-        |   use_schema_statement #manipulationUseSchema
-        |   show_schema_statement #manipulationShowSchema
-        |   rename_table_statement #manipulationRenameTable
-        |   show_table_statement #manipulationShowTable
-        |   show_column_statement #manipulationShowColumn ;
+			drop_schema_statement
+		|	alter_table_statement 
+		|	drop_table_statement 
+        |   alter_database_statement
+        |   use_schema_statement
+        |   show_schema_statement
+        |   rename_table_statement
+        |   show_table_statement
+        |   show_column_statement ;
         
 sql_data_statement : select_value ;
 
@@ -145,20 +142,19 @@ tipo_literal: RES_INT | RES_FLOAT | RES_CHAR | RES_DATE ;
 constraint: CONSTRAINT constraintType ;
 
 constraintType:
-            ID PRIMARY KEY '(' ID (',' ID)*')' #constraintPrimaryKey
-        |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')' #constraintForeignKey
-        |   ID CHECK '('ID exp ID ')' #constraintCheck;
+            ID PRIMARY KEY '(' ID (',' ID)*')'
+        |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')'
+        |   ID CHECK '('ID exp ID ')' ;
 
-exp: logic #expLogic
-	 | relational #expRelational;
+exp: logic | relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
 accion:
-          ADD COLUMN ID tipo_literal (constraint) #accionAddColumn
-        | ADD constraint #accionAddConstraint
-        | DROP COLUMN ID #accionDropColumn
-        | DROP CONSTRAINT ID #accionDropConstraint;
+          ADD COLUMN ID tipo_literal (constraint)
+        | ADD constraint
+        | DROP COLUMN ID 
+        | DROP CONSTRAINT ID ;
 
 show_table_statement: SHOW TABLES ';' ;
 
@@ -185,12 +181,12 @@ value: tipo;
 tipo: literal;
 
 literal:  
-        int_literal #literal_int
-    |   float_literal #literal_float
-    |   date_literal #literal_date
-    |   char_literal #literal_char ;
+        int_literal
+    |   float_literal
+    |   date_literal
+    |   char_literal ;
 
 int_literal: NUM;
-float_literal: FLOAT;
+float_literal: NUM;
 date_literal: DATE;
 char_literal: CHAR;
