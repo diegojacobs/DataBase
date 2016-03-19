@@ -14,7 +14,6 @@ public class Main
 
         sqlParser parser = new sqlParser(tokens);
         ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
-        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
-        
+        System.out.println(tree.toStringTree(parser)); // print LISP-style tree        
     }
 }
