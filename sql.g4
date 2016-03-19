@@ -100,14 +100,14 @@ COMMENT : ( '//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip ;
 
 sql2003Parser : ( sql_executable_statement )+ ;
 
-sql_executable_statement : sql_schema_statement #schemaStatement
-						 | sql_data_statement #dataStatement ;
+sql_executable_statement : sql_schema_statement #executableSchemaStatement
+						 | sql_data_statement #executableDataStatement ;
 
-sql_schema_statement : sql_schema_definition_statement #schemaDefinitionStatement
+sql_schema_statement : sql_schema_definition_statement #schemaStatement
 					 | sql_schema_manipulation_statement #schemaManipulationStatement ;
 
-sql_schema_definition_statement : schema_definition #schemaDefinition
-								| table_definition #tableDefinition ;
+sql_schema_definition_statement : schema_definition #schemaDefinitionStatement
+								| table_definition #tableDefinitionStatement ;
 
 sql_schema_manipulation_statement :	
 			drop_schema_statement #manipulationDropSchema

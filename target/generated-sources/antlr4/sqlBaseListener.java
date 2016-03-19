@@ -88,18 +88,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSchemaDefinition(@NotNull sqlParser.SchemaDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSchemaDefinition(@NotNull sqlParser.SchemaDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpRelational(@NotNull sqlParser.ExpRelationalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -119,6 +107,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInt_literal(@NotNull sqlParser.Int_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExecutableDataStatement(@NotNull sqlParser.ExecutableDataStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExecutableDataStatement(@NotNull sqlParser.ExecutableDataStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -191,6 +191,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExecutableSchemaStatement(@NotNull sqlParser.ExecutableSchemaStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExecutableSchemaStatement(@NotNull sqlParser.ExecutableSchemaStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -532,18 +544,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTableDefinition(@NotNull sqlParser.TableDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTableDefinition(@NotNull sqlParser.TableDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterManipulationRenameTable(@NotNull sqlParser.ManipulationRenameTableContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -616,6 +616,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTableDefinitionStatement(@NotNull sqlParser.TableDefinitionStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTableDefinitionStatement(@NotNull sqlParser.TableDefinitionStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterManipulationDropSchema(@NotNull sqlParser.ManipulationDropSchemaContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -635,18 +647,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUpdate_value(@NotNull sqlParser.Update_valueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDataStatement(@NotNull sqlParser.DataStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDataStatement(@NotNull sqlParser.DataStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

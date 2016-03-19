@@ -148,41 +148,41 @@ public class sqlParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class DataStatementContext extends Sql_executable_statementContext {
+	public static class ExecutableDataStatementContext extends Sql_executable_statementContext {
 		public Sql_data_statementContext sql_data_statement() {
 			return getRuleContext(Sql_data_statementContext.class,0);
 		}
-		public DataStatementContext(Sql_executable_statementContext ctx) { copyFrom(ctx); }
+		public ExecutableDataStatementContext(Sql_executable_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterDataStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExecutableDataStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitDataStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExecutableDataStatement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitDataStatement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExecutableDataStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class SchemaStatementContext extends Sql_executable_statementContext {
+	public static class ExecutableSchemaStatementContext extends Sql_executable_statementContext {
 		public Sql_schema_statementContext sql_schema_statement() {
 			return getRuleContext(Sql_schema_statementContext.class,0);
 		}
-		public SchemaStatementContext(Sql_executable_statementContext ctx) { copyFrom(ctx); }
+		public ExecutableSchemaStatementContext(Sql_executable_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExecutableSchemaStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExecutableSchemaStatement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaStatement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExecutableSchemaStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -198,14 +198,14 @@ public class sqlParser extends Parser {
 			case ALTER:
 			case SHOW:
 			case USE:
-				_localctx = new SchemaStatementContext(_localctx);
+				_localctx = new ExecutableSchemaStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(81); sql_schema_statement();
 				}
 				break;
 			case SELECT:
-				_localctx = new DataStatementContext(_localctx);
+				_localctx = new ExecutableDataStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(82); sql_data_statement();
@@ -237,22 +237,22 @@ public class sqlParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class SchemaDefinitionStatementContext extends Sql_schema_statementContext {
+	public static class SchemaStatementContext extends Sql_schema_statementContext {
 		public Sql_schema_definition_statementContext sql_schema_definition_statement() {
 			return getRuleContext(Sql_schema_definition_statementContext.class,0);
 		}
-		public SchemaDefinitionStatementContext(Sql_schema_statementContext ctx) { copyFrom(ctx); }
+		public SchemaStatementContext(Sql_schema_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaDefinitionStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaDefinitionStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaStatement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaDefinitionStatement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -283,7 +283,7 @@ public class sqlParser extends Parser {
 			setState(87);
 			switch (_input.LA(1)) {
 			case CREATE:
-				_localctx = new SchemaDefinitionStatementContext(_localctx);
+				_localctx = new SchemaStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(85); sql_schema_definition_statement();
@@ -325,41 +325,41 @@ public class sqlParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class TableDefinitionContext extends Sql_schema_definition_statementContext {
-		public Table_definitionContext table_definition() {
-			return getRuleContext(Table_definitionContext.class,0);
-		}
-		public TableDefinitionContext(Sql_schema_definition_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterTableDefinition(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitTableDefinition(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitTableDefinition(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class SchemaDefinitionContext extends Sql_schema_definition_statementContext {
+	public static class SchemaDefinitionStatementContext extends Sql_schema_definition_statementContext {
 		public Schema_definitionContext schema_definition() {
 			return getRuleContext(Schema_definitionContext.class,0);
 		}
-		public SchemaDefinitionContext(Sql_schema_definition_statementContext ctx) { copyFrom(ctx); }
+		public SchemaDefinitionStatementContext(Sql_schema_definition_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaDefinition(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaDefinitionStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaDefinition(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaDefinitionStatement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaDefinition(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaDefinitionStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class TableDefinitionStatementContext extends Sql_schema_definition_statementContext {
+		public Table_definitionContext table_definition() {
+			return getRuleContext(Table_definitionContext.class,0);
+		}
+		public TableDefinitionStatementContext(Sql_schema_definition_statementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterTableDefinitionStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitTableDefinitionStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitTableDefinitionStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -371,14 +371,14 @@ public class sqlParser extends Parser {
 			setState(91);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
-				_localctx = new SchemaDefinitionContext(_localctx);
+				_localctx = new SchemaDefinitionStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(89); schema_definition();
 				}
 				break;
 			case 2:
-				_localctx = new TableDefinitionContext(_localctx);
+				_localctx = new TableDefinitionStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(90); table_definition();
