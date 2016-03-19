@@ -43,7 +43,7 @@ public class queryView extends JFrame implements ActionListener{
 
 	//private JFrame frame;
 	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun;
-	JButton btnOpenFile, btnSave, btnRun;
+	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo;
 	JTextArea textArea;
 	TextLineNumber tln;
 	UndoManager manager;
@@ -237,6 +237,34 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnPaste);
 		
+		btnUndo = new JButton("Undo");
+		btnUndo.addActionListener(this);
+		btnUndo.setToolTipText("Undo");
+		try{
+			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/7undoButton.png"));
+			btnUndo.setIcon(new ImageIcon(img));
+			btnUndo.setText("");
+			Border emptyBorder = BorderFactory.createEmptyBorder();
+			btnUndo.setBorder(emptyBorder);
+		} catch (Exception e){
+			System.out.println("Error in resources/images/7undoButton.png");
+		}
+		toolBar.add(btnUndo);
+		
+		btnRedo = new JButton("Redo");
+		btnRedo.addActionListener(this);
+		btnRedo.setToolTipText("Redo");
+		try{
+			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/8redoButton.png"));
+			btnRedo.setIcon(new ImageIcon(img));
+			btnRedo.setText("");
+			Border emptyBorder = BorderFactory.createEmptyBorder();
+			btnRedo.setBorder(emptyBorder);
+		} catch (Exception e){
+			System.out.println("Error in resources/images/8redoButton.png");
+		}
+		toolBar.add(btnRedo);
+		
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(this);
 		btnRun.setToolTipText("Run");
@@ -292,9 +320,11 @@ public class queryView extends JFrame implements ActionListener{
 			save();
 		}else if (e.getSource() == mntmSaveAs){
 			saveAs();
-		}else if (e.getSource() == mntmUndo){
+		}else if (e.getSource() == mntmUndo ||
+				e.getSource() == btnUndo){
 			undo();
-		}else if (e.getSource() == mntmRedo){
+		}else if (e.getSource() == mntmRedo ||
+				e.getSource() == btnRedo){
 			redo();
 		}else if (e.getSource() == mntmRun ||
 				e.getSource() == btnRun){
