@@ -4,7 +4,7 @@
 /sqlListener.java
 /sqlParser.java
 /sqlVisitor.java
-/.gitignore
+/resources/
 /sqlBaseListener.class
 /sqlBaseVisitor.class
 /sqlListener.class
@@ -49,4 +49,3 @@
 /sqlParser.class
 /sqlVisitor.class
 /views/
-/resources/

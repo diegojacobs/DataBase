@@ -68,10 +68,26 @@ public class queryView {
 		mnNewMenu.add(mntmOpen);
 		
 		JMenuItem mntmSave = new JMenuItem("Save");
+		mntmSave.setEnabled(false);
 		mnNewMenu.add(mntmSave);
 		
 		JMenu mnNewMenu_1 = new JMenu("Edit");
 		menuBar.add(mnNewMenu_1);
+		
+		JMenuItem mntmCut = new JMenuItem("Cut");
+		mnNewMenu_1.add(mntmCut);
+		
+		JMenuItem mntmCopy = new JMenuItem("Copy");
+		mnNewMenu_1.add(mntmCopy);
+		
+		JMenuItem mntmPaste = new JMenuItem("Paste");
+		mnNewMenu_1.add(mntmPaste);
+		
+		JMenu mnQuery = new JMenu("Query");
+		menuBar.add(mnQuery);
+		
+		JMenuItem mntmRun = new JMenuItem("Run");
+		mnQuery.add(mntmRun);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JToolBar toolBar = new JToolBar();
@@ -80,6 +96,7 @@ public class queryView {
 		
 		
 		JButton btnOpenFile = new JButton("Open File");
+		btnOpenFile.setToolTipText("Open File");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/2openButton.png"));
 			btnOpenFile.setIcon(new ImageIcon(img));
@@ -92,19 +109,21 @@ public class queryView {
 		toolBar.add(btnOpenFile);
 		
 		JButton btnSave = new JButton("Save");
+		btnSave.setEnabled(false);
+		btnSave.setToolTipText("Save");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/3saveButton.png"));
 			btnSave.setIcon(new ImageIcon(img));
 			btnSave.setText("");
 			Border emptyBorder = BorderFactory.createEmptyBorder();
 			btnSave.setBorder(emptyBorder);
-			btnSave.setEnabled(false);//false until a file is written
 		} catch (Exception e){
 			System.out.println("Error in resources/images/3saveButton.png");
 		}
 		toolBar.add(btnSave);
 		
 		JButton btnCut = new JButton("Cut");
+		btnCut.setToolTipText("Cut");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/4cutButton.png"));
 			btnCut.setIcon(new ImageIcon(img));
@@ -117,6 +136,7 @@ public class queryView {
 		toolBar.add(btnCut);
 		
 		JButton btnCopy = new JButton("Copy");
+		btnCopy.setToolTipText("Copy");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/5copyButton.png"));
 			btnCopy.setIcon(new ImageIcon(img));
@@ -129,6 +149,7 @@ public class queryView {
 		toolBar.add(btnCopy);
 		
 		JButton btnPaste = new JButton("Paste");
+		btnPaste.setToolTipText("Paste");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/6pasteButton.png"));
 			btnPaste.setIcon(new ImageIcon(img));
@@ -141,6 +162,7 @@ public class queryView {
 		toolBar.add(btnPaste);
 		
 		JButton btnRun = new JButton("Run");
+		btnRun.setToolTipText("Run");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/1playButton.png"));
 			btnRun.setIcon(new ImageIcon(img));
