@@ -6,10 +6,12 @@ import java.awt.Image;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 import java.awt.BorderLayout;
@@ -23,9 +25,26 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 
-public class queryView {
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-	private JFrame frame;
+public class queryView extends JFrame implements ActionListener{
+
+	//private JFrame frame;
+	JMenuItem mntmOpen, mntmSave;
+	JButton btnOpenFile, btnSave;
+	JTextArea textArea;
+	JFileChooser fc;
+	File file;
+	
+	
 
 	/**
 	 * Launch the application.
@@ -35,7 +54,8 @@ public class queryView {
 			public void run() {
 				try {
 					queryView window = new queryView();
-					window.frame.setVisible(true);
+					//window.frame.setVisible(true);
+					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -54,21 +74,25 @@ public class queryView {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//frame = new JFrame();
+		this.setBounds(100, 100, 450, 300);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		fc = new JFileChooser();
 		
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		this.setJMenuBar(menuBar);
 		
 		JMenu mnNewMenu = new JMenu("File");
 		menuBar.add(mnNewMenu);
 		
-		JMenuItem mntmOpen = new JMenuItem("Open");
+		mntmOpen = new JMenuItem("Open");
+		mntmOpen.addActionListener(this);
 		mnNewMenu.add(mntmOpen);
 		
-		JMenuItem mntmSave = new JMenuItem("Save");
-		mntmSave.setEnabled(false);
+		mntmSave = new JMenuItem("Save");
+		mntmSave.addActionListener(this);
+		//mntmSave.setEnabled(false);
 		mnNewMenu.add(mntmSave);
 		
 		JMenu mnNewMenu_1 = new JMenu("Edit");
@@ -88,15 +112,16 @@ public class queryView {
 		
 		JMenuItem mntmRun = new JMenuItem("Run");
 		mnQuery.add(mntmRun);
-		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JToolBar toolBar = new JToolBar();
-		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
+		this.getContentPane().add(toolBar, BorderLayout.NORTH);
 		
 		
 		
-		JButton btnOpenFile = new JButton("Open File");
+		btnOpenFile = new JButton("Open File");
 		btnOpenFile.setToolTipText("Open File");
+		btnOpenFile.addActionListener(this);
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/2openButton.png"));
 			btnOpenFile.setIcon(new ImageIcon(img));
@@ -108,8 +133,9 @@ public class queryView {
 		}
 		toolBar.add(btnOpenFile);
 		
-		JButton btnSave = new JButton("Save");
-		btnSave.setEnabled(false);
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(this);
+		//btnSave.setEnabled(false);
 		btnSave.setToolTipText("Save");
 		try{
 			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/3saveButton.png"));
@@ -178,7 +204,7 @@ public class queryView {
 		splitPane.setResizeWeight(0.5);
 		splitPane.setContinuousLayout(true);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+		this.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		splitPane.setLeftComponent(tabbedPane);
@@ -186,8 +212,9 @@ public class queryView {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("SQL Editor", null, scrollPane_1, null);
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setTabSize(4);
+		
 		scrollPane_1.setViewportView(textArea);
 		
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
@@ -196,6 +223,83 @@ public class queryView {
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPane_1.addTab("Data Output", null, scrollPane, null);
 		
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == mntmOpen ||
+				e.getSource() == btnOpenFile){
+			open();
+	        
+		}else if (e.getSource() == mntmSave ||
+				e.getSource() == btnSave){
+			save();
+		}
+		
+	}
+	
+	public void open(){
+		int returnVal = fc.showOpenDialog(this);
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION){
+        	file = fc.getSelectedFile();
+        	mntmSave.setEnabled(true);
+        	btnSave.setEnabled(true);
+        	try{
+        		FileReader readFile = new FileReader(file.getAbsolutePath());
+        		BufferedReader br = new BufferedReader(readFile);
+        		textArea.setText("");
+        		String currentLine;
+        		while ((currentLine = br.readLine()) != null){
+        			textArea.append(currentLine+"\n");
+        		}
+        		br.close();
+        	} catch (Exception e){
+        		System.out.println("Error opening file");
+        	}
+        	
+        
+        	System.out.println(file.getAbsolutePath());
+        } else {
+        	//JOptionPane.showMessageDialog(null,"\nNo se ha encontrado el archivo","ADVERTENCIA!!!",JOptionPane.WARNING_MESSAGE);
+        }
+	}
+	
+	public void save(){
+		if (file != null){
+			System.out.println("Archivo salvado en "+file.getAbsolutePath());
+			try{
+				PrintWriter writer = new PrintWriter(file.getAbsolutePath(), "UTF-8");
+				writer.print(textArea.getText());
+				writer.close();
+			}catch (Exception e ){
+				System.out.println("Error saving file");
+			}
+			
+		}else{
+			saveAs();
+		}
+	}
+	
+	public void saveAs(){
+		int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = fc.getSelectedFile();
+            try{
+				PrintWriter writer = new PrintWriter(file.getAbsolutePath(), "UTF-8");
+				writer.print(textArea.getText());
+				writer.close();
+			}catch (Exception e ){
+				System.out.println("Error saving file");
+			}
+            
+            System.out.println(file.getAbsolutePath());
+            //This is where a real application would save the file.
+            //log.append("Saving: " + file.getName() + "." + newline);
+        } else {
+            //log.append("Save command cancelled by user." + newline);
+        }
 	}
 
 }

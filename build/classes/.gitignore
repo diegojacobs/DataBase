@@ -4,11 +4,10 @@
 /sqlListener.java
 /sqlParser.java
 /sqlVisitor.java
-/resources/
 /sqlBaseListener.class
 /sqlBaseVisitor.class
+/sqlLexer.class
 /sqlListener.class
-/sqlParser$AccionContext.class
 /sqlParser$Alter_database_statementContext.class
 /sqlParser$Alter_table_statementContext.class
 /sqlParser$Char_literalContext.class
@@ -47,5 +46,4 @@
 /sqlParser$Use_schema_statementContext.class
 /sqlParser$ValueContext.class
 /sqlParser.class
-/sqlVisitor.class
 /views/
