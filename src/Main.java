@@ -6,7 +6,7 @@ public class Main
     public static void main( String[] args) throws Exception 
     {
 
-        ANTLRInputStream input = new ANTLRInputStream("CREATE DATABASE prueba;");
+        ANTLRInputStream input = new ANTLRInputStream("CREATE database prueba;");
 
         sqlLexer lexer = new sqlLexer(input);
         
@@ -14,6 +14,11 @@ public class Main
 
         sqlParser parser = new sqlParser(tokens);
         ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
-        System.out.println(tree.toStringTree(parser)); // print LISP-style tree        
+        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+        
+        sqlBaseVisitor<String> semantic_checker = new sqlBaseVisitor();
+        
+        semantic_checker.visit(tree);
+        System.out.println(semantic_checker.getErrores());
     }
 }

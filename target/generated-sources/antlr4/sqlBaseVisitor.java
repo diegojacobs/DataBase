@@ -1,4 +1,15 @@
 // Generated from sql.g4 by ANTLR 4.4
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -11,13 +22,95 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sqlVisitor<T> {
+	
+	// Atributos
+	
+	private String dataPath;
+	private ArrayList<String> errores = new ArrayList<String>();
+	private DataBases dataBases = new DataBases();
+	private DataBase actual = new DataBase();	
+	
+	/**
+	 * @return the errores
+	 */
+	public ArrayList<String> getErrores() {
+		return errores;
+	}
+
+	/**
+	 * @param errores the errores to set
+	 */
+	public void setErrores(ArrayList<String> errores) {
+		this.errores = errores;
+	}
+
+	public sqlBaseVisitor() {
+		Path currentRelativePath = Paths.get("");
+		dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
+		cargarDBs();
+	}
+	
+	public void cargarDBs()
+	{
+		try {
+			FileInputStream fis = new FileInputStream(this.dataPath+"dbs.bin");
+			ObjectInputStream in = new ObjectInputStream(fis);
+			this.dataBases = (DataBases)in.readObject();
+			//in.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void guardarDBs()
+	{
+		try {
+			FileOutputStream fos = new FileOutputStream(this.dataPath+"dbs.bin");
+			ObjectOutputStream out = new ObjectOutputStream(fos);            
+            // Escribir el objeto en el fichero
+            out.writeObject(this.dataBases);            
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) { return visitChildren(ctx); }
+	@Override public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) 
+	{ 
+		String ID = ctx.ID().getText();
+		boolean find = false;		
+		for (DataBase i: this.dataBases.getDataBases())
+			if (i.getName().equals(ID))
+			{
+				find = true;
+				this.actual = i;
+				break;
+			}
+		if (! find)
+		{
+			String rule_5 = "No se puede usar la DataBase " + ID + " porque no ha sido creada @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		return (T)"";
+		//return visitChildren(ctx); 
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -354,13 +447,33 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitInsert_value(@NotNull sqlParser.Insert_valueContext ctx) { return visitChildren(ctx); }
+	
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx)
+	{ 		
+		String ID = ctx.ID().getText();
+		DataBase new_DB = new DataBase(ID);
+        File new_directory = new File(this.dataPath+ID);
+        boolean succes = new_directory.mkdirs();        
+        if (!succes)
+        {
+        	String rule_1 = "Error al crear el directorio " + ID + " @line: " + ctx.getStop().getLine();
+        	this.errores.add(rule_1);
+        }
+        else
+        {
+        	this.dataBases.addDataBase(new_DB);
+    		guardarDBs();
+        }
+		return (T)"";
+		//return visitChildren(ctx); 
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,5 +1,7 @@
+import java.io.Serializable;
 
-public class DataBase {
+
+public class DataBase implements Serializable {
 	
 	private String name;
 	
