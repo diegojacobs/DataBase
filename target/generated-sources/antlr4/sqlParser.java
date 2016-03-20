@@ -23,7 +23,7 @@ public class sqlParser extends Parser {
 		REFERENCES=31, CHECK=32, ADD=33, COLUMN=34, COLUMNS=35, FROM=36, RES_AND=37, 
 		RES_OR=38, RES_NOT=39, INSERT=40, INTO=41, VALUES=42, UPDATE=43, SET=44, 
 		WHERE=45, DELETE=46, SELECT=47, ORDER=48, BY=49, ASC=50, DESC=51, ID=52, 
-		NUM=53, FLOAT=54, CHAR=55, DATE=56, WHITESPACE=57, COMMENT=58;
+		NUM=53, CHAR=54, DATE=55, WHITESPACE=56, COMMENT=57;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'<='", "'<>'", "'('", "')'", "'*'", "'>='", "';'", "'<'", 
 		"','", "'='", "'>'", "CREATE", "DATABASE", "DATABASES", "TABLE", "TABLES", 
@@ -31,7 +31,7 @@ public class sqlParser extends Parser {
 		"RES_CHAR", "RES_DATE", "CONSTRAINT", "KEY", "PRIMARY", "FOREIGN", "REFERENCES", 
 		"CHECK", "ADD", "COLUMN", "COLUMNS", "FROM", "RES_AND", "RES_OR", "RES_NOT", 
 		"INSERT", "INTO", "VALUES", "UPDATE", "SET", "WHERE", "DELETE", "SELECT", 
-		"ORDER", "BY", "ASC", "DESC", "ID", "NUM", "FLOAT", "CHAR", "DATE", "WHITESPACE", 
+		"ORDER", "BY", "ASC", "DESC", "ID", "NUM", "CHAR", "DATE", "WHITESPACE", 
 		"COMMENT"
 	};
 	public static final int
@@ -138,51 +138,27 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Sql_executable_statementContext extends ParserRuleContext {
+		public Sql_schema_statementContext sql_schema_statement() {
+			return getRuleContext(Sql_schema_statementContext.class,0);
+		}
+		public Sql_data_statementContext sql_data_statement() {
+			return getRuleContext(Sql_data_statementContext.class,0);
+		}
 		public Sql_executable_statementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_sql_executable_statement; }
-	 
-		public Sql_executable_statementContext() { }
-		public void copyFrom(Sql_executable_statementContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class ExecutableDataStatementContext extends Sql_executable_statementContext {
-		public Sql_data_statementContext sql_data_statement() {
-			return getRuleContext(Sql_data_statementContext.class,0);
-		}
-		public ExecutableDataStatementContext(Sql_executable_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExecutableDataStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSql_executable_statement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExecutableDataStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSql_executable_statement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExecutableDataStatement(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ExecutableSchemaStatementContext extends Sql_executable_statementContext {
-		public Sql_schema_statementContext sql_schema_statement() {
-			return getRuleContext(Sql_schema_statementContext.class,0);
-		}
-		public ExecutableSchemaStatementContext(Sql_executable_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExecutableSchemaStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExecutableSchemaStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExecutableSchemaStatement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSql_executable_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -198,14 +174,12 @@ public class sqlParser extends Parser {
 			case ALTER:
 			case SHOW:
 			case USE:
-				_localctx = new ExecutableSchemaStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(81); sql_schema_statement();
 				}
 				break;
 			case SELECT:
-				_localctx = new ExecutableDataStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(82); sql_data_statement();
@@ -227,51 +201,27 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Sql_schema_statementContext extends ParserRuleContext {
+		public Sql_schema_manipulation_statementContext sql_schema_manipulation_statement() {
+			return getRuleContext(Sql_schema_manipulation_statementContext.class,0);
+		}
+		public Sql_schema_definition_statementContext sql_schema_definition_statement() {
+			return getRuleContext(Sql_schema_definition_statementContext.class,0);
+		}
 		public Sql_schema_statementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_sql_schema_statement; }
-	 
-		public Sql_schema_statementContext() { }
-		public void copyFrom(Sql_schema_statementContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class SchemaStatementContext extends Sql_schema_statementContext {
-		public Sql_schema_definition_statementContext sql_schema_definition_statement() {
-			return getRuleContext(Sql_schema_definition_statementContext.class,0);
-		}
-		public SchemaStatementContext(Sql_schema_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSql_schema_statement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSql_schema_statement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaStatement(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class SchemaManipulationStatementContext extends Sql_schema_statementContext {
-		public Sql_schema_manipulation_statementContext sql_schema_manipulation_statement() {
-			return getRuleContext(Sql_schema_manipulation_statementContext.class,0);
-		}
-		public SchemaManipulationStatementContext(Sql_schema_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaManipulationStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaManipulationStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaManipulationStatement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSql_schema_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -283,7 +233,6 @@ public class sqlParser extends Parser {
 			setState(87);
 			switch (_input.LA(1)) {
 			case CREATE:
-				_localctx = new SchemaStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(85); sql_schema_definition_statement();
@@ -293,7 +242,6 @@ public class sqlParser extends Parser {
 			case ALTER:
 			case SHOW:
 			case USE:
-				_localctx = new SchemaManipulationStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(86); sql_schema_manipulation_statement();
@@ -315,51 +263,27 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Sql_schema_definition_statementContext extends ParserRuleContext {
+		public Table_definitionContext table_definition() {
+			return getRuleContext(Table_definitionContext.class,0);
+		}
+		public Schema_definitionContext schema_definition() {
+			return getRuleContext(Schema_definitionContext.class,0);
+		}
 		public Sql_schema_definition_statementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_sql_schema_definition_statement; }
-	 
-		public Sql_schema_definition_statementContext() { }
-		public void copyFrom(Sql_schema_definition_statementContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class SchemaDefinitionStatementContext extends Sql_schema_definition_statementContext {
-		public Schema_definitionContext schema_definition() {
-			return getRuleContext(Schema_definitionContext.class,0);
-		}
-		public SchemaDefinitionStatementContext(Sql_schema_definition_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSchemaDefinitionStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSql_schema_definition_statement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSchemaDefinitionStatement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSql_schema_definition_statement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSchemaDefinitionStatement(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class TableDefinitionStatementContext extends Sql_schema_definition_statementContext {
-		public Table_definitionContext table_definition() {
-			return getRuleContext(Table_definitionContext.class,0);
-		}
-		public TableDefinitionStatementContext(Sql_schema_definition_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterTableDefinitionStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitTableDefinitionStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitTableDefinitionStatement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSql_schema_definition_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -371,14 +295,12 @@ public class sqlParser extends Parser {
 			setState(91);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
-				_localctx = new SchemaDefinitionStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(89); schema_definition();
 				}
 				break;
 			case 2:
-				_localctx = new TableDefinitionStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(90); table_definition();
@@ -398,184 +320,48 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Sql_schema_manipulation_statementContext extends ParserRuleContext {
+		public Drop_table_statementContext drop_table_statement() {
+			return getRuleContext(Drop_table_statementContext.class,0);
+		}
+		public Drop_schema_statementContext drop_schema_statement() {
+			return getRuleContext(Drop_schema_statementContext.class,0);
+		}
+		public Show_schema_statementContext show_schema_statement() {
+			return getRuleContext(Show_schema_statementContext.class,0);
+		}
+		public Alter_table_statementContext alter_table_statement() {
+			return getRuleContext(Alter_table_statementContext.class,0);
+		}
+		public Alter_database_statementContext alter_database_statement() {
+			return getRuleContext(Alter_database_statementContext.class,0);
+		}
+		public Rename_table_statementContext rename_table_statement() {
+			return getRuleContext(Rename_table_statementContext.class,0);
+		}
+		public Show_table_statementContext show_table_statement() {
+			return getRuleContext(Show_table_statementContext.class,0);
+		}
+		public Use_schema_statementContext use_schema_statement() {
+			return getRuleContext(Use_schema_statementContext.class,0);
+		}
+		public Show_column_statementContext show_column_statement() {
+			return getRuleContext(Show_column_statementContext.class,0);
+		}
 		public Sql_schema_manipulation_statementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_sql_schema_manipulation_statement; }
-	 
-		public Sql_schema_manipulation_statementContext() { }
-		public void copyFrom(Sql_schema_manipulation_statementContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class ManipulationShowTableContext extends Sql_schema_manipulation_statementContext {
-		public Show_table_statementContext show_table_statement() {
-			return getRuleContext(Show_table_statementContext.class,0);
-		}
-		public ManipulationShowTableContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationShowTable(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterSql_schema_manipulation_statement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationShowTable(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitSql_schema_manipulation_statement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationShowTable(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationAlterTableContext extends Sql_schema_manipulation_statementContext {
-		public Alter_table_statementContext alter_table_statement() {
-			return getRuleContext(Alter_table_statementContext.class,0);
-		}
-		public ManipulationAlterTableContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationAlterTable(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationAlterTable(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationAlterTable(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationAlterDataBaseContext extends Sql_schema_manipulation_statementContext {
-		public Alter_database_statementContext alter_database_statement() {
-			return getRuleContext(Alter_database_statementContext.class,0);
-		}
-		public ManipulationAlterDataBaseContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationAlterDataBase(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationAlterDataBase(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationAlterDataBase(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationShowColumnContext extends Sql_schema_manipulation_statementContext {
-		public Show_column_statementContext show_column_statement() {
-			return getRuleContext(Show_column_statementContext.class,0);
-		}
-		public ManipulationShowColumnContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationShowColumn(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationShowColumn(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationShowColumn(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationRenameTableContext extends Sql_schema_manipulation_statementContext {
-		public Rename_table_statementContext rename_table_statement() {
-			return getRuleContext(Rename_table_statementContext.class,0);
-		}
-		public ManipulationRenameTableContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationRenameTable(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationRenameTable(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationRenameTable(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationDropSchemaContext extends Sql_schema_manipulation_statementContext {
-		public Drop_schema_statementContext drop_schema_statement() {
-			return getRuleContext(Drop_schema_statementContext.class,0);
-		}
-		public ManipulationDropSchemaContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationDropSchema(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationDropSchema(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationDropSchema(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationUseSchemaContext extends Sql_schema_manipulation_statementContext {
-		public Use_schema_statementContext use_schema_statement() {
-			return getRuleContext(Use_schema_statementContext.class,0);
-		}
-		public ManipulationUseSchemaContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationUseSchema(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationUseSchema(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationUseSchema(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationDropTableContext extends Sql_schema_manipulation_statementContext {
-		public Drop_table_statementContext drop_table_statement() {
-			return getRuleContext(Drop_table_statementContext.class,0);
-		}
-		public ManipulationDropTableContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationDropTable(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationDropTable(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationDropTable(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ManipulationShowSchemaContext extends Sql_schema_manipulation_statementContext {
-		public Show_schema_statementContext show_schema_statement() {
-			return getRuleContext(Show_schema_statementContext.class,0);
-		}
-		public ManipulationShowSchemaContext(Sql_schema_manipulation_statementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterManipulationShowSchema(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitManipulationShowSchema(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitManipulationShowSchema(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitSql_schema_manipulation_statement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -587,63 +373,54 @@ public class sqlParser extends Parser {
 			setState(102);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
-				_localctx = new ManipulationDropSchemaContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(93); drop_schema_statement();
 				}
 				break;
 			case 2:
-				_localctx = new ManipulationAlterTableContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(94); alter_table_statement();
 				}
 				break;
 			case 3:
-				_localctx = new ManipulationDropTableContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(95); drop_table_statement();
 				}
 				break;
 			case 4:
-				_localctx = new ManipulationAlterDataBaseContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(96); alter_database_statement();
 				}
 				break;
 			case 5:
-				_localctx = new ManipulationUseSchemaContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(97); use_schema_statement();
 				}
 				break;
 			case 6:
-				_localctx = new ManipulationShowSchemaContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(98); show_schema_statement();
 				}
 				break;
 			case 7:
-				_localctx = new ManipulationRenameTableContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(99); rename_table_statement();
 				}
 				break;
 			case 8:
-				_localctx = new ManipulationShowTableContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(100); show_table_statement();
 				}
 				break;
 			case 9:
-				_localctx = new ManipulationShowColumnContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(101); show_column_statement();
@@ -1264,82 +1041,33 @@ public class sqlParser extends Parser {
 	}
 
 	public static class ConstraintTypeContext extends ParserRuleContext {
-		public ConstraintTypeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_constraintType; }
-	 
-		public ConstraintTypeContext() { }
-		public void copyFrom(ConstraintTypeContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class ConstraintCheckContext extends ConstraintTypeContext {
+		public TerminalNode PRIMARY() { return getToken(sqlParser.PRIMARY, 0); }
+		public TerminalNode KEY() { return getToken(sqlParser.KEY, 0); }
 		public TerminalNode CHECK() { return getToken(sqlParser.CHECK, 0); }
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
-		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(sqlParser.ID, i);
-		}
-		public ConstraintCheckContext(ConstraintTypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConstraintCheck(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConstraintCheck(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConstraintCheck(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ConstraintPrimaryKeyContext extends ConstraintTypeContext {
-		public TerminalNode PRIMARY() { return getToken(sqlParser.PRIMARY, 0); }
-		public TerminalNode KEY() { return getToken(sqlParser.KEY, 0); }
-		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(sqlParser.ID, i);
-		}
-		public ConstraintPrimaryKeyContext(ConstraintTypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConstraintPrimaryKey(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConstraintPrimaryKey(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConstraintPrimaryKey(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ConstraintForeignKeyContext extends ConstraintTypeContext {
-		public TerminalNode KEY() { return getToken(sqlParser.KEY, 0); }
 		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
 		public TerminalNode REFERENCES() { return getToken(sqlParser.REFERENCES, 0); }
 		public TerminalNode ID(int i) {
 			return getToken(sqlParser.ID, i);
 		}
 		public TerminalNode FOREIGN() { return getToken(sqlParser.FOREIGN, 0); }
-		public ConstraintForeignKeyContext(ConstraintTypeContext ctx) { copyFrom(ctx); }
+		public ConstraintTypeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_constraintType; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConstraintForeignKey(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConstraintType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConstraintForeignKey(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConstraintType(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConstraintForeignKey(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConstraintType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1352,7 +1080,6 @@ public class sqlParser extends Parser {
 			setState(214);
 			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
-				_localctx = new ConstraintPrimaryKeyContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(168); match(ID);
@@ -1378,7 +1105,6 @@ public class sqlParser extends Parser {
 				}
 				break;
 			case 2:
-				_localctx = new ConstraintForeignKeyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(181); match(ID);
@@ -1423,7 +1149,6 @@ public class sqlParser extends Parser {
 				}
 				break;
 			case 3:
-				_localctx = new ConstraintCheckContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(206); match(ID);
@@ -1449,51 +1174,27 @@ public class sqlParser extends Parser {
 	}
 
 	public static class ExpContext extends ParserRuleContext {
+		public LogicContext logic() {
+			return getRuleContext(LogicContext.class,0);
+		}
+		public RelationalContext relational() {
+			return getRuleContext(RelationalContext.class,0);
+		}
 		public ExpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_exp; }
-	 
-		public ExpContext() { }
-		public void copyFrom(ExpContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class ExpRelationalContext extends ExpContext {
-		public RelationalContext relational() {
-			return getRuleContext(RelationalContext.class,0);
-		}
-		public ExpRelationalContext(ExpContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExpRelational(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExp(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExpRelational(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExp(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExpRelational(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ExpLogicContext extends ExpContext {
-		public LogicContext logic() {
-			return getRuleContext(LogicContext.class,0);
-		}
-		public ExpLogicContext(ExpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterExpLogic(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitExpLogic(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExpLogic(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitExp(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1507,7 +1208,6 @@ public class sqlParser extends Parser {
 			case RES_AND:
 			case RES_OR:
 			case RES_NOT:
-				_localctx = new ExpLogicContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(216); logic();
@@ -1519,7 +1219,6 @@ public class sqlParser extends Parser {
 			case T__3:
 			case T__1:
 			case T__0:
-				_localctx = new ExpRelationalContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(217); relational();
@@ -1595,96 +1294,32 @@ public class sqlParser extends Parser {
 	}
 
 	public static class AccionContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
+		public TerminalNode COLUMN() { return getToken(sqlParser.COLUMN, 0); }
+		public ConstraintContext constraint() {
+			return getRuleContext(ConstraintContext.class,0);
+		}
+		public TerminalNode ADD() { return getToken(sqlParser.ADD, 0); }
+		public TerminalNode DROP() { return getToken(sqlParser.DROP, 0); }
+		public TerminalNode CONSTRAINT() { return getToken(sqlParser.CONSTRAINT, 0); }
+		public Tipo_literalContext tipo_literal() {
+			return getRuleContext(Tipo_literalContext.class,0);
+		}
 		public AccionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_accion; }
-	 
-		public AccionContext() { }
-		public void copyFrom(AccionContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class AccionDropConstraintContext extends AccionContext {
-		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public TerminalNode DROP() { return getToken(sqlParser.DROP, 0); }
-		public TerminalNode CONSTRAINT() { return getToken(sqlParser.CONSTRAINT, 0); }
-		public AccionDropConstraintContext(AccionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAccionDropConstraint(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAccion(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAccionDropConstraint(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAccion(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAccionDropConstraint(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class AccionAddColumnContext extends AccionContext {
-		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public TerminalNode COLUMN() { return getToken(sqlParser.COLUMN, 0); }
-		public ConstraintContext constraint() {
-			return getRuleContext(ConstraintContext.class,0);
-		}
-		public TerminalNode ADD() { return getToken(sqlParser.ADD, 0); }
-		public Tipo_literalContext tipo_literal() {
-			return getRuleContext(Tipo_literalContext.class,0);
-		}
-		public AccionAddColumnContext(AccionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAccionAddColumn(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAccionAddColumn(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAccionAddColumn(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class AccionAddConstraintContext extends AccionContext {
-		public ConstraintContext constraint() {
-			return getRuleContext(ConstraintContext.class,0);
-		}
-		public TerminalNode ADD() { return getToken(sqlParser.ADD, 0); }
-		public AccionAddConstraintContext(AccionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAccionAddConstraint(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAccionAddConstraint(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAccionAddConstraint(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class AccionDropColumnContext extends AccionContext {
-		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public TerminalNode COLUMN() { return getToken(sqlParser.COLUMN, 0); }
-		public TerminalNode DROP() { return getToken(sqlParser.DROP, 0); }
-		public AccionDropColumnContext(AccionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAccionDropColumn(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAccionDropColumn(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAccionDropColumn(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAccion(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1696,7 +1331,6 @@ public class sqlParser extends Parser {
 			setState(242);
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
-				_localctx = new AccionAddColumnContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(228); match(ADD);
@@ -1709,7 +1343,6 @@ public class sqlParser extends Parser {
 				}
 				break;
 			case 2:
-				_localctx = new AccionAddConstraintContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(234); match(ADD);
@@ -1717,7 +1350,6 @@ public class sqlParser extends Parser {
 				}
 				break;
 			case 3:
-				_localctx = new AccionDropColumnContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(236); match(DROP);
@@ -1726,7 +1358,6 @@ public class sqlParser extends Parser {
 				}
 				break;
 			case 4:
-				_localctx = new AccionDropConstraintContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(239); match(DROP);
@@ -2407,89 +2038,33 @@ public class sqlParser extends Parser {
 	}
 
 	public static class LiteralContext extends ParserRuleContext {
+		public Int_literalContext int_literal() {
+			return getRuleContext(Int_literalContext.class,0);
+		}
+		public Date_literalContext date_literal() {
+			return getRuleContext(Date_literalContext.class,0);
+		}
+		public Float_literalContext float_literal() {
+			return getRuleContext(Float_literalContext.class,0);
+		}
+		public Char_literalContext char_literal() {
+			return getRuleContext(Char_literalContext.class,0);
+		}
 		public LiteralContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_literal; }
-	 
-		public LiteralContext() { }
-		public void copyFrom(LiteralContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class Literal_intContext extends LiteralContext {
-		public Int_literalContext int_literal() {
-			return getRuleContext(Int_literalContext.class,0);
-		}
-		public Literal_intContext(LiteralContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterLiteral_int(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterLiteral(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitLiteral_int(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitLiteral(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitLiteral_int(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class Literal_dateContext extends LiteralContext {
-		public Date_literalContext date_literal() {
-			return getRuleContext(Date_literalContext.class,0);
-		}
-		public Literal_dateContext(LiteralContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterLiteral_date(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitLiteral_date(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitLiteral_date(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class Literal_floatContext extends LiteralContext {
-		public Float_literalContext float_literal() {
-			return getRuleContext(Float_literalContext.class,0);
-		}
-		public Literal_floatContext(LiteralContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterLiteral_float(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitLiteral_float(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitLiteral_float(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class Literal_charContext extends LiteralContext {
-		public Char_literalContext char_literal() {
-			return getRuleContext(Char_literalContext.class,0);
-		}
-		public Literal_charContext(LiteralContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterLiteral_char(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitLiteral_char(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitLiteral_char(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitLiteral(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2499,37 +2074,31 @@ public class sqlParser extends Parser {
 		enterRule(_localctx, 66, RULE_literal);
 		try {
 			setState(325);
-			switch (_input.LA(1)) {
-			case NUM:
-				_localctx = new Literal_intContext(_localctx);
+			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(321); int_literal();
 				}
 				break;
-			case FLOAT:
-				_localctx = new Literal_floatContext(_localctx);
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(322); float_literal();
 				}
 				break;
-			case DATE:
-				_localctx = new Literal_dateContext(_localctx);
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(323); date_literal();
 				}
 				break;
-			case CHAR:
-				_localctx = new Literal_charContext(_localctx);
+			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(324); char_literal();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2585,7 +2154,7 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Float_literalContext extends ParserRuleContext {
-		public TerminalNode FLOAT() { return getToken(sqlParser.FLOAT, 0); }
+		public TerminalNode NUM() { return getToken(sqlParser.NUM, 0); }
 		public Float_literalContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2611,7 +2180,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(329); match(FLOAT);
+			setState(329); match(NUM);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2708,7 +2277,7 @@ public class sqlParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3<\u0152\4\2\t\2\4"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3;\u0152\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -2813,9 +2382,9 @@ public class sqlParser extends Parser {
 		"\5D#\2\u0142C\3\2\2\2\u0143\u0148\5F$\2\u0144\u0148\5H%\2\u0145\u0148"+
 		"\5J&\2\u0146\u0148\5L\'\2\u0147\u0143\3\2\2\2\u0147\u0144\3\2\2\2\u0147"+
 		"\u0145\3\2\2\2\u0147\u0146\3\2\2\2\u0148E\3\2\2\2\u0149\u014a\7\67\2\2"+
-		"\u014aG\3\2\2\2\u014b\u014c\78\2\2\u014cI\3\2\2\2\u014d\u014e\7:\2\2\u014e"+
-		"K\3\2\2\2\u014f\u0150\79\2\2\u0150M\3\2\2\2\24QUY]hx\u00a1\u00b3\u00c0"+
-		"\u00cc\u00d8\u00dc\u00f4\u0123\u0126\u012f\u013c\u0147";
+		"\u014aG\3\2\2\2\u014b\u014c\7\67\2\2\u014cI\3\2\2\2\u014d\u014e\79\2\2"+
+		"\u014eK\3\2\2\2\u014f\u0150\78\2\2\u0150M\3\2\2\2\24QUY]hx\u00a1\u00b3"+
+		"\u00c0\u00cc\u00d8\u00dc\u00f4\u0123\u0126\u012f\u013c\u0147";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

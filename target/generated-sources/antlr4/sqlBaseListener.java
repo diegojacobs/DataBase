@@ -16,6 +16,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAccion(@NotNull sqlParser.AccionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAccion(@NotNull sqlParser.AccionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -52,246 +64,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLiteral_date(@NotNull sqlParser.Literal_dateContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLiteral_date(@NotNull sqlParser.Literal_dateContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAccionDropColumn(@NotNull sqlParser.AccionDropColumnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpLogic(@NotNull sqlParser.ExpLogicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpLogic(@NotNull sqlParser.ExpLogicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpRelational(@NotNull sqlParser.ExpRelationalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpRelational(@NotNull sqlParser.ExpRelationalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterInt_literal(@NotNull sqlParser.Int_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitInt_literal(@NotNull sqlParser.Int_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExecutableDataStatement(@NotNull sqlParser.ExecutableDataStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExecutableDataStatement(@NotNull sqlParser.ExecutableDataStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDelete_value(@NotNull sqlParser.Delete_valueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDelete_value(@NotNull sqlParser.Delete_valueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterChar_literal(@NotNull sqlParser.Char_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAccionAddColumn(@NotNull sqlParser.AccionAddColumnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExecutableSchemaStatement(@NotNull sqlParser.ExecutableSchemaStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExecutableSchemaStatement(@NotNull sqlParser.ExecutableSchemaStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSchemaDefinitionStatement(@NotNull sqlParser.SchemaDefinitionStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSchemaDefinitionStatement(@NotNull sqlParser.SchemaDefinitionStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCondition(@NotNull sqlParser.ConditionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCondition(@NotNull sqlParser.ConditionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterManipulationDropTable(@NotNull sqlParser.ManipulationDropTableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitManipulationDropTable(@NotNull sqlParser.ManipulationDropTableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSchemaManipulationStatement(@NotNull sqlParser.SchemaManipulationStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSchemaManipulationStatement(@NotNull sqlParser.SchemaManipulationStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLiteral_int(@NotNull sqlParser.Literal_intContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLiteral_int(@NotNull sqlParser.Literal_intContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -299,6 +71,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSql_schema_definition_statement(@NotNull sqlParser.Sql_schema_definition_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSql_schema_definition_statement(@NotNull sqlParser.Sql_schema_definition_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -316,18 +100,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSchemaStatement(@NotNull sqlParser.SchemaStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSchemaStatement(@NotNull sqlParser.SchemaStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterShow_schema_statement(@NotNull sqlParser.Show_schema_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -340,73 +112,73 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx) { }
+	@Override public void enterSql_schema_statement(@NotNull sqlParser.Sql_schema_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConstraintForeignKey(@NotNull sqlParser.ConstraintForeignKeyContext ctx) { }
+	@Override public void exitSql_schema_statement(@NotNull sqlParser.Sql_schema_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterManipulationShowTable(@NotNull sqlParser.ManipulationShowTableContext ctx) { }
+	@Override public void enterLiteral(@NotNull sqlParser.LiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitManipulationShowTable(@NotNull sqlParser.ManipulationShowTableContext ctx) { }
+	@Override public void exitLiteral(@NotNull sqlParser.LiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx) { }
+	@Override public void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAccionDropConstraint(@NotNull sqlParser.AccionDropConstraintContext ctx) { }
+	@Override public void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx) { }
+	@Override public void enterInt_literal(@NotNull sqlParser.Int_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAccionAddConstraint(@NotNull sqlParser.AccionAddConstraintContext ctx) { }
+	@Override public void exitInt_literal(@NotNull sqlParser.Int_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterManipulationShowColumn(@NotNull sqlParser.ManipulationShowColumnContext ctx) { }
+	@Override public void enterSql_schema_manipulation_statement(@NotNull sqlParser.Sql_schema_manipulation_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitManipulationShowColumn(@NotNull sqlParser.ManipulationShowColumnContext ctx) { }
+	@Override public void exitSql_schema_manipulation_statement(@NotNull sqlParser.Sql_schema_manipulation_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx) { }
+	@Override public void enterAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConstraintCheck(@NotNull sqlParser.ConstraintCheckContext ctx) { }
+	@Override public void exitAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -424,6 +196,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFloat_literal(@NotNull sqlParser.Float_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -436,25 +220,13 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLiteral_float(@NotNull sqlParser.Literal_floatContext ctx) { }
+	@Override public void enterSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLiteral_float(@NotNull sqlParser.Literal_floatContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLiteral_char(@NotNull sqlParser.Literal_charContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLiteral_char(@NotNull sqlParser.Literal_charContext ctx) { }
+	@Override public void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -467,6 +239,30 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExp(@NotNull sqlParser.ExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExp(@NotNull sqlParser.ExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDelete_value(@NotNull sqlParser.Delete_valueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDelete_value(@NotNull sqlParser.Delete_valueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -508,25 +304,25 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterManipulationAlterTable(@NotNull sqlParser.ManipulationAlterTableContext ctx) { }
+	@Override public void enterChar_literal(@NotNull sqlParser.Char_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitManipulationAlterTable(@NotNull sqlParser.ManipulationAlterTableContext ctx) { }
+	@Override public void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterManipulationAlterDataBase(@NotNull sqlParser.ManipulationAlterDataBaseContext ctx) { }
+	@Override public void enterSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitManipulationAlterDataBase(@NotNull sqlParser.ManipulationAlterDataBaseContext ctx) { }
+	@Override public void exitSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -544,30 +340,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterManipulationRenameTable(@NotNull sqlParser.ManipulationRenameTableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitManipulationRenameTable(@NotNull sqlParser.ManipulationRenameTableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterManipulationUseSchema(@NotNull sqlParser.ManipulationUseSchemaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitManipulationUseSchema(@NotNull sqlParser.ManipulationUseSchemaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterColumn(@NotNull sqlParser.ColumnContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -575,18 +347,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitColumn(@NotNull sqlParser.ColumnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConstraintPrimaryKey(@NotNull sqlParser.ConstraintPrimaryKeyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -616,25 +376,25 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTableDefinitionStatement(@NotNull sqlParser.TableDefinitionStatementContext ctx) { }
+	@Override public void enterTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTableDefinitionStatement(@NotNull sqlParser.TableDefinitionStatementContext ctx) { }
+	@Override public void exitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterManipulationDropSchema(@NotNull sqlParser.ManipulationDropSchemaContext ctx) { }
+	@Override public void enterCondition(@NotNull sqlParser.ConditionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitManipulationDropSchema(@NotNull sqlParser.ManipulationDropSchemaContext ctx) { }
+	@Override public void exitCondition(@NotNull sqlParser.ConditionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -647,6 +407,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUpdate_value(@NotNull sqlParser.Update_valueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -695,18 +467,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLogic(@NotNull sqlParser.LogicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterManipulationShowSchema(@NotNull sqlParser.ManipulationShowSchemaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitManipulationShowSchema(@NotNull sqlParser.ManipulationShowSchemaContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
