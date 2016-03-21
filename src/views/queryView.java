@@ -1,6 +1,7 @@
 package views;
 
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Image;
 
 import javax.imageio.ImageIO;
@@ -19,6 +20,8 @@ import java.awt.BorderLayout;
 
 import javax.swing.JButton;
 import javax.swing.border.Border;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.undo.UndoManager;
 import javax.swing.JSplitPane;
@@ -42,13 +45,17 @@ import java.io.PrintWriter;
 public class queryView extends JFrame implements ActionListener{
 
 	//private JFrame frame;
-	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun;
+	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment;
 	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo;
 	JTextArea textArea;
+	JTextField status;
 	TextLineNumber tln;
 	UndoManager manager;
 	JFileChooser fc;
 	File file;
+	
+	String commentSeq = "//";
+	int caretLine = 1, caretColumn = 1;
 	
 	
 
@@ -159,10 +166,22 @@ public class queryView extends JFrame implements ActionListener{
 		KeyStroke keyStrokeToRun = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
 		mntmRun.setAccelerator(keyStrokeToRun);
 		mnQuery.add(mntmRun);
+		
+		mntmComment = new JMenuItem("Comment Section");
+		mntmComment.addActionListener(this);
+		KeyStroke keyStrokeToComment = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
+		mntmComment.setAccelerator(keyStrokeToComment);
+		mnQuery.add(mntmComment);
+		
 		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JToolBar toolBar = new JToolBar();
 		this.getContentPane().add(toolBar, BorderLayout.NORTH);
+		
+		status = new JTextField();
+		status.setEditable(false);;
+		this.add(status, BorderLayout.SOUTH);
+		
 		
 		
 		
@@ -291,8 +310,12 @@ public class queryView extends JFrame implements ActionListener{
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("SQL Editor", null, scrollPane_1, null);
 		
+		Font font1 = new Font("Consolas", Font.PLAIN, 12);
+		
 		textArea = new JTextArea();
 		textArea.setTabSize(4);
+		textArea.setFont(font1);
+		//textArea.setDocument(new SqlDocument());
 		textArea.getDocument().addUndoableEditListener(manager);
 		
 		tln = new TextLineNumber(textArea);
@@ -300,12 +323,55 @@ public class queryView extends JFrame implements ActionListener{
 		scrollPane_1.setViewportView(textArea);
 		scrollPane_1.setRowHeaderView(tln);
 		
+		setCaretListener(textArea);
+		
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
 		splitPane.setRightComponent(tabbedPane_1);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		tabbedPane_1.addTab("Data Output", null, scrollPane, null);
 		
+	}
+	
+	private void setCaretListener(JTextArea editor){
+		 // Add a caretListener to the editor. This is an anonymous class because it is inline and has no specific name.
+        editor.addCaretListener(new CaretListener() {
+            // Each time the caret is moved, it will trigger the listener and its method caretUpdate.
+            // It will then pass the event to the update method including the source of the event (which is our textarea control)
+            public void caretUpdate(CaretEvent e) {
+                JTextArea editArea = (JTextArea)e.getSource();
+
+                // Lets start with some default values for the line and column.
+                
+
+                // We create a try catch to catch any exceptions. We will simply ignore such an error for our demonstration.
+                try {
+                    // First we find the position of the caret. This is the number of where the caret is in relation to the start of the JTextArea
+                    // in the upper left corner. We use this position to find offset values (eg what line we are on for the given position as well as
+                    // what position that line starts on.
+                    int caretpos = editArea.getCaretPosition();
+                    caretLine = editArea.getLineOfOffset(caretpos);
+
+                    // We subtract the offset of where our line starts from the overall caret position.
+                    // So lets say that we are on line 5 and that line starts at caret position 100, if our caret position is currently 106
+                    // we know that we must be on column 6 of line 5.
+                    caretColumn = caretpos - editArea.getLineStartOffset(caretLine);
+
+                    // We have to add one here because line numbers start at 0 for getLineOfOffset and we want it to start at 1 for display.
+                    caretLine += 1;
+                }
+                catch(Exception ex) { }
+
+                // Once we know the position of the line and the column, pass it to a helper function for updating the status bar.
+                updateStatus(caretLine, caretColumn);
+            }
+        });
+			
+		
+	}
+	
+	private void updateStatus(int linenumber,int columnnumber){
+		status.setText("Line: " + linenumber + " Column: " + columnnumber);
 	}
 
 
@@ -329,6 +395,8 @@ public class queryView extends JFrame implements ActionListener{
 		}else if (e.getSource() == mntmRun ||
 				e.getSource() == btnRun){
 			run();
+		}else if (e.getSource() == mntmComment){
+			comment();
 		}
 		
 	}
@@ -411,6 +479,37 @@ public class queryView extends JFrame implements ActionListener{
 		}catch (Exception e){
 			//to do
 		}
+	}
+	
+	public void comment(){
+		try{
+			int caretpos = textArea.getCaretPosition();
+			String[] array = textArea.getText().split("\n");
+			if (array[caretLine-1].length() > 0){//this means that there is some string
+				if (array[caretLine-1].length() >=commentSeq.length()){//we check if there is at least the chars in comment seq '//'
+					if (array[caretLine-1].substring(0, commentSeq.length()).equals(commentSeq)){//if it starts whit commentSeq
+						array[caretLine-1] = array[caretLine-1].substring(commentSeq.length());//we retain the non comment part
+					}else{
+						array[caretLine-1] = commentSeq+array[caretLine-1];
+					}
+				}else{
+					array[caretLine-1] = commentSeq+array[caretLine-1];
+				}
+			}else{
+				array[caretLine-1] = commentSeq+array[caretLine-1];
+			}
+			
+			String newTxt = "";
+			for (int i = 0; i < array.length; i++){
+				newTxt += array[i]+"\n";
+			}
+			textArea.setText(newTxt);
+			textArea.setCaretPosition(caretpos);
+			
+		} catch (Exception e){
+			System.out.println(e);
+		}
+		
 	}
 	
 	public void run(){
