@@ -61,7 +61,7 @@ public class queryView extends JFrame implements ActionListener{
 	JFileChooser fc;
 	File file;
 	
-	String commentSeq = "//";
+	String commentSeq = "//", textStr = "";
 	int caretLine = 1, caretColumn = 1;
 	
 	
@@ -571,7 +571,12 @@ public class queryView extends JFrame implements ActionListener{
 	}
 	
 	public void run(){
-		System.out.println("Run file");
+		textStr = textArea.getText();
+		System.out.println(textStr);
+	}
+	
+	public String getTextStr(){
+		return textStr;
 	}
 
 }
