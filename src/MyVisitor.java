@@ -232,6 +232,50 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		//return super.visitDrop_schema_statement(ctx);
 	}
 
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitAlter_database_statement(sqlParser.Alter_database_statementContext)
+	 */
+	@Override
+	public Object visitAlter_database_statement(sqlParser.Alter_database_statementContext ctx) {
+		// TODO Auto-generated method stub
+		String ID = ctx.ID(0).getText();
+		String NEW_ID = ctx.ID(1).getText();
+		File directory = new File(this.dataPath + ID);
+		// Verificar que los ID no sean iguales porque si son iguales no se hace nada
+		if (! ID.equals(NEW_ID))
+		{
+			boolean exist = false;
+			for(DataBase i: this.dataBases.getDataBases())
+				if (i.getName().equals(ID))
+				{
+					// Si encuentra una ocurrencia se hace el cambio de nombre
+					i.setName(NEW_ID);
+					exist = true;
+					break;
+				}
+			// Verificar si existe la DataBase a renombrar
+			if (exist)
+			{
+				// Guardar el cambio
+				guardarDBs();
+				// Verificar si hay que cambiar tambien el nombre de la DataBase actual
+				if (this.actual.getName().equals(ID))
+					this.actual.setName(NEW_ID);
+				// Renombrar el directorio
+				directory.renameTo(new File(this.dataPath + NEW_ID));
+				System.out.println("DataBase \"" + ID + "\" renombrada a \"" + NEW_ID +"\" exitosamente");
+			}
+			else
+			{
+				String no_database_exist = "No se puede renombrar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_exist);
+			}
+				
+		}
+		return (T)"";
+		//return super.visitAlter_database_statement(ctx);
+	}
+
 	/****************************************************************
 	 * Tipo_literal
 	 * Debemos ver si es char tomar el tamaño del char

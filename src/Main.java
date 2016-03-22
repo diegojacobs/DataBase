@@ -6,7 +6,7 @@ public class Main
     public static void main( String[] args) throws Exception 
     {
 
-        ANTLRInputStream input = new ANTLRInputStream("use database prueba;");
+        ANTLRInputStream input = new ANTLRInputStream("use database Prueba; alter database Prueba rename to prueba;");
 
         sqlLexer lexer = new sqlLexer(input);
         

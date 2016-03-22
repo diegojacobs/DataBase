@@ -45,7 +45,6 @@ ALTER : A L T E R;
 RENAME : R E N A M E;
 TO : T O;
 SHOW : S H O W;
-//
 USE : U S E;
 RES_INT : I N T;
 RES_FLOAT : F L O A T;
