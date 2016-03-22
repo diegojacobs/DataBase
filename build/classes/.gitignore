@@ -8,3 +8,8 @@
 /HelloVisitor.java
 /sqlLexer.java
 /sqlLexer.tokens
+/resources/
+/DataBase.class
+/DataBases.class
+/views/
+/visitor.class
