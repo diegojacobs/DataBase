@@ -10,9 +10,9 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import org.antlr.v4.runtime.misc.NotNull;
-
 
 /**
 @author Diego Jacobs (jewish boy)
@@ -132,8 +132,12 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		if (! find)
 		{
 			this.actual = new DataBase();
-			String rule_5 = "No se puede usar la DataBase \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
+			String rule_5 = "No se puede usar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
+		}
+		else
+		{
+			System.out.println("DataBase \"" + ID + "\" actualmente en uso");
 		}
 		return (T)"";
 		//return visitChildren(ctx); 
@@ -149,7 +153,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
         boolean succes = new_directory.mkdirs();        
         if (!succes)
         {
-        	String rule_1 = "Error al crear el directorio " + ID + " @line: " + ctx.getStop().getLine();
+        	String rule_1 = "No se puede crear la Base de Datos " + ID + " porque ya existe otra con el mismo nombre @line: " + ctx.getStop().getLine();
         	this.errores.add(rule_1);
         }
         else
@@ -160,9 +164,74 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
         }
 		return (T)"";
 		//return visitChildren(ctx); 
+	}	
+	
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitDrop_schema_statement(sqlParser.Drop_schema_statementContext)
+	 */
+	@Override
+	public Object visitDrop_schema_statement(sqlParser.Drop_schema_statementContext ctx) {
+		// TODO Auto-generated method stub
+		String ID = ctx.ID().getText();
+		File directory = new File(this.dataPath+ID);
+		if (directory.exists())
+		{			
+			// Establecer nuevo set de DataBases
+			ArrayList<DataBase> new_dataBases = new ArrayList<DataBase>();
+			boolean exist = false;
+			for(DataBase i: this.dataBases.getDataBases())
+				if (! i.getName().equals(ID))
+					new_dataBases.add(i);
+				else
+					exist = true;
+			if (exist)
+			{
+				this.dataBases.setDataBases(new_dataBases);
+				// Guardar nuevo set de DataBases
+				guardarDBs();
+				// Verificar si la DataBase actual es la eliminada para quitar la referencia
+				if (this.actual.getName().equals(ID))
+					this.actual = new DataBase();
+				// Borrar directorio
+				File[] currList;
+				Stack<File> stack = new Stack<File>();
+				stack.push(directory);
+				while (! stack.isEmpty())
+				{
+				    if (stack.lastElement().isDirectory())
+				    {
+				        currList = stack.lastElement().listFiles();
+				        if (currList != null)
+				        {
+					        if (currList.length > 0)
+					        {
+					            for (File curr: currList)
+					                stack.push(curr);
+					        }
+					        else			        
+					            stack.pop().delete();
+				        }
+				    } 
+				    else
+				        stack.pop().delete();
+				}
+				System.out.println("DataBase \"" + ID + "\" eliminada exitosamente");
+			}
+			else
+			{
+				String no_database_exist = "No se puede eliminar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_exist);
+			}
+		}
+		else
+		{
+			String no_database_exist = "No se puede eliminar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_exist);
+		}
+		return (T)"";
+		//return super.visitDrop_schema_statement(ctx);
 	}
-	
-	
+
 	/****************************************************************
 	 * Tipo_literal
 	 * Debemos ver si es char tomar el tamaño del char
