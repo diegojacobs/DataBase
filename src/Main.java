@@ -10,6 +10,7 @@ public class Main
 
     	//System.out.println("What");
     	queryView qr = new queryView();
+    	qr.setVisible(true);
         /*ANTLRInputStream input = new ANTLRInputStream( System.in);
 
         //HelloLexer lexer = new HelloLexer(input);

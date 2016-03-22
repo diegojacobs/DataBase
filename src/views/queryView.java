@@ -68,7 +68,7 @@ public class queryView extends JFrame implements ActionListener{
 
 	/**
 	 * Launch the application.
-	 */
+	 *
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -81,7 +81,7 @@ public class queryView extends JFrame implements ActionListener{
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the application.
