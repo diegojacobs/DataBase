@@ -28,5 +28,20 @@ public class DataBases implements Serializable {
 	{
 		this.dataBases.add(b);
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		String res = "DataBases:\n";
+		int cont = 1;
+		for (DataBase i: this.dataBases)
+		{
+			res += "\tDB#" + Integer.toString(cont) + " " + i.toString() + "\n";
+			cont++;
+		}
+		return res;
+	}	
 	
 }

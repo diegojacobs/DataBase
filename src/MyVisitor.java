@@ -1,7 +1,9 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -13,10 +15,10 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 
 /**
-@author Diego Jacobs
+@author Diego Jacobs (jewish boy)
 Date: Mar 19, 2016
  */
-public class visitor<T> extends sqlBaseVisitor<Object> {
+public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 
 	// Atributos
 	
@@ -31,6 +33,24 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
 	public ArrayList<String> getErrores() {
 		return errores;
 	}
+	
+	/**
+	 * @return the errores in toString form
+	 */
+	public String erroresToString()
+	{
+		String res = "Errores:\n";
+		int cont = 1;
+		for (String i: this.errores)
+		{
+			res += "Error #" + Integer.toString(cont) + " -> " + i + "\n";
+			cont++;
+		}
+		res += Integer.toString(cont-1) + " ERRORES EN TOTAL";
+		if (cont == 1)
+			res = "";
+		return res;
+	}
 
 	/**
 	 * @param errores the errores to set
@@ -39,20 +59,31 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
 		this.errores = errores;
 	}
 	
-	public visitor()
+	/*
+	 * Cargar las DataBases (directorios) ya creados
+	 */
+	public MyVisitor()
 	{
 		Path currentRelativePath = Paths.get("");
 		dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
-		cargarDBs();
+		cargarDBs();		
 	}
 	
+	/*
+	 * Des serializa el objeto
+	 */
 	public void cargarDBs()
 	{
 		try {
 			FileInputStream fis = new FileInputStream(this.dataPath+"dbs.bin");
-			ObjectInputStream in = new ObjectInputStream(fis);
-			this.dataBases = (DataBases)in.readObject();
-			//in.close();
+			BufferedReader br = new BufferedReader(new FileReader(this.dataPath+"dbs.bin"));     
+			if (br.readLine() != null)
+			{
+				ObjectInputStream in = new ObjectInputStream(fis);
+				this.dataBases = (DataBases)in.readObject();
+				fis.close();
+				in.close();
+			}			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,13 +96,18 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
 		}
 	}
 	
+	/*
+	 * Serializa el objeto
+	 */
 	public void guardarDBs()
 	{
 		try {
 			FileOutputStream fos = new FileOutputStream(this.dataPath+"dbs.bin");
 			ObjectOutputStream out = new ObjectOutputStream(fos);            
             // Escribir el objeto en el fichero
-            out.writeObject(this.dataBases);            
+            out.writeObject(this.dataBases);
+            //out.close();
+            //fos.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,20 +118,10 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
 	}
 	
 	@Override 
-	public T visitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) 
-	{ 
-		for (int i = 0;i<ctx.getChildCount();i++){
-            this.visit(ctx.getChild(i));
-         }
-        return (T)new String(); 
-	}
-	
-	
-	@Override 
 	public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) 
 	{ 
 		String ID = ctx.ID().getText();
-		boolean find = false;		
+		boolean find = false;
 		for (DataBase i: this.dataBases.getDataBases())
 			if (i.getName().equals(ID))
 			{
@@ -105,7 +131,8 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
 			}
 		if (! find)
 		{
-			String rule_5 = "No se puede usar la DataBase " + ID + " porque no ha sido creada @line: " + ctx.getStop().getLine();
+			this.actual = new DataBase();
+			String rule_5 = "No se puede usar la DataBase \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
 		return (T)"";
@@ -127,6 +154,7 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
         }
         else
         {
+        	System.out.println("DataBase \"" + ID + "\" creada exitosamente");
         	this.dataBases.addDataBase(new_DB);
     		guardarDBs();
         }
