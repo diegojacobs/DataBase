@@ -1,4 +1,5 @@
-package views;
+//package views;
+import views.*;
 
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -360,7 +361,7 @@ public class queryView extends JFrame implements ActionListener{
                     // what position that line starts on.
                     //int caretpos = e.getCaretPosition();
                     
-                    int rn = 0;//(caretpos == 0) ? 1:0;
+                    //(caretpos == 0) ? 1:0;
                     
                     
                     caretLine = getRow(e.getDot(),(JTextComponent)e.getSource());
