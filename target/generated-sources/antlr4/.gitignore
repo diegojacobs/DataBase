@@ -1,10 +1,6 @@
-/Hello.tokens
-/HelloBaseListener.java
-/HelloBaseVisitor.java
-/HelloLexer.java
-/HelloLexer.tokens
-/HelloListener.java
-/HelloParser.java
-/HelloVisitor.java
-/sqlLexer.java
-/sqlLexer.tokens
+/sql.tokens
+/sqlBaseListener.java
+/sqlBaseVisitor.java
+/sqlListener.java
+/sqlParser.java
+/sqlVisitor.java
