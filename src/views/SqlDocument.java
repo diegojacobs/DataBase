@@ -2,6 +2,7 @@ package views;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import javax.swing.event.DocumentEvent;
@@ -49,11 +50,15 @@ public class SqlDocument extends DefaultStyledDocument {
  
 		StyleConstants.setForeground(quote, red);
 		Object dummyObject = new Object();
+		
+		String keywordsS = "CREATE DATABASE DATABASES TABLE TABLES DROP ALTER RENAME TO SHOW USE "+
+				"INT FLOAT CHAR DATE CONSTRAINT KEY PRIMARY FOREIGN REFERENCES CHECK ADD COLUMN COLUMNS "+
+				"FROM AND OR NOT INSERT INTO VALUES UPDATE SET WHERE DELETE SELECT ORDER BY ASC DESC";
  
-		keywords = new ArrayList<String>();
-		keywords.add("SELECT");
-		keywords.add("INSERT");
-		keywords.add("DROP");
+		String[] array = keywordsS.split(" ");
+		keywords = new ArrayList<String>(Arrays.asList(array));
+
+		
 	}
  
 	/*
@@ -61,8 +66,10 @@ public class SqlDocument extends DefaultStyledDocument {
 	 */
 	public void insertString(int offset, String str, AttributeSet a)
 			throws BadLocationException {
+		str = str.replace("\t","    ");
 		if (str.equals("{"))
 			str = addMatchingBrace(offset);
+		
 		super.insertString(offset, str, a);
 		processChangedLines(offset, str.length());
 	}
