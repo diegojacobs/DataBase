@@ -71,6 +71,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(@NotNull sqlParser.LiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#columna}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColumna(@NotNull sqlParser.ColumnaContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

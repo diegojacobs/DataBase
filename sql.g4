@@ -87,6 +87,7 @@ fragment YEAR : FOUR_DIGITS ;
 fragment MONTH : DIGIT | TWO_DIGITS ;
 fragment DAY : DIGIT | TWO_DIGITS ;
 
+INT: DIGIT ( DIGIT )*;
 ID : LETTER ( LETTER | DIGIT )* ;
 NUM : ('-')? DIGIT ( DIGIT )* ('.' DIGIT(DIGIT)* )?;
 CHAR : '\'' ASCII(ASCII)* '\'' ;
@@ -137,7 +138,10 @@ use_schema_statement: USE DATABASE ID ';' ;
 
 column: (ID tipo_literal | constraint) ',' ;
 
-tipo_literal: RES_INT | RES_FLOAT | RES_CHAR | RES_DATE ;
+tipo_literal: RES_INT 
+			| RES_FLOAT 
+			| (RES_CHAR '('INT ')') 
+			| RES_DATE ;
 
 constraint: CONSTRAINT constraintType ;
 
@@ -164,15 +168,17 @@ logic: RES_AND | RES_OR | RES_NOT ;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO (column) VALUES (list_values) ';' ;
+insert_value: INSERT INTO ((columna)+ | ('(' (columna)+ ')')) VALUES (list_values | ('(' list_values ')')) ';' ;
 
-update_value: UPDATE ID SET column '=' value WHERE condition ';' ;
+update_value: UPDATE ID SET (columna '=' value)+ WHERE condition ';' ;
 
 delete_value: DELETE FROM ID WHERE condition ';' ;
 
 select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
               
 condition: ID '=' ID ;         
+
+columna: ID;
               
 list_values : (value (',' (value))* ) ;
          

@@ -108,6 +108,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitLiteral(@NotNull sqlParser.LiteralContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#columna}.
+	 * @param ctx the parse tree
+	 */
+	void enterColumna(@NotNull sqlParser.ColumnaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#columna}.
+	 * @param ctx the parse tree
+	 */
+	void exitColumna(@NotNull sqlParser.ColumnaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree
 	 */

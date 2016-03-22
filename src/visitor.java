@@ -135,6 +135,27 @@ public class visitor<T> extends sqlBaseVisitor<Object> {
 	}
 	
 	
+	/****************************************************************
+	 * Tipo_literal
+	 * Debemos ver si es char tomar el tamaño del char
+	 * 
+	 * (non-Javadoc)
+	 * @see sqlBaseVisitor#visitTipo_literal(sqlParser.Tipo_literalContext)
+	 *****************************************************************/
+	@Override 
+	public T visitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) 
+	{ 
+		int cant = 0;
+		
+		if (ctx.getChildCount() > 1)
+		{
+			cant = Integer.parseInt(ctx.INT().getText());
+		}
+		
+		return (T)visitChildren(ctx); 
+	}
+	
+	
 	/****************************
 	 * Recibimos un numero
 	 * Si este contiene un punto
