@@ -121,6 +121,20 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code exp_relational}
+	 * labeled alternative in {@link sqlParser#exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExp_relational(@NotNull sqlParser.Exp_relationalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code logic_and}
+	 * labeled alternative in {@link sqlParser#logic}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogic_and(@NotNull sqlParser.Logic_andContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#float_literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -146,17 +160,18 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExp(@NotNull sqlParser.ExpContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link sqlParser#delete_value}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitDelete_value(@NotNull sqlParser.Delete_valueContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code logic_not}
+	 * labeled alternative in {@link sqlParser#logic}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogic_not(@NotNull sqlParser.Logic_notContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#select_value}.
 	 * @param ctx the parse tree
@@ -234,6 +249,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code logic_or}
+	 * labeled alternative in {@link sqlParser#logic}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogic_or(@NotNull sqlParser.Logic_orContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code tipo_lit_float}
 	 * labeled alternative in {@link sqlParser#tipo_literal}.
 	 * @param ctx the parse tree
@@ -246,6 +268,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCondition(@NotNull sqlParser.ConditionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code exp_logic}
+	 * labeled alternative in {@link sqlParser#exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExp_logic(@NotNull sqlParser.Exp_logicContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#update_value}.
 	 * @param ctx the parse tree
@@ -283,10 +312,4 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRelational(@NotNull sqlParser.RelationalContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link sqlParser#logic}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogic(@NotNull sqlParser.LogicContext ctx);
 }

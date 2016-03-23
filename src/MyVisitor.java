@@ -307,7 +307,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitConstraintTypePrimaryKey(sqlParser.ConstraintTypePrimaryKeyContext ctx) {
 		// TODO Auto-generated method stub
-		//List<DECAFParser.VarDeclarationContext> var_decls = ctx.varDeclaration();
 		Constraint const_pk = new Constraint(ctx.getChild(0).getText(), "Primary Key");
 		for(int i = 4; i < ctx.getChildCount()-2; i++)
 		{
@@ -319,6 +318,73 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		return (T)const_pk;
 		//return super.visitConstraintTypePrimaryKey(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitConstraintTypeCheck(sqlParser.ConstraintTypeCheckContext)
+	 */
+	@Override
+	public Object visitConstraintTypeCheck(sqlParser.ConstraintTypeCheckContext ctx) {
+		// TODO Auto-generated method stub
+		Constraint const_check = new Constraint(ctx.getChild(0).getText(), "Check");
+		String id_1 = ctx.getChild(3).getText();
+		String id_2 = ctx.getChild(5).getText();
+		String exp = (String) this.visit(ctx.exp());
+		const_check.addLocalID(id_1);
+		const_check.addLocalID(id_2);
+		const_check.setExp(exp);
+		return (T)const_check;
+		//return super.visitConstraintTypeCheck(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitExp_relational(sqlParser.Exp_relationalContext)
+	 */
+	@Override
+	public Object visitExp_relational(sqlParser.Exp_relationalContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)ctx.getText();
+		//return super.visitExp_relational(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitExp_logic(sqlParser.Exp_logicContext)
+	 */
+	@Override
+	public Object visitExp_logic(sqlParser.Exp_logicContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)this.visit(ctx.logic());
+		//return super.visitExp_logic(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitLogic_and(sqlParser.Logic_andContext)
+	 */
+	@Override
+	public Object visitLogic_and(sqlParser.Logic_andContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)"&&";
+		//return super.visitLogic_and(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitLogic_not(sqlParser.Logic_notContext)
+	 */
+	@Override
+	public Object visitLogic_not(sqlParser.Logic_notContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)"!";
+		//return super.visitLogic_not(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitLogic_or(sqlParser.Logic_orContext)
+	 */
+	@Override
+	public Object visitLogic_or(sqlParser.Logic_orContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)"||";
+		//return super.visitLogic_or(ctx);
 	}
 
 	/* (non-Javadoc)

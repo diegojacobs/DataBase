@@ -150,7 +150,8 @@ constraintType:
         |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')' #constraintTypeForeignKey
         |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
 
-exp: logic | relational;
+exp: logic #exp_logic
+	 | relational #exp_relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
@@ -164,7 +165,9 @@ show_table_statement: SHOW TABLES ';' ;
 
 show_column_statement: SHOW COLUMNS FROM ID ';' ;         
           
-logic: RES_AND | RES_OR | RES_NOT ;
+logic: RES_AND #logic_and 
+	   | RES_OR #logic_or 
+	   | RES_NOT #logic_not;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
