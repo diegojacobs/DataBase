@@ -71,17 +71,25 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(@NotNull sqlParser.LiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code constraintTypePrimaryKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#columna}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitColumna(@NotNull sqlParser.ColumnaContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#constraintType}.
+	 * Visit a parse tree produced by the {@code tipo_lit_date}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
+	T visitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#int_literal}.
 	 * @param ctx the parse tree
@@ -124,6 +132,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code constraintTypeForeignKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#drop_schema_statement}.
 	 * @param ctx the parse tree
@@ -179,11 +194,19 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDrop_table_statement(@NotNull sqlParser.Drop_table_statementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#column}.
+	 * Visit a parse tree produced by the {@code column_constraint}
+	 * labeled alternative in {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitColumn(@NotNull sqlParser.ColumnContext ctx);
+	T visitColumn_constraint(@NotNull sqlParser.Column_constraintContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code tipo_lit_char}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree
@@ -197,11 +220,26 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * Visit a parse tree produced by the {@code column_literal}
+	 * labeled alternative in {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	T visitColumn_literal(@NotNull sqlParser.Column_literalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code constraintTypeCheck}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code tipo_lit_float}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#condition}.
 	 * @param ctx the parse tree
@@ -220,6 +258,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code tipo_lit_int}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTipo_lit_int(@NotNull sqlParser.Tipo_lit_intContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#constraint}.
 	 * @param ctx the parse tree

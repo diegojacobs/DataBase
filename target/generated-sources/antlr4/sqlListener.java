@@ -108,6 +108,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitLiteral(@NotNull sqlParser.LiteralContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code constraintTypePrimaryKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintTypePrimaryKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#columna}.
 	 * @param ctx the parse tree
 	 */
@@ -118,15 +130,17 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitColumna(@NotNull sqlParser.ColumnaContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#constraintType}.
+	 * Enter a parse tree produced by the {@code tipo_lit_date}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
 	 * @param ctx the parse tree
 	 */
-	void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
+	void enterTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#constraintType}.
+	 * Exit a parse tree produced by the {@code tipo_lit_date}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
 	 * @param ctx the parse tree
 	 */
-	void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx);
+	void exitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#int_literal}.
 	 * @param ctx the parse tree
@@ -197,6 +211,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constraintTypeForeignKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintTypeForeignKey}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#drop_schema_statement}.
 	 * @param ctx the parse tree
@@ -288,15 +314,29 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitDrop_table_statement(@NotNull sqlParser.Drop_table_statementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#column}.
+	 * Enter a parse tree produced by the {@code column_constraint}
+	 * labeled alternative in {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 */
-	void enterColumn(@NotNull sqlParser.ColumnContext ctx);
+	void enterColumn_constraint(@NotNull sqlParser.Column_constraintContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#column}.
+	 * Exit a parse tree produced by the {@code column_constraint}
+	 * labeled alternative in {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 */
-	void exitColumn(@NotNull sqlParser.ColumnContext ctx);
+	void exitColumn_constraint(@NotNull sqlParser.Column_constraintContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code tipo_lit_char}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tipo_lit_char}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree
@@ -318,15 +358,41 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitSchema_definition(@NotNull sqlParser.Schema_definitionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * Enter a parse tree produced by the {@code column_literal}
+	 * labeled alternative in {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 */
-	void enterTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	void enterColumn_literal(@NotNull sqlParser.Column_literalContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link sqlParser#tipo_literal}.
+	 * Exit a parse tree produced by the {@code column_literal}
+	 * labeled alternative in {@link sqlParser#column}.
 	 * @param ctx the parse tree
 	 */
-	void exitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx);
+	void exitColumn_literal(@NotNull sqlParser.Column_literalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constraintTypeCheck}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constraintTypeCheck}
+	 * labeled alternative in {@link sqlParser#constraintType}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code tipo_lit_float}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tipo_lit_float}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#condition}.
 	 * @param ctx the parse tree
@@ -357,6 +423,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code tipo_lit_int}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterTipo_lit_int(@NotNull sqlParser.Tipo_lit_intContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tipo_lit_int}
+	 * labeled alternative in {@link sqlParser#tipo_literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitTipo_lit_int(@NotNull sqlParser.Tipo_lit_intContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#constraint}.
 	 * @param ctx the parse tree

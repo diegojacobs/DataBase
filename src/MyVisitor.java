@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.misc.NotNull;
@@ -168,6 +169,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	/* (non-Javadoc)
 	 * @see sqlBaseVisitor#visitDrop_schema_statement(sqlParser.Drop_schema_statementContext)
+	 * 
+	 * FALTAN IMPLEMENTAR LAS SIGUIENTES RESTRICCIONES
+	 * 
+	 *  1. Si existe una referencia HACIA la tabla que se desea borrar, no se debe permitir
+		la acción. De esta manera se garantiza la integridad referencial. El usuario del DBMS deberá primero hacer ALTER TABLE tabla
+		DROP CONSTRAINT constraint, para luego poder borrar la tabla que está siendo referenciada.
+	 *	2. Verificación para DROP DATABASE. Para esta instrucción se debe hacer una doble verificación con el usuario del DBMS
+		mostrando el siguiente mensaje: “¿Borrar base de datos nombre_BD con N registros? (si/no)” Donde N es la sumatoria de los
+		registros de todas las tablas en la base de datos.
+	 * 
 	 */
 	@Override
 	public Object visitDrop_schema_statement(sqlParser.Drop_schema_statementContext ctx) {
@@ -276,26 +287,83 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		//return super.visitAlter_database_statement(ctx);
 	}
 
-	/****************************************************************
-	 * Tipo_literal
-	 * Debemos ver si es char tomar el tamaño del char
-	 * 
-	 * (non-Javadoc)
-	 * @see sqlBaseVisitor#visitTipo_literal(sqlParser.Tipo_literalContext)
-	 *****************************************************************/
-	@Override 
-	public T visitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) 
-	{ 
-		int cant = 0;
-		
-		if (ctx.getChildCount() > 1)
-		{
-			cant = Integer.parseInt(ctx.INT().getText());
-		}
-		
-		return (T)visitChildren(ctx); 
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitColumn_literal(sqlParser.Column_literalContext)
+	 */
+	@Override
+	public Object visitColumn_literal(sqlParser.Column_literalContext ctx) {
+		// TODO Auto-generated method stub
+		// Obtener tipo del atributo
+		Atributo atr = (Atributo) this.visit(ctx.tipo_literal());
+		// Establecer ID del atributo
+		atr.setId(ctx.ID().getText());
+		return (T) atr;
+		//return super.visitColumn_literal(ctx);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitConstraintTypePrimaryKey(sqlParser.ConstraintTypePrimaryKeyContext)
+	 */
+	@Override
+	public Object visitConstraintTypePrimaryKey(sqlParser.ConstraintTypePrimaryKeyContext ctx) {
+		// TODO Auto-generated method stub
+		//List<DECAFParser.VarDeclarationContext> var_decls = ctx.varDeclaration();
+		Constraint const_pk = new Constraint(ctx.getChild(0).getText(), "Primary Key");
+		for(int i = 4; i < ctx.getChildCount()-2; i++)
+		{
+			String child_text = ctx.getChild(i).getText();
+			if (! child_text.equals(","))
+			{
+				const_pk.addLocalID(child_text);
+			}
+		}
+		return (T)const_pk;
+		//return super.visitConstraintTypePrimaryKey(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitTipo_lit_date(sqlParser.Tipo_lit_dateContext)
+	 */
+	@Override
+	public Object visitTipo_lit_date(sqlParser.Tipo_lit_dateContext ctx) {
+		// TODO Auto-generated method stub
+		Atributo date_atr = new Atributo("", "date");
+		return (T) date_atr;
+		//return super.visitTipo_lit_date(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitTipo_lit_char(sqlParser.Tipo_lit_charContext)
+	 */
+	@Override
+	public Object visitTipo_lit_char(sqlParser.Tipo_lit_charContext ctx) {
+		// TODO Auto-generated method stub		
+		Atributo char_atr = new Atributo("", "char", Integer.valueOf(ctx.INT().getText()));
+		return (T) char_atr;
+		//return super.visitTipo_lit_char(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitTipo_lit_float(sqlParser.Tipo_lit_floatContext)
+	 */
+	@Override
+	public Object visitTipo_lit_float(sqlParser.Tipo_lit_floatContext ctx) {
+		// TODO Auto-generated method stub
+		Atributo float_atr = new Atributo("", "float");
+		return (T) float_atr;
+		//return super.visitTipo_lit_float(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitTipo_lit_int(sqlParser.Tipo_lit_intContext)
+	 */
+	@Override
+	public Object visitTipo_lit_int(sqlParser.Tipo_lit_intContext ctx) {
+		// TODO Auto-generated method stub
+		Atributo int_atr = new Atributo("", "int");
+		return (T) int_atr;
+		//return super.visitTipo_lit_int(ctx);
+	}	
 	
 	/****************************
 	 * Recibimos un numero
@@ -354,6 +422,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		int mes = Integer.parseInt(date[1]);
 		int dia = Integer.parseInt(date[2]);
 		
+		String tipo = "Error";
+		
 		if (1 <= mes && mes<= 12 && dia>=1)
 		{
 			if (bisiesto(anio))
@@ -362,14 +432,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					if (dia<=29)
 					{
-						return (T)"Date";
+						tipo = "date";
 					}
 				}
 				else
 				{
 					if (dia<=maxday(mes))
 					{
-						return (T)"Date";
+						tipo = "date";
 					}
 				}
 			}
@@ -379,23 +449,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					if (dia<=28)
 					{
-						return (T)"Date";
+						tipo = "date";
 					}
 				}
 				else
 				{
 					if (dia<=maxday(mes))
 					{
-						return (T)"Date";
+						tipo = "date";
 					}
 				}
 			}
 		}
-		else
-		{
-			return (T)"Error";
-		}
-		return (T)"Error"; 
+		
+		return (T)tipo; 
 	}
 	
 	
@@ -412,7 +479,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		int length = text.length();
 		
-		return (T)"Char"; 
+		return (T)"char";
 	}
 	
 	

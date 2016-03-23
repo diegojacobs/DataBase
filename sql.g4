@@ -121,7 +121,7 @@ sql_data_statement : select_value ;
 
 schema_definition: CREATE DATABASE ID ';' ;
 
-table_definition: CREATE TABLE ID '(' (column)+ ')' ';' ;
+table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
@@ -135,19 +135,20 @@ show_schema_statement: SHOW DATABASES ';' ;
 
 use_schema_statement: USE DATABASE ID ';' ;
 
-column: (ID tipo_literal | constraint) ',' ;
+column: ID tipo_literal #column_literal 
+		| constraint #column_constraint;
 
-tipo_literal: RES_INT 
-			| RES_FLOAT 
-			| (RES_CHAR '('INT ')') 
-			| RES_DATE ;
+tipo_literal: RES_INT #tipo_lit_int 
+			| RES_FLOAT #tipo_lit_float 
+			| (RES_CHAR '('INT ')') #tipo_lit_char
+			| RES_DATE #tipo_lit_date;
 
 constraint: CONSTRAINT constraintType ;
 
 constraintType:
-            ID PRIMARY KEY '(' ID (',' ID)*')'
-        |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')'
-        |   ID CHECK '('ID exp ID ')' ;
+            ID PRIMARY KEY '(' ID (',' ID)*')' #constraintTypePrimaryKey
+        |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')' #constraintTypeForeignKey
+        |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
 
 exp: logic | relational;
 

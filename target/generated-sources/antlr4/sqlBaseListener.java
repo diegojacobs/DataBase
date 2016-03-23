@@ -136,6 +136,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterColumna(@NotNull sqlParser.ColumnaContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -148,13 +160,13 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx) { }
+	@Override public void enterTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConstraintType(@NotNull sqlParser.ConstraintTypeContext ctx) { }
+	@Override public void exitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -239,6 +251,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSql2003Parser(@NotNull sqlParser.Sql2003ParserContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -352,13 +376,25 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterColumn(@NotNull sqlParser.ColumnContext ctx) { }
+	@Override public void enterColumn_constraint(@NotNull sqlParser.Column_constraintContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitColumn(@NotNull sqlParser.ColumnContext ctx) { }
+	@Override public void exitColumn_constraint(@NotNull sqlParser.Column_constraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -388,13 +424,37 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) { }
+	@Override public void enterColumn_literal(@NotNull sqlParser.Column_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTipo_literal(@NotNull sqlParser.Tipo_literalContext ctx) { }
+	@Override public void exitColumn_literal(@NotNull sqlParser.Column_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -431,6 +491,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitRename_table_statement(@NotNull sqlParser.Rename_table_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTipo_lit_int(@NotNull sqlParser.Tipo_lit_intContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTipo_lit_int(@NotNull sqlParser.Tipo_lit_intContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
