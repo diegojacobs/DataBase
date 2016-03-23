@@ -151,6 +151,7 @@ constraintType:
         |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
 
 exp: logic #exp_logic
+	 | logic_not #exp_logic_not
 	 | relational #exp_relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
@@ -166,8 +167,9 @@ show_table_statement: SHOW TABLES ';' ;
 show_column_statement: SHOW COLUMNS FROM ID ';' ;         
           
 logic: RES_AND #logic_and 
-	   | RES_OR #logic_or 
-	   | RES_NOT #logic_not;
+	   | RES_OR #logic_or;
+
+logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
@@ -179,7 +181,9 @@ delete_value: DELETE FROM ID WHERE condition ';' ;
 
 select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
               
-condition: ID '=' ID ;         
+condition: (logic_not)? comp (logic (logic_not)? (comp))*;         
+
+comp : ID relational (ID | literal);    
 
 columna: ID;
               
