@@ -26,7 +26,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private String dataPath;
 	private ArrayList<String> errores = new ArrayList<String>();
 	private DataBases dataBases = new DataBases();
-	private DataBase actual = new DataBase();	
+	private DataBase actual = new DataBase();
 	
 	/**
 	 * @return the errores
@@ -363,7 +363,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitLogic_and(sqlParser.Logic_andContext ctx) {
 		// TODO Auto-generated method stub
-		return (T)"&&";
+		return (T)"AND";
 		//return super.visitLogic_and(ctx);
 	}
 
@@ -373,7 +373,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitLogic_not(sqlParser.Logic_notContext ctx) {
 		// TODO Auto-generated method stub
-		return (T)"!";
+		return (T)"NOT";
 		//return super.visitLogic_not(ctx);
 	}
 
@@ -383,7 +383,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitLogic_or(sqlParser.Logic_orContext ctx) {
 		// TODO Auto-generated method stub
-		return (T)"||";
+		return (T)"OR";
 		//return super.visitLogic_or(ctx);
 	}
 
@@ -430,6 +430,56 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return (T) int_atr;
 		//return super.visitTipo_lit_int(ctx);
 	}	
+	
+	
+	/**************************
+	 * Condition
+	 * Revisamos cada comparacion
+	 * Si al final la expresion es true devolvemos true
+	 * si no false
+	 */
+	@Override 
+	public T visitCondition(@NotNull sqlParser.ConditionContext ctx) 
+	{ 
+		int cant = ctx.getChildCount();
+		
+		switch (cant)
+		{
+			case 1:
+				  return (T)ctx.comp();
+			case 2:
+				if (ctx.comp().toString().equals("true"))
+					return (T)"false";
+				else
+					return (T)"true";
+			default:
+				//debemos visitar cada comparación
+					return (T)"true";
+		}
+	}
+	
+	
+	/***************************
+	 * Comp
+	 * Revisamos comp que puede tener
+	 * ID relational ID | literal
+	 */
+	@Override 
+	public T visitComp(@NotNull sqlParser.CompContext ctx) 
+	{
+		String ID1 = ctx.getChild(0).getText();
+		String comp = ctx.getChild(2).getText(); //si es literal, voy a recibir el tipo
+		
+		
+		/* Debemos de alguna forma revisar que el ID1 pertenece 
+		 * a la tabla que estamos trabajando
+		 * si el hijo 2 es ID debemos verificar qeut ambien pertenezca
+		 * a la tabla
+		 * si no solo comparar tipos y luego hacer la comparación
+		*/
+		
+		return (T)"true"; 
+	}
 	
 	/****************************
 	 * Recibimos un numero
