@@ -38,6 +38,13 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -277,6 +284,13 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitDate_literal(@NotNull sqlParser.Date_literalContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRefIDS(@NotNull sqlParser.RefIDSContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

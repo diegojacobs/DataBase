@@ -1,5 +1,7 @@
+import java.io.Serializable;
 
-public class Atributo {
+
+public class Atributo implements Serializable{
 	
 	private String id;
 	private String tipo;
@@ -96,9 +98,9 @@ public class Atributo {
 	 */
 	@Override
 	public String toString() {
-		String ret = "Atributo: " + id + ", tipo: " + tipo;
+		String ret = id + " " + tipo;
 		if (this.size >= 0 )
-			ret = "Atributo: " + id + ", tipo: " + tipo + "[" + Integer.toString(this.size) + "]";
+			ret = id + " " + tipo + "[" + Integer.toString(this.size) + "]";
 		return ret;
 	}	
 	

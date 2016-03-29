@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
 @author Diego Jacobs (jewish boy)
@@ -67,7 +68,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	{
 		Path currentRelativePath = Paths.get("");
 		dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
-		cargarDBs();		
+		cargarDBs();
 	}
 	
 	/*
@@ -82,9 +83,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			{
 				ObjectInputStream in = new ObjectInputStream(fis);
 				this.dataBases = (DataBases)in.readObject();
-				fis.close();
-				in.close();
-			}			
+				//fis.close();
+				//in.close();
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,6 +119,27 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 	}
 	
+	/*
+	 * Serializa una Tabla
+	 */
+	public void saveTable(String dbName, String name, Table t)
+	{
+		try {
+			FileOutputStream fos = new FileOutputStream(this.dataPath + "\\" + dbName + "\\" + name + ".bin");
+			ObjectOutputStream out = new ObjectOutputStream(fos);            
+            // Escribir el objeto en el fichero
+            out.writeObject(t);
+            //out.close();
+            //fos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@Override 
 	public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) 
 	{ 
@@ -130,7 +152,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.actual = i;
 				break;
 			}
-		if (! find)
+		if (find == false)
 		{
 			this.actual = new DataBase();
 			String rule_5 = "No se puede usar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
@@ -288,6 +310,84 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitTable_definition(sqlParser.Table_definitionContext)
+	 */
+	@Override
+	public Object visitTable_definition(sqlParser.Table_definitionContext ctx) {
+		// TODO Auto-generated method stub
+		String name = ctx.ID().getText();
+		ArrayList<Atributo> atrs = new ArrayList<Atributo>();
+		ArrayList<Constraint> pks = new ArrayList<Constraint>();
+		ArrayList<Constraint> fks = new ArrayList<Constraint>();
+		ArrayList<Constraint> checks = new ArrayList<Constraint>();
+		if (! this.actual.existTable(name))
+		{
+			for(int i = 4; i < ctx.getChildCount()-2; i++)
+			{			
+				ParseTree child = ctx.getChild(i);
+				String child_text = child.getText();
+				// Ignorar la coma
+				if (! child_text.equals(","))
+				{
+					// Atributo
+					if (child.getChildCount() == 2)
+						atrs.add((Atributo)this.visit(child));
+					// Constraint
+					else
+					{
+						Constraint co = (Constraint)this.visit(child);
+						switch (co.getTipo())
+						{
+							case "Primary Key": 
+								pks.add(co);
+								break;
+							case "Foreign Key":
+								fks.add(co);
+								break;
+							case "Check":
+								checks.add(co);
+								break;
+						}
+					}
+				}
+			}
+			Table new_table = new Table(name, atrs, pks, fks, checks);
+			if (this.actual.getName().isEmpty())
+			{
+				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+			}
+			else
+			{
+				// Agregar tabla a la DB
+				this.actual.addTable(new_table);
+				System.out.println("Tabla " + name + " agregada exitosamente a la Base de Datos " + this.actual.getName());
+				System.out.println();
+				System.out.println(this.actual.toString());
+				// Guardar tabla en directorio
+				saveTable(this.actual.getName(), name, new_table);
+				// Guardar cambio en la DB
+				guardarDBs();
+			}
+		}
+		else
+		{
+			if (this.actual.getName().isEmpty())
+			{
+				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+			}
+			else
+			{
+				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+	        	this.errores.add(table_already_exist);
+			}
+		}
+		return (T)"";
+		//return super.visitTable_definition(ctx);
+	}
+
+	/* (non-Javadoc)
 	 * @see sqlBaseVisitor#visitColumn_literal(sqlParser.Column_literalContext)
 	 */
 	@Override
@@ -299,6 +399,73 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		atr.setId(ctx.ID().getText());
 		return (T) atr;
 		//return super.visitColumn_literal(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitColumn_constraint(sqlParser.Column_constraintContext)
+	 */
+	@Override
+	public Object visitColumn_constraint(sqlParser.Column_constraintContext ctx) {
+		// TODO Auto-generated method stub
+		Constraint con = (Constraint) this.visit(ctx.constraint());
+		return (T)con;
+		//return super.visitColumn_constraint(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitConstraint(sqlParser.ConstraintContext)
+	 */
+	@Override
+	public Object visitConstraint(sqlParser.ConstraintContext ctx) {
+		// TODO Auto-generated method stub
+		Constraint con = (Constraint) this.visit(ctx.constraintType());
+		return (T)con;
+		//return super.visitConstraint(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitLocalIDS(sqlParser.LocalIDSContext)
+	 */
+	@Override
+	public Object visitLocalIDS(sqlParser.LocalIDSContext ctx) {
+		// TODO Auto-generated method stub
+		ArrayList<String> ids = new ArrayList<String>();
+		ids.add(ctx.ID().getText());
+		if (ctx.getChildCount() != 1)
+		{
+			ids.addAll((ArrayList<String>) this.visit(ctx.localIDS()));
+		}
+		return (T)ids;
+		//return super.visitLocalIDS(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitRefIDS(sqlParser.RefIDSContext)
+	 */
+	@Override
+	public Object visitRefIDS(sqlParser.RefIDSContext ctx) {
+		// TODO Auto-generated method stub
+		ArrayList<String> ids = new ArrayList<String>();
+		ids.add(ctx.ID().getText());
+		if (ctx.getChildCount() != 1)
+		{
+			ids.addAll((ArrayList<String>) this.visit(ctx.refIDS()));
+		}
+		return (T)ids;
+		//return super.visitRefIDS(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitConstraintTypeForeignKey(sqlParser.ConstraintTypeForeignKeyContext)
+	 */
+	@Override
+	public Object visitConstraintTypeForeignKey(sqlParser.ConstraintTypeForeignKeyContext ctx) {
+		// TODO Auto-generated method stub
+		Constraint const_pk = new Constraint(ctx.getChild(0).getText(), "Foreign Key");
+		const_pk.setIDS_local((ArrayList<String>)this.visit(ctx.localIDS()));
+		const_pk.setIDS_refs((ArrayList<String>)this.visit(ctx.refIDS()));
+		return (T)const_pk;
+		//return super.visitConstraintTypeForeignKey(ctx);
 	}
 
 	/* (non-Javadoc)

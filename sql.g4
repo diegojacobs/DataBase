@@ -147,8 +147,14 @@ constraint: CONSTRAINT constraintType ;
 
 constraintType:
             ID PRIMARY KEY '(' ID (',' ID)*')' #constraintTypePrimaryKey
-        |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')' #constraintTypeForeignKey
+        |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES ID '(' refIDS ')' #constraintTypeForeignKey
         |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
+
+localIDS: ID
+		  | ID ',' localIDS;
+
+refIDS: ID
+		  | ID ',' refIDS;
 
 exp: logic #exp_logic
 	 | logic_not #exp_logic_not

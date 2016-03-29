@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class Constraint {
+public class Constraint implements Serializable {
 	
 	private String id;
 	private String tipo;
@@ -126,6 +127,52 @@ public class Constraint {
 	public void addRefID(String s)
 	{
 		this.IDS_refs.add(s);
+	}
+	
+	public String toString()
+	{
+		String ret = this.tipo + " " + this.id + "(";
+		switch (this.tipo)
+		{
+			case "Primary Key":
+				int cont = 0;
+				for (String i: this.IDS_local)
+				{
+					if (cont < this.IDS_local.size() - 1)
+						ret += i + ", ";
+					else
+						ret += i;
+					cont++;
+				}
+				ret += ")";
+				break;
+			case "Foreign Key":
+				cont = 0;
+				for (String i: this.IDS_local)
+				{
+					if (cont < this.IDS_local.size() - 1)
+						ret += i + ", ";
+					else
+						ret += i;
+					cont++;
+				}
+				ret += ") REFERENCES (";
+				cont = 0;
+				for (String i: this.IDS_refs)
+				{
+					if (cont < this.IDS_refs.size() - 1)
+						ret += i + ", ";
+					else
+						ret += i;
+					cont++;
+				}
+				ret += ")";
+				break;
+			case "Check":
+				ret += this.IDS_local.get(0) + " " + this.exp + " " + this.IDS_local.get(1) + ")";
+				break;
+		}
+		return ret;
 	}
 
 }

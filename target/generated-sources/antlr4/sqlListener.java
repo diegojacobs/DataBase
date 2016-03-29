@@ -38,6 +38,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitTable_definition(@NotNull sqlParser.Table_definitionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#localIDS}.
+	 * @param ctx the parse tree
+	 */
+	void enterLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#localIDS}.
+	 * @param ctx the parse tree
+	 */
+	void exitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code constraintTypePrimaryKey}
 	 * labeled alternative in {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree
@@ -405,6 +415,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDate_literal(@NotNull sqlParser.Date_literalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#refIDS}.
+	 * @param ctx the parse tree
+	 */
+	void enterRefIDS(@NotNull sqlParser.RefIDSContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#refIDS}.
+	 * @param ctx the parse tree
+	 */
+	void exitRefIDS(@NotNull sqlParser.RefIDSContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#drop_table_statement}.
 	 * @param ctx the parse tree

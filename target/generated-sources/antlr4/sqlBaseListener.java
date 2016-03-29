@@ -52,6 +52,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLocalIDS(@NotNull sqlParser.LocalIDSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterConstraintTypePrimaryKey(@NotNull sqlParser.ConstraintTypePrimaryKeyContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -467,6 +479,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDate_literal(@NotNull sqlParser.Date_literalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRefIDS(@NotNull sqlParser.RefIDSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRefIDS(@NotNull sqlParser.RefIDSContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

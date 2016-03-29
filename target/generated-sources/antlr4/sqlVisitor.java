@@ -29,6 +29,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTable_definition(@NotNull sqlParser.Table_definitionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#localIDS}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code constraintTypePrimaryKey}
 	 * labeled alternative in {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree
@@ -247,6 +253,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDate_literal(@NotNull sqlParser.Date_literalContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#refIDS}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRefIDS(@NotNull sqlParser.RefIDSContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#drop_table_statement}.
 	 * @param ctx the parse tree

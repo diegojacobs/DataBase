@@ -6,8 +6,12 @@ public class Main
     public static void main( String[] args) throws Exception 
     {
 
-        ANTLRInputStream input = new ANTLRInputStream("use database Prueba; alter database Prueba rename to prueba;");
-
+    	//use database prueba; create table varonRojo (nombre int, edad char(4), constraint pk primary KEY (a, b), constraint fk FOREIGN KEY (a) REFERENCES x (y, z), constraint ck CHECK (p and q));
+    	
+        ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table varonRojo (nombre int, edad char(4), constraint pk primary KEY (a, b), constraint fk FOREIGN KEY (a) REFERENCES x (y, z), constraint ck CHECK (p and q));");
+    	
+    	//ANTLRInputStream input = new ANTLRInputStream("create database prueba;");
+    	
         sqlLexer lexer = new sqlLexer(input);
         
         CommonTokenStream tokens = new CommonTokenStream(lexer);
