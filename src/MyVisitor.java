@@ -361,7 +361,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			{
 				// Agregar tabla a la DB
 				this.actual.addTable(new_table);
-				System.out.println("Tabla " + name + " agregada exitosamente a la Base de Datos " + this.actual.getName());
+				System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
 				System.out.println();
 				System.out.println(this.actual.toString());
 				// Guardar tabla en directorio
@@ -379,7 +379,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
 	        	this.errores.add(table_already_exist);
 			}
 		}

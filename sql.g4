@@ -154,7 +154,7 @@ localIDS: ID
 		  | ID ',' localIDS;
 
 refIDS: ID
-		  | ID ',' refIDS;
+		| ID ',' refIDS;
 
 exp: logic #exp_logic
 	 | logic_not #exp_logic_not
