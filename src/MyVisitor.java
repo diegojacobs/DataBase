@@ -320,6 +320,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<Constraint> pks = new ArrayList<Constraint>();
 		ArrayList<Constraint> fks = new ArrayList<Constraint>();
 		ArrayList<Constraint> checks = new ArrayList<Constraint>();
+		// No se puede repetir nombre en las tablas
 		if (! this.actual.existTable(name))
 		{
 			for(int i = 4; i < ctx.getChildCount()-2; i++)
@@ -351,24 +352,66 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 				}
 			}
-			Table new_table = new Table(name, atrs, pks, fks, checks);
-			if (this.actual.getName().isEmpty())
+			// Validaciones
+			int errores = 0;
+			// Ningun atributo se puede llamar igual
+			boolean err1 = false;
+			int i_cont = 0;
+			for (Atributo i: atrs)
 			{
-				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
-	        	this.errores.add(no_database_in_use);
+				String name_i = i.getId();
+				err1 = false;
+				for (Atributo j: atrs.subList(i_cont+1, atrs.size()))
+					if (name_i.equals(j.getId()))
+					{
+						err1 = true;
+						errores++;
+						break;
+					}
+				if (err1 == true)
+				{
+					String attr_declared = "El atributo \"" + name_i + "\" esta declarado mas de una vez @line: " + ctx.getStop().getLine();
+		        	this.errores.add(attr_declared);
+				}
+				i_cont++;
 			}
-			else
+			// Solo puede haber una PK
+			if (errores == 0)
 			{
-				// Agregar tabla a la DB
-				this.actual.addTable(new_table);
-				System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
-				System.out.println();
-				System.out.println(this.actual.toString());
-				// Guardar tabla en directorio
-				saveTable(this.actual.getName(), name, new_table);
-				// Guardar cambio en la DB
-				guardarDBs();
-			}
+				if (pks.size() > 1)
+				{
+					errores++;
+					String more_than_one_pk = "Una tabla no puede tener declarada mas de una Primary Key @line: " + ctx.getStop().getLine();
+		        	this.errores.add(more_than_one_pk);
+				}				
+				// Local IDS pertenecen a la tabla
+				if (errores == 0)
+				{
+					//
+				}
+				// Si no hay errores se guarda la tabla
+				if (errores == 0)
+				{			
+					Table new_table = new Table(name, atrs, pks, fks, checks);
+					if (this.actual.getName().isEmpty())
+					{
+						String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+			        	this.errores.add(no_database_in_use);
+					}
+					else
+					{
+						// Agregar tabla a la DB
+						this.actual.addTable(new_table);
+						System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
+						System.out.println();
+						System.out.println(this.actual.toString());
+						// Guardar tabla en directorio
+						saveTable(this.actual.getName(), name, new_table);
+						// Guardar cambio en la DB
+						guardarDBs();
+					}
+				}
+			}			
 		}
 		else
 		{

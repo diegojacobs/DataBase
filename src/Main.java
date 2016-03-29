@@ -8,7 +8,7 @@ public class Main
 
     	//use database prueba; create table varonRojo (nombre int, edad char(4), constraint pk primary KEY (a, b), constraint fk FOREIGN KEY (a) REFERENCES x (y, z), constraint ck CHECK (p and q));
     	
-        ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table varonRojo (nombre int, edad char(4), constraint pk primary KEY (a, b), constraint fk FOREIGN KEY (a) REFERENCES x (y, z), constraint ck CHECK (p and q));");
+        ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table varonRojoCayala (nombre int, nombre char(4), dpi int, dpi char(10));");
     	
     	//ANTLRInputStream input = new ANTLRInputStream("create database prueba;");
     	
