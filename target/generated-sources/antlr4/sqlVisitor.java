@@ -35,6 +35,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#idRef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdRef(@NotNull sqlParser.IdRefContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code constraintTypePrimaryKey}
 	 * labeled alternative in {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree

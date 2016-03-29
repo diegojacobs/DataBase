@@ -109,17 +109,16 @@ public class Table implements Serializable {
 		ForeignKey = foreignKey;
 	}
 
-	public boolean hasID(String id)
+	public boolean hasAtributo(String id)
 	{
 		boolean flag = false;
 		
 		for (Atributo i : atributos)
-		{
 			if (i.getId().equals(id))
 			{
 				flag = true;
+				break;
 			}
-		}
 		
 		return flag;
 	}
@@ -141,7 +140,7 @@ public class Table implements Serializable {
 	
 	public String toString()
 	{
-		String ret = this.name + "\n";
+		String ret = "Table " + this.name + "\n";
 		int cont = 0;
 		ret += "\tAtributos: ";
 		for (Atributo i: this.atributos)
@@ -149,9 +148,10 @@ public class Table implements Serializable {
 			if (cont < this.atributos.size() - 1)
 				ret += i.toString() + ", ";
 			else
-				ret += i.toString() + "\n";
+				ret += i.toString();
 			cont++;
 		}
+		ret += "\n";
 		cont = 0;
 		ret += "\tPrimary Keys: ";
 		for (Constraint i: this.PrimaryKeys)
@@ -159,9 +159,10 @@ public class Table implements Serializable {
 			if (cont < this.PrimaryKeys.size() - 1)
 				ret += i.toString() + ", ";
 			else
-				ret += i.toString() + "\n";
+				ret += i.toString();
 			cont++;
 		}
+		ret += "\n";
 		cont = 0;
 		ret += "\tForeign Keys: ";
 		for (Constraint i: this.ForeignKey)
@@ -169,9 +170,10 @@ public class Table implements Serializable {
 			if (cont < this.ForeignKey.size() - 1)
 				ret += i.toString() + ", ";
 			else
-				ret += i.toString() + "\n";
+				ret += i.toString();
 			cont++;
 		}
+		ret += "\n";
 		cont = 0;
 		ret += "\tCheck: ";
 		for (Constraint i: this.Checks)
@@ -179,7 +181,7 @@ public class Table implements Serializable {
 			if (cont < this.Checks.size() - 1)
 				ret += i.toString() + ", ";
 			else
-				ret += i.toString() + "\n";
+				ret += i.toString();
 			cont++;
 		}
 		return ret;

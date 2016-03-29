@@ -310,6 +310,59 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitRename_table_statement(sqlParser.Rename_table_statementContext)
+	 * FALTA VALIDAR/CAMBIAR:
+	 * Si hay una Key que hace referencia se debe cambiar tambien el nombre de la referencia
+	 */
+	@Override
+	public Object visitRename_table_statement(sqlParser.Rename_table_statementContext ctx) {
+		// TODO Auto-generated method stub
+		String ID = ctx.ID(0).getText();
+		String NEW_ID = ctx.ID(1).getText();		
+		// Verificar que los ID no sean iguales porque si son iguales no se hace nada
+		if (! ID.equals(NEW_ID))
+		{
+			// Verificar que se este utilizando una base de datos
+			if (this.actual.getName().isEmpty())
+			{
+				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+			}
+			else
+			{
+				// Verificar que la tabla con ID exista
+				if (this.actual.existTable(ID))
+				{
+					// Verificar que no exista una tabla ya creada con ID == NEW_ID
+					if (! this.actual.existTable(NEW_ID))
+					{
+						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
+						Table new_table = this.actual.getTable(ID);
+						new_table.setName(NEW_ID);
+						File directory = new File(this.dataPath + "\\" + this.actual.getName() + "\\" + ID + ".bin");
+						// Renombrar el directorio
+						directory.renameTo(new File(this.dataPath + "\\" + this.actual.getName() + "\\" + NEW_ID + ".bin"));						
+						// Guardar cambio en la DB
+						guardarDBs();
+					}
+					else
+					{
+						String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+			        	this.errores.add(table_already_exist);
+					}
+				}
+				else
+				{
+					String table_not_found = "La Tabla \"" + ID + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+					this.errores.add(table_not_found);
+				}
+			}
+		}
+		return (T)"";
+		//return super.visitRename_table_statement(ctx);
+	}
+
+	/* (non-Javadoc)
 	 * @see sqlBaseVisitor#visitTable_definition(sqlParser.Table_definitionContext)
 	 */
 	@Override
@@ -320,108 +373,189 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<Constraint> pks = new ArrayList<Constraint>();
 		ArrayList<Constraint> fks = new ArrayList<Constraint>();
 		ArrayList<Constraint> checks = new ArrayList<Constraint>();
-		// No se puede repetir nombre en las tablas
-		if (! this.actual.existTable(name))
+		ArrayList<String> const_ids = new ArrayList<String>();
+		int errores = 0;
+		// Verificar que se este utilizando una base de datos
+		if (this.actual.getName().isEmpty())
 		{
-			for(int i = 4; i < ctx.getChildCount()-2; i++)
-			{			
-				ParseTree child = ctx.getChild(i);
-				String child_text = child.getText();
-				// Ignorar la coma
-				if (! child_text.equals(","))
-				{
-					// Atributo
-					if (child.getChildCount() == 2)
-						atrs.add((Atributo)this.visit(child));
-					// Constraint
-					else
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+        	errores++;
+		}
+		else
+		{		
+			// No se puede repetir nombre en las tablas
+			if (! this.actual.existTable(name))
+			{
+				for(int i = 4; i < ctx.getChildCount()-2; i++)
+				{			
+					ParseTree child = ctx.getChild(i);
+					String child_text = child.getText();
+					// Ignorar la coma
+					if (! child_text.equals(","))
 					{
-						Constraint co = (Constraint)this.visit(child);
-						switch (co.getTipo())
+						// Atributo
+						if (child.getChildCount() == 2)
+							atrs.add((Atributo)this.visit(child));
+						// Constraint
+						else
 						{
-							case "Primary Key": 
-								pks.add(co);
+							Constraint co = (Constraint)this.visit(child);
+							const_ids.add(co.getId());
+							switch (co.getTipo())
+							{
+								case "Primary Key": 
+									if (pks.isEmpty())
+										pks.add(co);
+									// Solo puede haber una PK
+									else
+									{
+										String more_than_one_pk = "Una tabla no puede tener declarada mas de una Primary Key @line: " + ctx.getStop().getLine();
+							        	this.errores.add(more_than_one_pk);
+							        	errores++;
+									}
+									break;
+								case "Foreign Key":								
+									fks.add(co);								
+									break;
+								case "Check":
+									checks.add(co);
+									break;
+							}
+						}
+					}
+				}
+				// Validaciones
+				if (errores == 0)
+				{
+					// Ningun atributo se puede llamar igual
+					ArrayList<String> attrs_names = new ArrayList<String>();
+					boolean err1 = false;
+					int i_cont = 0;
+					for (Atributo i: atrs)
+					{
+						String name_i = i.getId();
+						attrs_names.add(name_i);
+						err1 = false;
+						for (Atributo j: atrs.subList(i_cont+1, atrs.size()))
+							if (name_i.equals(j.getId()))
+							{
+								err1 = true;
+								errores++;
 								break;
-							case "Foreign Key":
-								fks.add(co);
+							}
+						if (err1 == true)
+						{
+							String attr_declared = "El atributo \"" + name_i + "\" esta declarado mas de una vez @line: " + ctx.getStop().getLine();
+				        	this.errores.add(attr_declared);
+						}
+						i_cont++;
+					}
+					// Ninguna constraint se puede llamar igual
+					err1 = false;
+					i_cont = 0;
+					for (String i: const_ids)
+					{
+						err1 = false;
+						for (String j: const_ids.subList(i_cont+1, const_ids.size()))
+							if (i.equals(j))
+							{
+								err1 = true;
+								errores++;
 								break;
-							case "Check":
-								checks.add(co);
-								break;
+							}
+						if (err1 == true)
+						{
+							String const_declared = "La Constraint \"" + i + "\" esta declarada mas de una vez @line: " + ctx.getStop().getLine();
+				        	this.errores.add(const_declared);
+						}
+						i_cont++;
+					}
+					// Local IDS pertenecen a la tabla
+					if (errores == 0)
+					{			
+						// Primary Keys
+						if (! pks.isEmpty())
+						{
+							Constraint pk = pks.get(0);
+							ArrayList<String> ids = pk.getIDS_local();
+							for (String i: ids)
+								if (! attrs_names.contains(i))
+								{
+									String local_id_not_found = "El ID \"" + i + "\" de la Primary Key \"" + pk.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+						        	this.errores.add(local_id_not_found);
+						        	errores++;
+								}		
+						}
+						// Foreign Keys
+						for (Constraint i: fks)
+						{
+							// Local IDS
+							for (String j: i.getIDS_local())
+								if (! attrs_names.contains(j))										
+								{
+									String local_id_not_found = "El ID \"" + j + "\" de la Foreign Key \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+						        	this.errores.add(local_id_not_found);
+						        	errores++;
+								}
+							// Ref IDS
+							// Buscar que exista una tabla con el nombre al que se hace referencia
+							if (! this.actual.existTable(i.getId_ref()))
+							{
+								String table_not_found = "La tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(table_not_found);
+					        	errores++;
+							}
+							else
+							{
+								Table table_ref = this.actual.getTable(i.getId_ref());
+								// Verificar que los RefIDS pertenezcan a la tabla
+								for (String j: i.getIDS_refs())
+									if (! table_ref.hasAtributo(j))
+									{
+										String ref_id_not_found = "El ID \"" + j + "\" no esta declarado en la tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" @line: " + ctx.getStop().getLine();
+							        	this.errores.add(ref_id_not_found);
+							        	errores++;
+									}
+							}
+						}
+						// Check
+						for (Constraint i: checks)
+						{
+							String id1 = i.getIDS_local().get(0);
+							String id2 = i.getIDS_local().get(1);
+							if (! attrs_names.contains(id1) )
+							{
+								String local_id_not_found = "El ID \"" + id1 + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(local_id_not_found);
+					        	errores++;
+							}
+							if (! attrs_names.contains(id2) )
+							{
+								String local_id_not_found = "El ID \"" + id2 + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(local_id_not_found);
+					        	errores++;
+							} 
+						}
+						// Si no hay errores se guarda la tabla
+						if (errores == 0)
+						{			
+							Table new_table = new Table(name, atrs, pks, fks, checks);
+							// Agregar tabla a la DB
+							this.actual.addTable(new_table);
+							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
+							System.out.println();
+							System.out.println(this.actual.toString());
+							// Guardar tabla en directorio
+							saveTable(this.actual.getName(), name, new_table);
+							// Guardar cambio en la DB
+							guardarDBs();
 						}
 					}
 				}
 			}
-			// Validaciones
-			int errores = 0;
-			// Ningun atributo se puede llamar igual
-			boolean err1 = false;
-			int i_cont = 0;
-			for (Atributo i: atrs)
-			{
-				String name_i = i.getId();
-				err1 = false;
-				for (Atributo j: atrs.subList(i_cont+1, atrs.size()))
-					if (name_i.equals(j.getId()))
-					{
-						err1 = true;
-						errores++;
-						break;
-					}
-				if (err1 == true)
-				{
-					String attr_declared = "El atributo \"" + name_i + "\" esta declarado mas de una vez @line: " + ctx.getStop().getLine();
-		        	this.errores.add(attr_declared);
-				}
-				i_cont++;
-			}
-			// Solo puede haber una PK
-			if (errores == 0)
-			{
-				if (pks.size() > 1)
-				{
-					errores++;
-					String more_than_one_pk = "Una tabla no puede tener declarada mas de una Primary Key @line: " + ctx.getStop().getLine();
-		        	this.errores.add(more_than_one_pk);
-				}				
-				// Local IDS pertenecen a la tabla
-				if (errores == 0)
-				{
-					//
-				}
-				// Si no hay errores se guarda la tabla
-				if (errores == 0)
-				{			
-					Table new_table = new Table(name, atrs, pks, fks, checks);
-					if (this.actual.getName().isEmpty())
-					{
-						String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
-			        	this.errores.add(no_database_in_use);
-					}
-					else
-					{
-						// Agregar tabla a la DB
-						this.actual.addTable(new_table);
-						System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
-						System.out.println();
-						System.out.println(this.actual.toString());
-						// Guardar tabla en directorio
-						saveTable(this.actual.getName(), name, new_table);
-						// Guardar cambio en la DB
-						guardarDBs();
-					}
-				}
-			}			
-		}
-		else
-		{
-			if (this.actual.getName().isEmpty())
-			{
-				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
-	        	this.errores.add(no_database_in_use);
-			}
 			else
-			{
+			{				
 				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
 	        	this.errores.add(table_already_exist);
 			}
@@ -499,6 +633,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitIdRef(sqlParser.IdRefContext)
+	 */
+	@Override
+	public Object visitIdRef(sqlParser.IdRefContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)ctx.ID().getText();
+		//return super.visitIdRef(ctx);
+	}
+
+	/* (non-Javadoc)
 	 * @see sqlBaseVisitor#visitConstraintTypeForeignKey(sqlParser.ConstraintTypeForeignKeyContext)
 	 */
 	@Override
@@ -507,6 +651,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		Constraint const_pk = new Constraint(ctx.getChild(0).getText(), "Foreign Key");
 		const_pk.setIDS_local((ArrayList<String>)this.visit(ctx.localIDS()));
 		const_pk.setIDS_refs((ArrayList<String>)this.visit(ctx.refIDS()));
+		const_pk.setId_ref((String)this.visit(ctx.idRef()));
 		return (T)const_pk;
 		//return super.visitConstraintTypeForeignKey(ctx);
 	}
@@ -518,6 +663,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitConstraintTypePrimaryKey(sqlParser.ConstraintTypePrimaryKeyContext ctx) {
 		// TODO Auto-generated method stub
 		Constraint const_pk = new Constraint(ctx.getChild(0).getText(), "Primary Key");
+		const_pk.setIDS_local((ArrayList<String>)this.visit(ctx.localIDS()));
+		/*
 		for(int i = 4; i < ctx.getChildCount()-2; i++)
 		{
 			String child_text = ctx.getChild(i).getText();
@@ -525,7 +672,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			{
 				const_pk.addLocalID(child_text);
 			}
-		}
+		}*/
 		return (T)const_pk;
 		//return super.visitConstraintTypePrimaryKey(ctx);
 	}

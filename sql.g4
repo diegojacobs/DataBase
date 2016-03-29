@@ -146,9 +146,11 @@ tipo_literal: RES_INT #tipo_lit_int
 constraint: CONSTRAINT constraintType ;
 
 constraintType:
-            ID PRIMARY KEY '(' ID (',' ID)*')' #constraintTypePrimaryKey
-        |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES ID '(' refIDS ')' #constraintTypeForeignKey
+            ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
+        |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
         |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
+
+idRef: ID;
 
 localIDS: ID
 		  | ID ',' localIDS;

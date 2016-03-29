@@ -62,15 +62,27 @@ public class DataBase implements Serializable {
 			}
 		return res;
 	}
+	
+	public Table getTable(String name)
+	{
+		Table res = new Table();
+		for (Table i: this.tables)
+			if (i.getName().equals(name))
+			{
+				res = i;
+				break;
+			}
+		return res;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		String ret = this.name + "\n";
+		String ret = "DB " + this.name + "\n";
 		for (Table i: this.tables)
-			ret += "\t" + i.toString() + "\n";
+			ret += "\t" + i.toString() + "\n\n";
 		return ret;
 	}
 	

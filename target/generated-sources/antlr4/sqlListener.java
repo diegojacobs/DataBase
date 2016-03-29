@@ -48,6 +48,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#idRef}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdRef(@NotNull sqlParser.IdRefContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#idRef}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdRef(@NotNull sqlParser.IdRefContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code constraintTypePrimaryKey}
 	 * labeled alternative in {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree

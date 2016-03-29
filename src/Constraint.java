@@ -7,14 +7,16 @@ public class Constraint implements Serializable {
 	private String id;
 	private String tipo;
 	private String exp;
-	ArrayList<String> IDS_local;
-	ArrayList<String> IDS_refs;
+	private String id_ref;
+	private ArrayList<String> IDS_local;
+	private ArrayList<String> IDS_refs;
 	
 	public Constraint()
 	{
 		this.id = "";
 		this.tipo = "";
 		this.exp = "";
+		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
 	}
@@ -23,6 +25,7 @@ public class Constraint implements Serializable {
 		this.id = id;
 		this.tipo = "";
 		this.exp = "";
+		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
 	}
@@ -31,6 +34,7 @@ public class Constraint implements Serializable {
 		this.id = id;
 		this.tipo = tipo;
 		this.exp = "";
+		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
 	}
@@ -39,6 +43,7 @@ public class Constraint implements Serializable {
 		this.id = id;
 		this.tipo = tipo;
 		this.exp = exp;
+		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
 	}
@@ -76,6 +81,20 @@ public class Constraint implements Serializable {
 	 */
 	public String getExp() {
 		return exp;
+	}
+
+	/**
+	 * @return the id_ref
+	 */
+	public String getId_ref() {
+		return id_ref;
+	}
+
+	/**
+	 * @param id_ref the id_ref to set
+	 */
+	public void setId_ref(String id_ref) {
+		this.id_ref = id_ref;
 	}
 
 	/**
@@ -156,7 +175,7 @@ public class Constraint implements Serializable {
 						ret += i;
 					cont++;
 				}
-				ret += ") REFERENCES (";
+				ret += ") REFERENCES " + this.id_ref + " (";
 				cont = 0;
 				for (String i: this.IDS_refs)
 				{

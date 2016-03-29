@@ -5,12 +5,17 @@ public class Main
 {
     public static void main( String[] args) throws Exception 
     {
-
-    	//use database prueba; create table varonRojo (nombre int, edad char(4), constraint pk primary KEY (a, b), constraint fk FOREIGN KEY (a) REFERENCES x (y, z), constraint ck CHECK (p and q));
+    	// Create DataBase
+    	ANTLRInputStream input = new ANTLRInputStream("create database prueba;");
     	
-        ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table varonRojoCayala (nombre int, nombre char(4), dpi int, dpi char(10));");
+    	// Create Table
+    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
     	
-    	//ANTLRInputStream input = new ANTLRInputStream("create database prueba;");
+    	// Create Table con Constraints
+        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
+   	
+    	// Rename Table
+    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
     	
         sqlLexer lexer = new sqlLexer(input);
         
