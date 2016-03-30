@@ -306,11 +306,20 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnRun);
 		
+		JSplitPane splitPane1 = new JSplitPane();
+		splitPane1.setResizeWeight(0.2);
+		splitPane1.setContinuousLayout(true);
+		splitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		this.getContentPane().add(splitPane1, BorderLayout.CENTER);
+		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setResizeWeight(0.5);
 		splitPane.setContinuousLayout(true);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		this.getContentPane().add(splitPane, BorderLayout.CENTER);
+		
+		splitPane1.setRightComponent(splitPane);
+		splitPane1.setLeftComponent(new SimpleTree());
+		//this.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		splitPane.setLeftComponent(tabbedPane);
