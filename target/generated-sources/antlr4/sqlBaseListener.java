@@ -232,6 +232,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterList(@NotNull sqlParser.ListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitList(@NotNull sqlParser.ListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -323,6 +335,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterColumns(@NotNull sqlParser.ColumnsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitColumns(@NotNull sqlParser.ColumnsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

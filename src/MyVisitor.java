@@ -790,6 +790,71 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	
 	/**************************
+	 * INSERT
+	 * validamos el numero de columnas y valores
+	 * el tipo de cada columna con el valor ingresado
+	 * debemos ver que columnas no fueron ingresadas 
+	 * para llenarlas con NULL y que la tabla exista
+	 */
+	@Override
+	public Object visitInsert_value(sqlParser.Insert_valueContext ctx) 
+	{
+		int columnas = ctx.getChild(3).getChildCount();
+		int values = ctx.getChild(5).getChildCount();
+		String id = ctx.ID().getText();
+		
+		//debemos revisar si existe la tabla en la base de datos actual
+		
+		//comparamos numerod e columas y valores con y sin parentesis
+		if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
+		{
+			
+		}
+		else
+		{	
+			if (columnas<values)
+			{
+				String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+			}
+			else
+			{
+				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+			}
+					
+		}
+		
+		// TODO Auto-generated method stub
+		return new String();
+	}
+	
+	
+	/*****************************
+	 * LIST
+	 * devolvemos un array con el tipo de cada valor ingresado
+	 */
+	@Override
+	public Object visitList(sqlParser.ListContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitList(ctx);
+	}
+
+	
+	/*****************************
+	 * COLUMNS
+	 * devolvemos un array con los atributos/columna a 
+	 * la que se desea ingresar un valor
+	 * debemos revisar que las columnas existan en la tabla
+	 */
+	@Override
+	public Object visitColumns(sqlParser.ColumnsContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitColumns(ctx);
+	}
+
+	
+	/**************************
 	 * Condition
 	 * Revisamos cada comparacion
 	 * Si al final la expresion es true devolvemos true

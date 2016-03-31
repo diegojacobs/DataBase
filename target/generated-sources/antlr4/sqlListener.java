@@ -194,6 +194,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#list}.
+	 * @param ctx the parse tree
+	 */
+	void enterList(@NotNull sqlParser.ListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#list}.
+	 * @param ctx the parse tree
+	 */
+	void exitList(@NotNull sqlParser.ListContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code constraintTypeCheck}
 	 * labeled alternative in {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree
@@ -281,6 +291,16 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link sqlParser#columns}.
+	 * @param ctx the parse tree
+	 */
+	void enterColumns(@NotNull sqlParser.ColumnsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#columns}.
+	 * @param ctx the parse tree
+	 */
+	void exitColumns(@NotNull sqlParser.ColumnsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#sql_schema_definition_statement}.
 	 * @param ctx the parse tree

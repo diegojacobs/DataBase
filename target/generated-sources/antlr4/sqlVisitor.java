@@ -122,6 +122,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#list}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitList(@NotNull sqlParser.ListContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code constraintTypeCheck}
 	 * labeled alternative in {@link sqlParser#constraintType}.
 	 * @param ctx the parse tree
@@ -173,6 +179,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitShow_column_statement(@NotNull sqlParser.Show_column_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#columns}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColumns(@NotNull sqlParser.ColumnsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#sql_schema_definition_statement}.
 	 * @param ctx the parse tree

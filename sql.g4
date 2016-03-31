@@ -88,7 +88,7 @@ fragment DAY : DIGIT | TWO_DIGITS ;
 
 INT: DIGIT ( DIGIT )*;
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : ('-')? DIGIT ( DIGIT )* ('.' DIGIT(DIGIT)* )?;
+NUM : ('-')? DIGIT ( DIGIT )*;
 CHAR : '\'' ASCII(ASCII)* '\'' ;
 DATE: '\''YEAR '-' MONTH '-' DAY'\'' ;
 
@@ -181,7 +181,7 @@ logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO ((columna)+ | ('(' (columna)+ ')')) VALUES (list_values | ('(' list_values ')')) ';' ;
+insert_value: INSERT INTO ID columns VALUES list ';' ;
 
 update_value: UPDATE ID SET (columna '=' value)+ WHERE condition ';' ;
 
@@ -193,8 +193,12 @@ condition: (logic_not)? comp (logic (logic_not)? (comp))*;
 
 comp : ID relational (ID | literal);    
 
+columns:((columna)+ | ('(' (columna)+ ')')) ;
+
 columna: ID;
-              
+           
+list: (list_values | ('(' list_values ')')) ;       
+           
 list_values : (value (',' (value))* ) ;
          
 value: tipo;
@@ -208,6 +212,6 @@ literal:
     |   char_literal ;
 
 int_literal: NUM;
-float_literal: NUM;
+float_literal: NUM ('.' INT )?;
 date_literal: DATE;
 char_literal: CHAR;
