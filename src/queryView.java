@@ -613,7 +613,7 @@ public class queryView extends JFrame implements ActionListener{
 	}
 	
 	public void run(){
-		textStr = textArea.getText();
+		textStr = textArea.getText();//
 		//System.out.println(textStr);
 		
 		// Create DataBase
