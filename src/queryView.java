@@ -2,10 +2,13 @@
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
 import views.*;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 
 import javax.imageio.ImageIO;
@@ -60,6 +63,7 @@ public class queryView extends JFrame implements ActionListener{
 	//JTextArea textArea;
 	JTextPane textArea, dataOutputArea, dataReadArea;
 	JTextField status;
+	JSplitPane splitPane1;
 	TextLineNumber tln;
 	UndoManager manager;
 	JFileChooser fc;
@@ -99,7 +103,10 @@ public class queryView extends JFrame implements ActionListener{
 	 */
 	private void initialize() {
 		//frame = new JFrame();
-		this.setBounds(100, 100, 450, 300);
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
+		int height = gd.getDisplayMode().getHeight();
+		this.setBounds(100, 100, (width/2), (height/2));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		fc = new JFileChooser();
@@ -309,7 +316,7 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnRun);
 		
-		JSplitPane splitPane1 = new JSplitPane();
+		splitPane1 = new JSplitPane();
 		splitPane1.setResizeWeight(0.2);
 		splitPane1.setContinuousLayout(true);
 		splitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
@@ -330,7 +337,7 @@ public class queryView extends JFrame implements ActionListener{
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("SQL Editor", null, scrollPane_1, null);
 		
-		Font font1 = new Font("Consolas", Font.PLAIN, 12);
+		Font font1 = new Font("Consolas", Font.PLAIN, 14);
 		
 		//textArea = new JTextArea();
 		textArea = new JTextPane();
@@ -437,6 +444,7 @@ public class queryView extends JFrame implements ActionListener{
             }
         } catch (BadLocationException e) {
             e.printStackTrace();
+            
         }
         return rn;
 	}
@@ -447,7 +455,7 @@ public class queryView extends JFrame implements ActionListener{
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-        return -1;
+        return 1;
     }
 	
 	private void updateStatus(int linenumber,int columnnumber){
@@ -643,6 +651,7 @@ public class queryView extends JFrame implements ActionListener{
         
         dataOutputArea.setText(semantic_checker.erroresToString());
         dataReadArea.setText(textStr);
+        splitPane1.setLeftComponent(new SimpleTree());
 		
 	}
 	
