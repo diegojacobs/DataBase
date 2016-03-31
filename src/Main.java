@@ -7,20 +7,8 @@ public class Main
 {
     public static void main( String[] args) throws Exception 
     {
-
-    	//System.out.println("What");
     	queryView qr = new queryView();
-    	qr.setVisible(true);
-        /*ANTLRInputStream input = new ANTLRInputStream( System.in);
-
-        //HelloLexer lexer = new HelloLexer(input);
-        
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        HelloParser parser = new HelloParser(tokens);
-        ParseTree tree = parser.r(); // begin parsing at rule 'r'
-        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
-        */
+    	qr.setVisible(true);  
         
     }
 }

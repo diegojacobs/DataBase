@@ -45,7 +45,6 @@ ALTER : A L T E R;
 RENAME : R E N A M E;
 TO : T O;
 SHOW : S H O W;
-//
 USE : U S E;
 RES_INT : I N T;
 RES_FLOAT : F L O A T;
@@ -89,7 +88,7 @@ fragment DAY : DIGIT | TWO_DIGITS ;
 
 INT: DIGIT ( DIGIT )*;
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : ('-')? DIGIT ( DIGIT )* ('.' DIGIT(DIGIT)* )?;
+NUM : ('-')? DIGIT ( DIGIT )*;
 CHAR : '\'' ASCII(ASCII)* '\'' ;
 DATE: '\''YEAR '-' MONTH '-' DAY'\'' ;
 
@@ -122,7 +121,7 @@ sql_data_statement : select_value ;
 
 schema_definition: CREATE DATABASE ID ';' ;
 
-table_definition: CREATE TABLE ID '(' (column)+ ')' ';' ;
+table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
@@ -136,21 +135,32 @@ show_schema_statement: SHOW DATABASES ';' ;
 
 use_schema_statement: USE DATABASE ID ';' ;
 
-column: (ID tipo_literal | constraint) ',' ;
+column: ID tipo_literal #column_literal 
+		| constraint #column_constraint;
 
-tipo_literal: RES_INT 
-			| RES_FLOAT 
-			| (RES_CHAR '('INT ')') 
-			| RES_DATE ;
+tipo_literal: RES_INT #tipo_lit_int 
+			| RES_FLOAT #tipo_lit_float 
+			| (RES_CHAR '('INT ')') #tipo_lit_char
+			| RES_DATE #tipo_lit_date;
 
 constraint: CONSTRAINT constraintType ;
 
 constraintType:
-            ID PRIMARY KEY '(' ID (',' ID)*')'
-        |   ID FOREIGN KEY  '(' ID (',' ID)*')' REFERENCES ID '(' ID (',' ID)*')'
-        |   ID CHECK '('ID exp ID ')' ;
+            ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
+        |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
+        |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
 
-exp: logic | relational;
+idRef: ID;
+
+localIDS: ID
+		  | ID ',' localIDS;
+
+refIDS: ID
+		| ID ',' refIDS;
+
+exp: logic #exp_logic
+	 | logic_not #exp_logic_not
+	 | relational #exp_relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
@@ -164,11 +174,14 @@ show_table_statement: SHOW TABLES ';' ;
 
 show_column_statement: SHOW COLUMNS FROM ID ';' ;         
           
-logic: RES_AND | RES_OR | RES_NOT ;
+logic: RES_AND #logic_and 
+	   | RES_OR #logic_or;
+
+logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO ((columna)+ | ('(' (columna)+ ')')) VALUES (list_values | ('(' list_values ')')) ';' ;
+insert_value: INSERT INTO ID columns VALUES list ';' ;
 
 update_value: UPDATE ID SET (columna '=' value)+ WHERE condition ';' ;
 
@@ -176,10 +189,16 @@ delete_value: DELETE FROM ID WHERE condition ';' ;
 
 select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
               
-condition: ID '=' ID ;         
+condition: (logic_not)? comp (logic (logic_not)? (comp))*;         
+
+comp : ID relational (ID | literal);    
+
+columns:((columna)+ | ('(' (columna)+ ')')) ;
 
 columna: ID;
-              
+           
+list: (list_values | ('(' list_values ')')) ;       
+           
 list_values : (value (',' (value))* ) ;
          
 value: tipo;
@@ -193,6 +212,6 @@ literal:
     |   char_literal ;
 
 int_literal: NUM;
-float_literal: NUM;
+float_literal: NUM ('.' INT )?;
 date_literal: DATE;
 char_literal: CHAR;

@@ -20,20 +20,23 @@ public class SimpleTree extends JPanel {
     }
   
   public Dimension getPreferredSize(){
-    return new Dimension(200, 120);
+    return new Dimension(50, 30);
     }
   
   public void getList(DefaultMutableTreeNode node, File f) {
      if(!f.isDirectory()) {
+    	 /* esto es para tener como archivo solo los que dicen .java 
          // We keep only JAVA source file for display in this HowTo
          if (f.getName().endsWith("java")) {
-            System.out.println("FILE  -  " + f.getName());
-            DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
-            node.add(child);
-            }
+            //System.out.println("FILE  -  " + f.getName());
+        	 DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
+             node.add(child);
+            }*/
+         DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
+         node.add(child);
          }
      else {
-         System.out.println("DIRECTORY  -  " + f.getName());
+         //System.out.println("DIRECTORY  -  " + f.getName());
          DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
          node.add(child);
          File fList[] = f.listFiles();
