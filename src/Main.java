@@ -6,8 +6,8 @@ public class Main
     public static void main( String[] args) throws Exception 
     {
     	// Create DataBase
-    	ANTLRInputStream input = new ANTLRInputStream("create database prueba;");
-    	
+    	ANTLRInputStream input = new ANTLRInputStream("create database prueba;");    	
+ 	
     	// Create Table
     	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
     	
