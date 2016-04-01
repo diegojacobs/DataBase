@@ -101,6 +101,7 @@ public class DataBase implements Serializable {
 	public Table getTable(String name)
 	{
 		Table res = new Table();
+		res = null;
 		for (Table i: this.tables)
 			if (i.getName().equals(name))
 			{

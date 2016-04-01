@@ -88,9 +88,9 @@ fragment DAY : DIGIT | TWO_DIGITS ;
 
 INT: DIGIT ( DIGIT )*;
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : ('-')? DIGIT ( DIGIT )*;
+DATE: '\'' YEAR'-'MONTH'-'DAY  '\'';
 CHAR : '\'' ASCII(ASCII)* '\'' ;
-DATE: '\''YEAR '-' MONTH '-' DAY'\'' ;
+
 
 WHITESPACE : [\t\r\n\f ]+ -> skip ;
 
@@ -117,7 +117,10 @@ sql_schema_manipulation_statement :
         |   show_table_statement
         |   show_column_statement ;
         
-sql_data_statement : select_value ;
+sql_data_statement : select_value 
+					| insert_value
+					| delete_value
+					| update_value;
 
 schema_definition: CREATE DATABASE ID ';' ;
 
@@ -183,7 +186,7 @@ relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
 insert_value: INSERT INTO ID columns VALUES list ';' ;
 
-update_value: UPDATE ID SET (columna '=' value)+ WHERE condition ';' ;
+update_value: UPDATE ID SET (columna '=' literal)+ WHERE condition ';' ;
 
 delete_value: DELETE FROM ID WHERE condition ';' ;
 
@@ -197,13 +200,10 @@ columns:((columna)+ | ('(' (columna)+ ')')) ;
 
 columna: ID;
            
-list: (list_values | ('(' list_values ')')) ;       
+list: list_values 
+	 | '(' list_values ')' ;       
            
-list_values : (value (',' (value))* ) ;
-         
-value: tipo;
-              
-tipo: literal;
+list_values : (literal (',' (literal))* ) ;
 
 literal:  
         int_literal
@@ -211,7 +211,7 @@ literal:
     |   date_literal
     |   char_literal ;
 
-int_literal: NUM;
-float_literal: NUM ('.' INT )?;
-date_literal: DATE;
+int_literal: ('-')? INT;
+float_literal: ('-')? INT ('.' INT )?;
+date_literal: DATE ;
 char_literal: CHAR;

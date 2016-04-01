@@ -804,26 +804,36 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String id = ctx.ID().getText();
 		
 		//debemos revisar si existe la tabla en la base de datos actual
-		
-		//comparamos numerod e columas y valores con y sin parentesis
-		if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
+		Table tabla = this.actual.getTable(id);
+		if (tabla != null)
 		{
-			
-		}
-		else
-		{	
-			if (columnas<values)
+			//comparamos numerod e columas y valores con y sin parentesis
+			if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
 			{
-				String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
-				this.errores.add(rule_5);
+				ArrayList<String> cols = (ArrayList<String>)this.visit(ctx.getChild(3));
+				
+				ArrayList<Value> vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
 			}
 			else
-			{
-				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-				this.errores.add(rule_5);
+			{	
+				if (columnas<values)
+				{
+					String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
+				else
+				{
+					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
 			}
-					
 		}
+		else
+		{
+			String rule_5 = "La tabla " + id + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		
 		
 		// TODO Auto-generated method stub
 		return new String();
@@ -832,12 +842,27 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	/*****************************
 	 * LIST
-	 * devolvemos un array con el tipo de cada valor ingresado
+	 * devolvemos un array con el tipo y valor de cada valor ingresado
 	 */
 	@Override
 	public Object visitList(sqlParser.ListContext ctx) {
+		
+		ArrayList<Value> values = new ArrayList();
+		
+		for (int i = 0; i < ctx.getChildCount(); i++)
+			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			{
+				Value valor = new Value();
+				if(ctx.getChild(i).getText().contains("'"))
+				{
+					
+				}
+				
+				values.add(valor);
+			}
+		
 		// TODO Auto-generated method stub
-		return super.visitList(ctx);
+		return values;
 	}
 
 	
@@ -849,8 +874,17 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	 */
 	@Override
 	public Object visitColumns(sqlParser.ColumnsContext ctx) {
+		
+		ArrayList<String> columnas = new ArrayList();
+		
+		for (int i = 0; i < ctx.getChildCount(); i++)
+			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			{
+				columnas.add(ctx.getChild(i).getText());
+			}
+		
 		// TODO Auto-generated method stub
-		return super.visitColumns(ctx);
+		return columnas;
 	}
 
 	
@@ -911,7 +945,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitInt_literal(@NotNull sqlParser.Int_literalContext ctx) 
 	{ 
-		String num = ctx.NUM().getText();
+		String num = ctx.INT().getText();
 		
 		if (num.contains("."))
 		{
@@ -931,7 +965,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitFloat_literal(@NotNull sqlParser.Float_literalContext ctx) 
 	{ 
-		String num = ctx.NUM().getText();
+		String num = ctx.INT(0).getText();
 		
 		if (!num.contains("."))
 		{
