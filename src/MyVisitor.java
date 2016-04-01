@@ -1689,4 +1689,36 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return dia;
 	}
 	
+	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
+		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
+		String dbsPath = dataPath+"/dbs.bin";//path... /data/
+		if (actual.getName().isEmpty()){
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}else{
+			String ID = ctx.getChild(3).getText();
+			Table tb = actual.getTable(ID);
+			if (tb == null){
+				String no_database_in_use = "No hay una Tabla " +ID+" en la Base de Datos " +actual.getName()+" @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+	        	//System.out.println("error de tabla");
+			}else{
+				return (T) tb;
+			}
+		}
+		
+		return (T)new String();
+	}
+	
+	public T visitShow_schema_statement(sqlParser.Show_schema_statementContext ctx){
+		//SHOW DATABASES
+		//System.out.println("llego aqui");
+		return (T) dataBases;
+	}
+	
+	public T visitShow_table_statement(sqlParser.Show_table_statementContext ctx){
+		//SHOW TABLES (comprobar use database)
+		return (T) new String();
+	}
+	
 }

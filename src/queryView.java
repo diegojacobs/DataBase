@@ -5,7 +5,10 @@ import org.antlr.v4.runtime.tree.*;
 
 import views.*;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -16,12 +19,15 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
 import java.awt.BorderLayout;
@@ -30,11 +36,15 @@ import javax.swing.JButton;
 import javax.swing.border.Border;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.Utilities;
+import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -50,24 +60,30 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class queryView extends JFrame implements ActionListener{
 
+	
 	//private JFrame frame;
-	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment;
+	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment, mntmPrueba;
 	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo;
 	//JTextArea textArea;
 	JTextPane textArea, dataOutputArea, dataReadArea;
 	JTextField status;
 	JSplitPane splitPane1;
+	JTabbedPane tabbedPane;
+	
 	TextLineNumber tln;
 	UndoManager manager;
 	JFileChooser fc;
 	File file;
+	SimpleTree explorer;
 	
 	String commentSeq = "//", textStr = "";
 	int caretLine = 1, caretColumn = 1;
@@ -108,6 +124,7 @@ public class queryView extends JFrame implements ActionListener{
 		int height = gd.getDisplayMode().getHeight();
 		this.setBounds(100, 100, (width/2), (height/2));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		
 		fc = new JFileChooser();
 		
@@ -190,6 +207,12 @@ public class queryView extends JFrame implements ActionListener{
 		KeyStroke keyStrokeToComment = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
 		mntmComment.setAccelerator(keyStrokeToComment);
 		mnQuery.add(mntmComment);
+		
+		mntmPrueba = new JMenuItem("Prueba");
+		mntmPrueba.addActionListener(this);
+		//KeyStroke keyStrokeToPrueba = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
+		//mntmPrueba.setAccelerator(keyStrokeToPrueba);
+		mnQuery.add(mntmPrueba);
 		
 		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -328,21 +351,23 @@ public class queryView extends JFrame implements ActionListener{
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		
 		splitPane1.setRightComponent(splitPane);
-		splitPane1.setLeftComponent(new SimpleTree());
+		explorer = new SimpleTree();
+		addTreeSelection(explorer.getTree());
+		splitPane1.setLeftComponent(explorer);
 		//this.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		splitPane.setLeftComponent(tabbedPane);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("SQL Editor", null, scrollPane_1, null);
 		
-		Font font1 = new Font("Consolas", Font.PLAIN, 14);
+		
 		
 		//textArea = new JTextArea();
 		textArea = new JTextPane();
 		//textArea.setTabSize(4);
-		textArea.setFont(font1);
+		
 		textArea.setDocument(new SqlDocument());
 		textArea.getDocument().addUndoableEditListener(manager);
 		
@@ -362,7 +387,7 @@ public class queryView extends JFrame implements ActionListener{
 		//textArea = new JTextArea();
 		dataOutputArea = new JTextPane();
 		//textArea.setTabSize(4);
-		dataOutputArea.setFont(font1);
+		
 		dataOutputArea.setEditable(false);
 		//textArea.setDocument(new SqlDocument());
 		//textArea.getDocument().addUndoableEditListener(manager);
@@ -378,7 +403,7 @@ public class queryView extends JFrame implements ActionListener{
 		//textArea = new JTextArea();
 		dataReadArea = new JTextPane();
 		//textArea.setTabSize(4);
-		dataReadArea.setFont(font1);
+		
 		dataReadArea.setEditable(false);
 		dataReadArea.setDocument(new SqlDocument());
 		//textArea.getDocument().addUndoableEditListener(manager);
@@ -388,6 +413,150 @@ public class queryView extends JFrame implements ActionListener{
 		scrollPane_2.setViewportView(dataReadArea);
 		//scrollPane_1.setRowHeaderView(tln);
 		
+		Font font0 = new Font("Arial", Font.BOLD, height/60);
+		changeFont(this,font0);
+		
+		Font font1 = new Font("Consolas", Font.PLAIN, height/60);
+		dataOutputArea.setFont(font1);
+		dataReadArea.setFont(font1);
+		textArea.setFont(font1);
+		
+	}
+	
+	public void addNewTab(File file){
+		try{
+			String path = file.getAbsolutePath();
+			String name = file.getName();
+			FileInputStream fis = new FileInputStream(path);
+			BufferedReader br = new BufferedReader(new FileReader(path));
+			
+			JScrollPane scrollPane_1 = new JScrollPane();
+			tabbedPane.add(scrollPane_1);
+			
+			
+			JTable table = new JTable();
+			if (br.readLine() != null)
+			{
+				ObjectInputStream in = new ObjectInputStream(fis);
+				try{
+					DataBases dataBases = (DataBases)in.readObject();
+					table = createNewTable(dataBases);
+					System.out.println(dataBases);
+				} catch (Exception e1){
+					System.out.println("No es dataBases");
+					try{
+						Table dataBaseTable = (Table)in.readObject();
+						table = createNewTable(dataBaseTable);
+						System.out.println(dataBaseTable);
+					} catch (Exception e2){
+						System.out.println("No es table");
+					}
+				}
+				in.close();
+				
+				
+			}
+			
+			if (table != null) scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+				tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			
+			//System.out.println(dataBases);
+			fis.close();
+			
+			
+		} catch (Exception e){
+			System.out.println(e.toString());
+		}
+	}
+	
+	public void addNewTab(DataBases dataBases){
+		String name = "dbs.bin";
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane.add(scrollPane_1);
+		
+		JTable table = createNewTable(dataBases);		
+		if (table != null) scrollPane_1.setViewportView(table);
+		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+	}
+	
+	public void addNewTab(Table tableObj){
+		String name = tableObj.getName();
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane.add(scrollPane_1);
+		
+		JTable table = createNewTable(tableObj);		
+		if (table != null) scrollPane_1.setViewportView(table);
+		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+	}
+	
+	public JTable createNewTable(Table table){
+		//dataOutputArea.setText("Todavia no esta listo cerote, aguantala");
+		System.out.println("Todavia no esta listo cerote, aguantala");
+		return new JTable();
+	}
+	
+	public JTable createNewTable(DataBases dataBases){
+		String [] columnNames = {"Database","Table Number"};
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+		for (DataBase st: dataBases.getDataBases()){
+			Object[] objs = {st.getName(), st.getTables().size()};
+			tableModel.addRow(objs);
+		}
+		JTable nTable = new JTable(tableModel);
+		nTable.setEnabled(false);
+		
+		return nTable;
+	}
+	
+	public void addTreeSelection(JTree tree){
+		tree.addTreeSelectionListener(new TreeSelectionListener(){
+			public void valueChanged(TreeSelectionEvent event){
+				File file = (File) tree.getLastSelectedPathComponent();
+				addNewTab(file);
+			}
+		});
+	}
+	
+	
+	public JPanel getTitlePanel(final JTabbedPane tabbedPane, final Component panel, String title){
+		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		titlePanel.setOpaque(false);
+		JLabel titleLbl = new JLabel(title);
+		titleLbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		titlePanel.add(titleLbl);
+		JButton closeButton = new JButton("x");
+	 
+		Border emptyBorder = BorderFactory.createEmptyBorder();
+		closeButton.setBorder(emptyBorder);
+		//closeButton.setOpaque(true);
+
+		closeButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e){
+				tabbedPane.remove(panel);
+			}
+		});
+		titlePanel.add(closeButton);
+
+		return titlePanel;
+	}
+	
+	
+	public void changeFont ( Component component, Font font )
+	{
+		
+	    component.setFont ( font );
+	    //System.out.println(component.getName());
+	    if ( component instanceof Container )
+	    {
+	        for ( Component child : ( ( Container ) component ).getComponents () )
+	        {
+	            changeFont ( child, font );
+	        }
+	    }
 	}
 	
 	private void setCaretListener(JTextPane editor){
@@ -474,6 +643,7 @@ public class queryView extends JFrame implements ActionListener{
 			save();
 		}else if (e.getSource() == mntmSaveAs){
 			saveAs();
+			explorer.reload();
 		}else if (e.getSource() == mntmUndo ||
 				e.getSource() == btnUndo){
 			undo();
@@ -483,8 +653,11 @@ public class queryView extends JFrame implements ActionListener{
 		}else if (e.getSource() == mntmRun ||
 				e.getSource() == btnRun){
 			run();
+			explorer.reload();
 		}else if (e.getSource() == mntmComment){
 			comment();
+		}else if (e.getSource() == mntmPrueba){
+			addNewTab(new File("C:/"));
 		}
 		
 	}
@@ -656,13 +829,28 @@ public class queryView extends JFrame implements ActionListener{
 		        
 		        MyVisitor<String> semantic_checker = new MyVisitor();
 		        
-		        semantic_checker.visit(tree);
+		        Object obj = (Object)semantic_checker.visit(tree);
 		        semantic_checker.guardarDBs();
+		        try{
+		        	DataBases dbs = (DataBases) obj;
+		        	//System.out.println(dbs);
+		        	addNewTab(dbs);
+		        }catch (Exception e1){
+		        	//System.out.println("no es database");
+		        	try{
+		        		Table tb = (Table) obj;
+		        		
+		        		addNewTab(tb);
+		        		
+		        	}catch (Exception e2){
+		        		//System.out.println("no es table");
+		        	}
+		        }
 		        //System.out.println(semantic_checker.erroresToString());
 		        
 		        dataOutputArea.setText(semantic_checker.erroresToString());
 		        dataReadArea.setText(textStr);
-		        splitPane1.setLeftComponent(new SimpleTree());
+		        //splitPane1.setLeftComponent(new SimpleTree());
 		} catch (Exception e){
 			dataReadArea.setText("Unexpected error: " + e.getStackTrace().toString());
 		}
