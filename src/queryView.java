@@ -38,6 +38,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
@@ -431,7 +432,7 @@ public class queryView extends JFrame implements ActionListener{
 			
 			JScrollPane scrollPane_1 = new JScrollPane();
 			tabbedPane.add(scrollPane_1);
-			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			
 			
 			JTable table = new JTable();
 			if (br.readLine() != null)
@@ -442,12 +443,13 @@ public class queryView extends JFrame implements ActionListener{
 					table = createNewTable(dataBases);
 					System.out.println(dataBases);
 				} catch (Exception e1){
+					System.out.println("No es dataBases");
 					try{
 						Table dataBaseTable = (Table)in.readObject();
 						table = createNewTable(dataBaseTable);
 						System.out.println(dataBaseTable);
 					} catch (Exception e2){
-						
+						System.out.println("No es table");
 					}
 				}
 				in.close();
@@ -456,6 +458,8 @@ public class queryView extends JFrame implements ActionListener{
 			}
 			
 			if (table != null) scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+				tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
 			
 			//System.out.println(dataBases);
 			fis.close();
@@ -467,12 +471,21 @@ public class queryView extends JFrame implements ActionListener{
 	}
 	
 	public JTable createNewTable(Table table){
-		
+		System.out.println("Todavia no esta listo cerote, aguantala");
 		return new JTable();
 	}
 	
 	public JTable createNewTable(DataBases dataBases){
-		return new JTable();
+		String [] columnNames = {"Database","Table Number"};
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+		for (DataBase st: dataBases.getDataBases()){
+			Object[] objs = {st.getName(), st.getTables().size()};
+			tableModel.addRow(objs);
+		}
+		JTable nTable = new JTable(tableModel);
+		nTable.setEnabled(false);
+		
+		return nTable;
 	}
 	
 	public void addTreeSelection(JTree tree){
