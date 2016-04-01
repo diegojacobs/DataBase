@@ -310,9 +310,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	/* (non-Javadoc)
-	 * @see sqlBaseVisitor#visitRename_table_statement(sqlParser.Rename_table_statementContext)
-	 * FALTA VALIDAR/CAMBIAR:
-	 * Si hay una Key que hace referencia se debe cambiar tambien el nombre de la referencia
+	 * @see sqlBaseVisitor#visitRename_table_statement(sqlParser.Rename_table_statementContext)	 
 	 */
 	@Override
 	public Object visitRename_table_statement(sqlParser.Rename_table_statementContext ctx) {
@@ -335,7 +333,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					// Verificar que no exista una tabla ya creada con ID == NEW_ID
 					if (! this.actual.existTable(NEW_ID))
-					{
+					{						
+						//System.out.println("Before rename");
+						//System.out.println(this.actual);
+						// Renombrar referencias
+						if (this.actual.existRef(ID))
+						{
+							for (Table i: this.actual.getTables())
+								i.renameRefIdFK(ID, NEW_ID);
+						}
+						this.actual.renameRef(ID, NEW_ID);
 						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
 						Table new_table = this.actual.getTable(ID);
 						new_table.setName(NEW_ID);
@@ -344,6 +351,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						directory.renameTo(new File(this.dataPath + "\\" + this.actual.getName() + "\\" + NEW_ID + ".bin"));						
 						// Guardar cambio en la DB
 						guardarDBs();
+						//System.out.println("After rename");
+						//System.out.println(this.actual);
 					}
 					else
 					{
@@ -541,6 +550,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						if (errores == 0)
 						{			
 							Table new_table = new Table(name, atrs, pks, fks, checks);
+							// Agregar referencias de las Foreign Key
+							for (Constraint i: fks)
+								this.actual.addRef(i.getId_ref());
 							// Agregar tabla a la DB
 							this.actual.addTable(new_table);
 							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");

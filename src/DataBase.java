@@ -6,19 +6,19 @@ public class DataBase implements Serializable {
 	
 	private String name;
 	private ArrayList<Table> tables;
-	private ArrayList<String[]> constraints_refs;
+	private ArrayList<String> constraints_refs;
 	
 	public DataBase()
 	{
 		this.name = "";
 		this.tables = new ArrayList<Table>();
-		this.constraints_refs = new ArrayList<String[]>();
+		this.constraints_refs = new ArrayList<String>();
 	}
 
 	public DataBase(String name) {
 		this.name = name;
 		this.tables = new ArrayList<Table>();
-		this.constraints_refs = new ArrayList<String[]>();
+		this.constraints_refs = new ArrayList<String>();
 	}
 
 	/**
@@ -38,14 +38,14 @@ public class DataBase implements Serializable {
 	/**
 	 * @return the constraints_refs
 	 */
-	public ArrayList<String[]> getConstraints_refs() {
+	public ArrayList<String> getConstraints_refs() {
 		return constraints_refs;
 	}
 
 	/**
 	 * @param constraints_refs the constraints_refs to set
 	 */
-	public void setConstraints_refs(ArrayList<String[]> constraints_refs) {
+	public void setConstraints_refs(ArrayList<String> constraints_refs) {
 		this.constraints_refs = constraints_refs;
 	}
 
@@ -63,22 +63,30 @@ public class DataBase implements Serializable {
 		this.name = name;
 	}
 	
-	public void addRef(String table_from, String key_id, String table_to)
-	{
-		String[] new_ref = new String[3];
-		new_ref[0] = table_from;
-		new_ref[1] = key_id;
-		new_ref[2] = table_to;
-		this.constraints_refs.add(new_ref);
+	public void addRef(String table_to)
+	{		
+		if (! this.constraints_refs.contains(table_to))
+			this.constraints_refs.add(table_to);
 	}
 	
-	public boolean existRef(String table_from, String key_id, String table_to)
+	public boolean existRef(String table_to)
 	{
-		String[] new_ref = new String[3];
-		new_ref[0] = table_from;
-		new_ref[1] = key_id;
-		new_ref[2] = table_to;
-		return this.constraints_refs.contains(new_ref);
+		boolean res = false; 
+		
+		for (String i: this.constraints_refs)
+			if (i.equals(table_to))
+			{
+				res = true;
+				break;
+			}
+		return res;
+	}
+	
+	public void renameRef(String old_name, String new_name)
+	{
+		int index = this.constraints_refs.indexOf(old_name);
+		this.constraints_refs.remove(index);
+		this.constraints_refs.add(new_name);
 	}
 	
 	public void addTable(Table t)

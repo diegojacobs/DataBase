@@ -108,6 +108,13 @@ public class Table implements Serializable {
 	public void setForeignKey(ArrayList<Constraint> foreignKey) {
 		ForeignKey = foreignKey;
 	}
+	
+	public void renameRefIdFK(String oldName, String new_name)
+	{
+		for (Constraint i: this.ForeignKey)
+			if (i.getId_ref().equals(oldName))
+				i.setId_ref(new_name);
+	}
 
 	public boolean hasAtributo(String id)
 	{
