@@ -28,6 +28,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private ArrayList<String> errores = new ArrayList<String>();
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
+	private Table table_use = new Table();
 	
 	/**
 	 * @return the errores
@@ -816,15 +817,76 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String id = ctx.ID().getText();
 		
 		//debemos revisar si existe la tabla en la base de datos actual
-		Table tabla = this.actual.getTable(id);
-		if (tabla != null)
+		table_use = this.actual.getTable(id);
+		
+		if (table_use != null)
 		{
 			//comparamos numerod e columas y valores con y sin parentesis
 			if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
 			{
-				ArrayList<String> cols = (ArrayList<String>)this.visit(ctx.getChild(3));
-				
+				ArrayList<Atributo> cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));		
 				ArrayList<Value> vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+				
+				//si los array no son del mismo tamaño hubo algun error en el camino
+				//debemos revisar que el tipo del atributo sea igual al tipo del valor
+				int cont = 0;
+				if (cols.size()==vals.size())
+				{
+					for (Atributo atr : cols)
+					{
+						Value valor = vals.get(cont);
+						if (atr.getTipo().equals(valor.getTipo()))
+						{
+							if (atr.getTipo().equals("char"))
+							{
+								if (atr.getSize()>=valor.getSize())
+								{
+									//agrego el valor a la fila
+								}
+								else
+								{
+									//error tamaño del valor mayor
+									String rule_5 = "El tamaño del valor que se desea ingresar es mayor al tamaño reservado en la base de datos @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
+							}
+							else
+							{
+								//agrego el valor a la fila
+							}
+						}
+						else
+						{
+							//debo revisar si pueden ser casteados
+							if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
+							{
+								String num = valor.getValue();
+								int index = num.indexOf('.');
+								num = num.substring(0, index);
+								valor.setValue(num);
+								valor.setTipo("int");
+								
+								//agrego valor a la fila
+							}
+							else
+							{
+								if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
+								{
+									String num = valor.getValue();
+									num += ".0";
+									valor.setValue(num);
+									valor.setTipo("float");
+									
+									//agrego valor a la fila
+								}
+							}
+						}
+						cont++;
+					}
+					
+					//debo revisar si se llenaron todas las columnas de la fila
+					//si no lleno las que esten vacias con null
+				}
 			}
 			else
 			{	
@@ -842,7 +904,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		else
 		{
-			String rule_5 = "La tabla " + id + " @line: " + ctx.getStop().getLine();
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
 		
@@ -865,11 +927,26 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
 			{
 				Value valor = new Value();
-				if(ctx.getChild(i).getText().contains("'"))
-				{
-					
-				}
+				String text = ctx.getChild(i).getText();
+				String tipo = (String)this.visit(ctx.getChild(i));
 				
+				if (tipo.equals("char"))
+				{
+					valor = new Value(text,tipo, text.length()-2);
+				}
+				else
+				{
+					if (tipo.equals("Error"))
+					{
+						String rule_5 = "La fecha " + text + " no es valida @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+						valor = new Value(text,"date");
+					}
+					else
+					{
+						valor = new Value(text,tipo);
+					}
+				}
 				values.add(valor);
 			}
 		
@@ -887,12 +964,23 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitColumns(sqlParser.ColumnsContext ctx) {
 		
-		ArrayList<String> columnas = new ArrayList();
+		ArrayList<Atributo> columnas = new ArrayList();
 		
 		for (int i = 0; i < ctx.getChildCount(); i++)
 			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
 			{
-				columnas.add(ctx.getChild(i).getText());
+				
+				String columna = ctx.getChild(i).getText(); 
+				if (this.table_use.hasAtributo(columna))
+				{
+					Atributo id = this.table_use.getID(columna);
+					columnas.add(id);
+				}
+				else
+				{
+					String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
 			}
 		
 		// TODO Auto-generated method stub
