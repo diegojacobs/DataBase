@@ -6,16 +6,19 @@ public class DataBase implements Serializable {
 	
 	private String name;
 	private ArrayList<Table> tables;
+	private ArrayList<String> constraints_refs;
 	
 	public DataBase()
 	{
 		this.name = "";
 		this.tables = new ArrayList<Table>();
+		this.constraints_refs = new ArrayList<String>();
 	}
 
 	public DataBase(String name) {
 		this.name = name;
 		this.tables = new ArrayList<Table>();
+		this.constraints_refs = new ArrayList<String>();
 	}
 
 	/**
@@ -30,6 +33,20 @@ public class DataBase implements Serializable {
 	 */
 	public ArrayList<Table> getTables() {
 		return tables;
+	}
+
+	/**
+	 * @return the constraints_refs
+	 */
+	public ArrayList<String> getConstraints_refs() {
+		return constraints_refs;
+	}
+
+	/**
+	 * @param constraints_refs the constraints_refs to set
+	 */
+	public void setConstraints_refs(ArrayList<String> constraints_refs) {
+		this.constraints_refs = constraints_refs;
 	}
 
 	/**
