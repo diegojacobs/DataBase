@@ -470,7 +470,30 @@ public class queryView extends JFrame implements ActionListener{
 		}
 	}
 	
+	public void addNewTab(DataBases dataBases){
+		String name = "dbs.bin";
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane.add(scrollPane_1);
+		
+		JTable table = createNewTable(dataBases);		
+		if (table != null) scrollPane_1.setViewportView(table);
+		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+	}
+	
+	public void addNewTab(Table tableObj){
+		String name = tableObj.getName();
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane.add(scrollPane_1);
+		
+		JTable table = createNewTable(tableObj);		
+		if (table != null) scrollPane_1.setViewportView(table);
+		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+	}
+	
 	public JTable createNewTable(Table table){
+		//dataOutputArea.setText("Todavia no esta listo cerote, aguantala");
 		System.out.println("Todavia no esta listo cerote, aguantala");
 		return new JTable();
 	}
@@ -806,8 +829,23 @@ public class queryView extends JFrame implements ActionListener{
 		        
 		        MyVisitor<String> semantic_checker = new MyVisitor();
 		        
-		        semantic_checker.visit(tree);
+		        Object obj = (Object)semantic_checker.visit(tree);
 		        semantic_checker.guardarDBs();
+		        try{
+		        	DataBases dbs = (DataBases) obj;
+		        	//System.out.println(dbs);
+		        	addNewTab(dbs);
+		        }catch (Exception e1){
+		        	//System.out.println("no es database");
+		        	try{
+		        		Table tb = (Table) obj;
+		        		
+		        		addNewTab(tb);
+		        		
+		        	}catch (Exception e2){
+		        		//System.out.println("no es table");
+		        	}
+		        }
 		        //System.out.println(semantic_checker.erroresToString());
 		        
 		        dataOutputArea.setText(semantic_checker.erroresToString());
