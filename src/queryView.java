@@ -791,7 +791,7 @@ public class queryView extends JFrame implements ActionListener{
 		        dataReadArea.setText(textStr);
 		        //splitPane1.setLeftComponent(new SimpleTree());
 		} catch (Exception e){
-			dataReadArea.setText(e.getStackTrace().toString());
+			dataReadArea.setText("Unexpected error: " + e.getStackTrace().toString());
 		}
 		
 	}

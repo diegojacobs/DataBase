@@ -18,16 +18,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#tipo}.
-	 * @param ctx the parse tree
-	 */
-	void enterTipo(@NotNull sqlParser.TipoContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#tipo}.
-	 * @param ctx the parse tree
-	 */
-	void exitTipo(@NotNull sqlParser.TipoContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#table_definition}.
 	 * @param ctx the parse tree
 	 */
@@ -425,16 +415,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSelect_value(@NotNull sqlParser.Select_valueContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void enterValue(@NotNull sqlParser.ValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void exitValue(@NotNull sqlParser.ValueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#date_literal}.
 	 * @param ctx the parse tree

@@ -28,6 +28,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private ArrayList<String> errores = new ArrayList<String>();
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
+	private Table table_use = new Table();
 	
 	/**
 	 * @return the errores
@@ -310,9 +311,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	/* (non-Javadoc)
-	 * @see sqlBaseVisitor#visitRename_table_statement(sqlParser.Rename_table_statementContext)
-	 * FALTA VALIDAR/CAMBIAR:
-	 * Si hay una Key que hace referencia se debe cambiar tambien el nombre de la referencia
+	 * @see sqlBaseVisitor#visitRename_table_statement(sqlParser.Rename_table_statementContext)	 
 	 */
 	@Override
 	public Object visitRename_table_statement(sqlParser.Rename_table_statementContext ctx) {
@@ -335,7 +334,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					// Verificar que no exista una tabla ya creada con ID == NEW_ID
 					if (! this.actual.existTable(NEW_ID))
-					{
+					{						
+						//System.out.println("Before rename");
+						//System.out.println(this.actual);
+						// Renombrar referencias
+						if (this.actual.existRef(ID))
+						{
+							for (Table i: this.actual.getTables())
+								i.renameRefIdFK(ID, NEW_ID);
+						}
+						this.actual.renameRef(ID, NEW_ID);
 						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
 						Table new_table = this.actual.getTable(ID);
 						new_table.setName(NEW_ID);
@@ -344,6 +352,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						directory.renameTo(new File(this.dataPath + "\\" + this.actual.getName() + "\\" + NEW_ID + ".bin"));						
 						// Guardar cambio en la DB
 						guardarDBs();
+						//System.out.println("After rename");
+						//System.out.println(this.actual);
 					}
 					else
 					{
@@ -541,6 +551,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						if (errores == 0)
 						{			
 							Table new_table = new Table(name, atrs, pks, fks, checks);
+							// Agregar referencias de las Foreign Key
+							for (Constraint i: fks)
+								this.actual.addRef(i.getId_ref());
 							// Agregar tabla a la DB
 							this.actual.addTable(new_table);
 							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
@@ -804,26 +817,97 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String id = ctx.ID().getText();
 		
 		//debemos revisar si existe la tabla en la base de datos actual
+		table_use = this.actual.getTable(id);
 		
-		//comparamos numerod e columas y valores con y sin parentesis
-		if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
+		if (table_use != null)
 		{
-			
-		}
-		else
-		{	
-			if (columnas<values)
+			//comparamos numerod e columas y valores con y sin parentesis
+			if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
 			{
-				String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
-				this.errores.add(rule_5);
+				ArrayList<Atributo> cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));		
+				ArrayList<Value> vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+				
+				//si los array no son del mismo tamaño hubo algun error en el camino
+				//debemos revisar que el tipo del atributo sea igual al tipo del valor
+				int cont = 0;
+				if (cols.size()==vals.size())
+				{
+					for (Atributo atr : cols)
+					{
+						Value valor = vals.get(cont);
+						if (atr.getTipo().equals(valor.getTipo()))
+						{
+							if (atr.getTipo().equals("char"))
+							{
+								if (atr.getSize()>=valor.getSize())
+								{
+									//agrego el valor a la fila
+								}
+								else
+								{
+									//error tamaño del valor mayor
+									String rule_5 = "El tamaño del valor que se desea ingresar es mayor al tamaño reservado en la base de datos @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
+							}
+							else
+							{
+								//agrego el valor a la fila
+							}
+						}
+						else
+						{
+							//debo revisar si pueden ser casteados
+							if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
+							{
+								String num = valor.getValue();
+								int index = num.indexOf('.');
+								num = num.substring(0, index);
+								valor.setValue(num);
+								valor.setTipo("int");
+								
+								//agrego valor a la fila
+							}
+							else
+							{
+								if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
+								{
+									String num = valor.getValue();
+									num += ".0";
+									valor.setValue(num);
+									valor.setTipo("float");
+									
+									//agrego valor a la fila
+								}
+							}
+						}
+						cont++;
+					}
+					
+					//debo revisar si se llenaron todas las columnas de la fila
+					//si no lleno las que esten vacias con null
+				}
 			}
 			else
-			{
-				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-				this.errores.add(rule_5);
+			{	
+				if (columnas<values)
+				{
+					String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
+				else
+				{
+					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
 			}
-					
 		}
+		else
+		{
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		
 		
 		// TODO Auto-generated method stub
 		return new String();
@@ -832,12 +916,42 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	/*****************************
 	 * LIST
-	 * devolvemos un array con el tipo de cada valor ingresado
+	 * devolvemos un array con el tipo y valor de cada valor ingresado
 	 */
 	@Override
 	public Object visitList(sqlParser.ListContext ctx) {
+		
+		ArrayList<Value> values = new ArrayList();
+		
+		for (int i = 0; i < ctx.getChildCount(); i++)
+			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			{
+				Value valor = new Value();
+				String text = ctx.getChild(i).getText();
+				String tipo = (String)this.visit(ctx.getChild(i));
+				
+				if (tipo.equals("char"))
+				{
+					valor = new Value(text,tipo, text.length()-2);
+				}
+				else
+				{
+					if (tipo.equals("Error"))
+					{
+						String rule_5 = "La fecha " + text + " no es valida @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+						valor = new Value(text,"date");
+					}
+					else
+					{
+						valor = new Value(text,tipo);
+					}
+				}
+				values.add(valor);
+			}
+		
 		// TODO Auto-generated method stub
-		return super.visitList(ctx);
+		return values;
 	}
 
 	
@@ -849,8 +963,28 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	 */
 	@Override
 	public Object visitColumns(sqlParser.ColumnsContext ctx) {
+		
+		ArrayList<Atributo> columnas = new ArrayList();
+		
+		for (int i = 0; i < ctx.getChildCount(); i++)
+			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			{
+				
+				String columna = ctx.getChild(i).getText(); 
+				if (this.table_use.hasAtributo(columna))
+				{
+					Atributo id = this.table_use.getID(columna);
+					columnas.add(id);
+				}
+				else
+				{
+					String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
+			}
+		
 		// TODO Auto-generated method stub
-		return super.visitColumns(ctx);
+		return columnas;
 	}
 
 	
@@ -911,7 +1045,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitInt_literal(@NotNull sqlParser.Int_literalContext ctx) 
 	{ 
-		String num = ctx.NUM().getText();
+		String num = ctx.INT().getText();
 		
 		if (num.contains("."))
 		{
@@ -931,7 +1065,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitFloat_literal(@NotNull sqlParser.Float_literalContext ctx) 
 	{ 
-		String num = ctx.NUM().getText();
+		String num = ctx.INT(0).getText();
 		
 		if (!num.contains("."))
 		{
