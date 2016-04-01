@@ -91,7 +91,6 @@ ID : LETTER ( LETTER | DIGIT )* ;
 DATE: '\'' YEAR'-'MONTH'-'DAY  '\'';
 CHAR : '\'' ASCII(ASCII)* '\'' ;
 
-
 WHITESPACE : [\t\r\n\f ]+ -> skip ;
 
 COMMENT : ( '//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip ;
@@ -128,7 +127,14 @@ table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
-alter_table_statement: ALTER TABLE ID accion ';' ;
+alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal constraint ';' #alterAddColumn
+					 | ALTER TABLE idTable ADD constraint ';' #alterAddConstraint
+					 | ALTER TABLE idTable DROP COLUMN idColumn ';' #alterDropColumn
+					 | ALTER TABLE idTable DROP CONSTRAINT idConstraint ';' #alterDropConstraint;
+					 
+idTable: ID;
+idColumn: ID;
+idConstraint: ID;
 
 drop_table_statement: DROP TABLE ID ';' ;
 
@@ -166,12 +172,6 @@ exp: logic #exp_logic
 	 | relational #exp_relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
-
-accion:
-          ADD COLUMN ID tipo_literal (constraint)
-        | ADD constraint
-        | DROP COLUMN ID 
-        | DROP CONSTRAINT ID ;
 
 show_table_statement: SHOW TABLES ';' ;
 

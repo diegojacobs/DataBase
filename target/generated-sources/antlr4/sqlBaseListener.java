@@ -100,13 +100,13 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx) { }
+	@Override public void enterIdTable(@NotNull sqlParser.IdTableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAlter_table_statement(@NotNull sqlParser.Alter_table_statementContext ctx) { }
+	@Override public void exitIdTable(@NotNull sqlParser.IdTableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -220,6 +220,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAlterDropColumn(@NotNull sqlParser.AlterDropColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlterDropColumn(@NotNull sqlParser.AlterDropColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterList(@NotNull sqlParser.ListContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -304,13 +316,25 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAccion(@NotNull sqlParser.AccionContext ctx) { }
+	@Override public void enterAlterAddConstraint(@NotNull sqlParser.AlterAddConstraintContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAccion(@NotNull sqlParser.AccionContext ctx) { }
+	@Override public void exitAlterAddConstraint(@NotNull sqlParser.AlterAddConstraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdColumn(@NotNull sqlParser.IdColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdColumn(@NotNull sqlParser.IdColumnContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -335,6 +359,30 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitColumns(@NotNull sqlParser.ColumnsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAlterAddColumn(@NotNull sqlParser.AlterAddColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlterAddColumn(@NotNull sqlParser.AlterAddColumnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAlterDropConstraint(@NotNull sqlParser.AlterDropConstraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlterDropConstraint(@NotNull sqlParser.AlterDropConstraintContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -599,6 +647,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLogic_or(@NotNull sqlParser.Logic_orContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdConstraint(@NotNull sqlParser.IdConstraintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdConstraint(@NotNull sqlParser.IdConstraintContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -89,6 +89,13 @@ public class DataBase implements Serializable {
 		this.constraints_refs.add(new_name);
 	}
 	
+	public void deleteRef(String name)
+	{
+		int index = this.constraints_refs.indexOf(name);
+		if (index != -1)
+			this.constraints_refs.remove(index);
+	}
+	
 	public void addTable(Table t)
 	{
 		this.tables.add(t);
@@ -117,6 +124,23 @@ public class DataBase implements Serializable {
 				break;
 			}
 		return res;
+	}
+	
+	public void deleteTable(String name)
+	{
+		int index = -1;
+		int cont = 0;
+		for (Table i: this.tables)
+		{
+			if (i.getName().equals(name))
+			{
+				index = cont;
+				break;
+			}
+			cont++;
+		}
+		if (index != -1)
+			this.tables.remove(index);
 	}
 
 	/* (non-Javadoc)
