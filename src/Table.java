@@ -66,6 +66,16 @@ public class Table implements Serializable {
 	public ArrayList<Atributo> getAtributos() {
 		return atributos;
 	}
+	
+	/**
+	 * @return the name of the atributos
+	 */
+	public ArrayList<String> getAtributosNames() {
+		ArrayList<String> ret = new ArrayList<String>();
+		for (Atributo i: this.atributos)
+			ret.add(i.getId());
+		return ret;
+	}
 
 	/**
 	 * @return the checks
@@ -143,6 +153,217 @@ public class Table implements Serializable {
 		}
 		
 		return atr;
+	}
+	
+	public Constraint getConstraint(String id)
+	{
+		Constraint res = new Constraint();
+		int cont = 0;
+		
+		for (Constraint i: this.PrimaryKeys)
+			if (i.getId().equals(id))
+			{
+				res = i;
+				cont++;
+				break;
+			}
+		
+		if (cont == 0)
+		{
+			for (Constraint i: this.ForeignKey)
+				if (i.getId().equals(id))
+				{
+					res = i;
+					cont++;
+					break;
+				}
+			
+			if (cont == 0)
+			{
+				for (Constraint i: this.Checks)
+					if (i.getId().equals(id))
+					{
+						res = i;
+						cont++;
+						break;
+					}				
+			}
+		}	
+		
+		return res;
+	}
+	
+	/*
+	 * Return false si ya existe un atributo con el mismo nombre 
+	 */
+	public boolean canAddAtributo(Atributo a)
+	{		
+		int cont = 0;
+		
+		for(Atributo i: this.atributos)
+			if (i.getId().equals(a.getId()))
+			{
+				cont++;
+				break;
+			}
+		
+		return (cont == 0);
+	}
+	
+	public void addAtributo(Atributo a)
+	{
+		this.atributos.add(a);
+	}
+	
+	public void deleteAtributo(String id)
+	{
+		int index = -1;
+		int cont = 0;
+		
+		for (Atributo i: this.atributos)
+		{
+			if (i.getId().equals(id))
+			{
+				index = cont;
+				break;
+			}
+			cont++;
+		}
+		
+		if (index != -1)
+			this.atributos.remove(index);
+	}
+	
+	public void deleteConstraint(Constraint c)
+	{
+		switch (c.getTipo())
+		{
+			case "Primary Key":
+				this.PrimaryKeys.remove(0);
+				break;
+			case "Foreign Key":
+				int index = -1;
+				int cont = 0;
+				for (Constraint i: this.ForeignKey)
+				{
+					if (i.getId().equals(c.getId()))
+					{
+						index = cont;
+						break;
+					}
+					cont++;
+				}
+				if (index != -1)
+					this.ForeignKey.remove(index);
+						
+				break;
+			case "Check":
+				index = -1;
+				cont = 0;
+				for (Constraint i: this.Checks)
+				{
+					if (i.getId().equals(c.getId()))
+					{
+						index = cont;
+						break;
+					}
+					cont++;
+				}
+				if (index != -1)
+					this.ForeignKey.remove(index);
+						
+				break;
+		}
+	}
+	
+	/*
+	 * Return false si ya existe una constraint con el mismo nombre 
+	 */
+	public boolean canAddConstraint(Constraint c)
+	{
+		int cont = 0;
+		
+		for (Constraint i: this.PrimaryKeys)
+			if (i.getId().equals(c.getId()))
+			{
+				cont++;
+				break;
+			}
+		
+		if (cont == 0)
+		{
+			for (Constraint i: this.ForeignKey)
+				if (i.getId().equals(c.getId()))
+				{
+					cont++;
+					break;
+				}
+			
+			if (cont == 0)
+			{
+				for (Constraint i: this.Checks)
+					if (i.getId().equals(c.getId()))
+					{
+						cont++;
+						break;
+					}				
+			}
+		}	
+		
+		return (cont == 0);
+	}
+	
+	public void addConstraint(Constraint c)
+	{
+		switch (c.getTipo())
+		{
+			case "Primary Key":
+				this.PrimaryKeys.add(c);
+				break;
+			case "Foreign Key":
+				this.ForeignKey.add(c);
+				break;
+			case "Check":
+				this.Checks.add(c);
+				break;
+		}
+	}
+	
+	/*
+	 * Return true if exist the Constraint
+	 */
+	public boolean existeConstraint(String c)
+	{
+		int cont = 0;
+		
+		for (Constraint i: this.PrimaryKeys)
+			if (i.getId().equals(c))
+			{
+				cont++;
+				break;
+			}
+		
+		if (cont == 0)
+		{
+			for (Constraint i: this.ForeignKey)
+				if (i.getId().equals(c))
+				{
+					cont++;
+					break;
+				}
+			
+			if (cont == 0)
+			{
+				for (Constraint i: this.Checks)
+					if (i.getId().equals(c))
+					{
+						cont++;
+						break;
+					}				
+			}
+		}	
+		
+		return (cont > 0);
 	}
 	
 	public String toString()

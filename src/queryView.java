@@ -778,6 +778,15 @@ public class queryView extends JFrame implements ActionListener{
 				// Create DataBase
 		    	ANTLRInputStream input = new ANTLRInputStream(textStr);
 		    	
+		    	/*
+		    	    create database antros;
+		    	    use database antros;
+					create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));
+					create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );
+					create table baronRojoXela (id int, constraint fk foreign key(id) references baronRojoCayala (nombre) );
+					alter table baronRojo add column fecha date constraint fk foreign key (nombre) references baronRojoXela (id);
+		    	 */
+		    	
 		    	// Create Table
 		    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
 		    	
@@ -798,6 +807,7 @@ public class queryView extends JFrame implements ActionListener{
 		        MyVisitor<String> semantic_checker = new MyVisitor();
 		        
 		        semantic_checker.visit(tree);
+		        semantic_checker.guardarDBs();
 		        //System.out.println(semantic_checker.erroresToString());
 		        
 		        dataOutputArea.setText(semantic_checker.erroresToString());
