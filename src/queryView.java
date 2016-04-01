@@ -621,37 +621,41 @@ public class queryView extends JFrame implements ActionListener{
 	}
 	
 	public void run(){
-		textStr = textArea.getText();//
-		//System.out.println(textStr);
+		try{
+				textStr = textArea.getText();//
+				//System.out.println(textStr);
+				
+				// Create DataBase
+		    	ANTLRInputStream input = new ANTLRInputStream(textStr);
+		    	
+		    	// Create Table
+		    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
+		    	
+		    	// Create Table con Constraints
+		        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
+		   	
+		    	// Rename Table
+		    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
+		    	
+		        sqlLexer lexer = new sqlLexer(input);
+		        
+		        CommonTokenStream tokens = new CommonTokenStream(lexer);
 		
-		// Create DataBase
-    	ANTLRInputStream input = new ANTLRInputStream(textStr);
-    	
-    	// Create Table
-    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
-    	
-    	// Create Table con Constraints
-        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
-   	
-    	// Rename Table
-    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
-    	
-        sqlLexer lexer = new sqlLexer(input);
-        
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        sqlParser parser = new sqlParser(tokens);
-        ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
-        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
-        
-        MyVisitor<String> semantic_checker = new MyVisitor();
-        
-        semantic_checker.visit(tree);
-        //System.out.println(semantic_checker.erroresToString());
-        
-        dataOutputArea.setText(semantic_checker.erroresToString());
-        dataReadArea.setText(textStr);
-        splitPane1.setLeftComponent(new SimpleTree());
+		        sqlParser parser = new sqlParser(tokens);
+		        ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
+		        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+		        
+		        MyVisitor<String> semantic_checker = new MyVisitor();
+		        
+		        semantic_checker.visit(tree);
+		        //System.out.println(semantic_checker.erroresToString());
+		        
+		        dataOutputArea.setText(semantic_checker.erroresToString());
+		        dataReadArea.setText(textStr);
+		        splitPane1.setLeftComponent(new SimpleTree());
+		} catch (Exception e){
+			dataReadArea.setText(e.getStackTrace().toString());
+		}
 		
 	}
 	
