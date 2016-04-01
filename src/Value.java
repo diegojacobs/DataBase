@@ -6,7 +6,7 @@ Date: Mar 31, 2016
 public class Value {
 	private String value;
 	private String tipo;
-	private String size;
+	private int size;
 	
 	
 	
@@ -14,17 +14,17 @@ public class Value {
 		super();
 		value = "";
 		tipo = "";
-		this.size = "";
+		this.size = 0;
 	}
 
 	public Value(String value, String tipo) {
 		super();
 		this.value = value;
 		this.tipo = tipo;
-		this.size = "";
+		this.size = 0;
 	}
 
-	public Value(String value, String tipo, String size) {
+	public Value(String value, String tipo, int size) {
 		super();
 		this.value = value;
 		this.tipo = tipo;
@@ -47,11 +47,11 @@ public class Value {
 		this.tipo = tipo;
 	}
 	
-	public String getSize() {
+	public int getSize() {
 		return size;
 	}
 	
-	public void setSize(String size) {
+	public void setSize(int size) {
 		this.size = size;
 	}
 
