@@ -184,7 +184,7 @@ logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO ID columns VALUES list ';' ;
+insert_value: INSERT INTO ID (columns)? VALUES list ';' ;
 
 update_value: UPDATE ID SET (columna '=' literal)+ WHERE condition ';' ;
 
@@ -196,14 +196,12 @@ condition: (logic_not)? comp (logic (logic_not)? (comp))*;
 
 comp : ID relational (ID | literal);    
 
-columns:((columna)+ | ('(' (columna)+ ')')) ;
+columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
 
 columna: ID;
-           
-list: list_values 
-	 | '(' list_values ')' ;       
-           
-list_values : (literal (',' (literal))* ) ;
+                      
+list : (literal (',' literal)* )
+			|  '(' (literal (',' literal)* ) ')';
 
 literal:  
         int_literal

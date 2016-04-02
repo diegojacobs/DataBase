@@ -13,6 +13,7 @@ public class Table implements Serializable {
 	private ArrayList<Constraint> PrimaryKeys;
 	private ArrayList<Constraint> ForeignKey;
 	private ArrayList<Constraint> Checks;
+	private ArrayList<ArrayList<String>> data;
 	
 	public Table()
 	{
@@ -21,6 +22,7 @@ public class Table implements Serializable {
 		this.PrimaryKeys = new ArrayList<Constraint>();
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
+		this.data = new ArrayList<ArrayList<String>>();
 	}
 
 	public Table(String name) {		
@@ -29,6 +31,7 @@ public class Table implements Serializable {
 		this.PrimaryKeys = new ArrayList<Constraint>();
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
+		this.data = new ArrayList<ArrayList<String>>();
 	}	
 
 	public Table(String name, ArrayList<Atributo> atributos, ArrayList<Constraint> primaryKeys, ArrayList<Constraint> foreignKey, ArrayList<Constraint> checks) {
@@ -37,6 +40,7 @@ public class Table implements Serializable {
 		PrimaryKeys = primaryKeys;
 		ForeignKey = foreignKey;
 		this.Checks = checks;
+		this.data = new ArrayList<ArrayList<String>>();
 	}
 
 	/**
@@ -366,6 +370,18 @@ public class Table implements Serializable {
 		return (cont > 0);
 	}
 	
+	public void addData(ArrayList<String> data){
+		this.data.add(data);
+	}
+	
+	public ArrayList<ArrayList<String>> getData() {
+		return data;
+	}
+
+	public void setData(ArrayList<ArrayList<String>> data) {
+		this.data = data;
+	}
+
 	public String toString()
 	{
 		String ret = "Table " + this.name + "\n";

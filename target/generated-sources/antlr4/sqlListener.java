@@ -412,16 +412,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#list_values}.
-	 * @param ctx the parse tree
-	 */
-	void enterList_values(@NotNull sqlParser.List_valuesContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#list_values}.
-	 * @param ctx the parse tree
-	 */
-	void exitList_values(@NotNull sqlParser.List_valuesContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code exp_relational}
 	 * labeled alternative in {@link sqlParser#exp}.
 	 * @param ctx the parse tree

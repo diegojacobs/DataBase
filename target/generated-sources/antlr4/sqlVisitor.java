@@ -251,12 +251,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#list_values}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitList_values(@NotNull sqlParser.List_valuesContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code exp_relational}
 	 * labeled alternative in {@link sqlParser#exp}.
 	 * @param ctx the parse tree
