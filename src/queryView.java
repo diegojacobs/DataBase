@@ -41,8 +41,11 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Utilities;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
@@ -65,7 +68,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class queryView extends JFrame implements ActionListener{
 
@@ -430,72 +436,126 @@ public class queryView extends JFrame implements ActionListener{
 			FileInputStream fis = new FileInputStream(path);
 			BufferedReader br = new BufferedReader(new FileReader(path));
 			
-			JScrollPane scrollPane_1 = new JScrollPane();
+			//JScrollPane scrollPane_1 = new JScrollPane();
+			
+			JTable table = null;
+			JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			tabbedPane.add(scrollPane_1);
 			
-			
-			JTable table = new JTable();
 			if (br.readLine() != null)
 			{
 				ObjectInputStream in = new ObjectInputStream(fis);
-				try{
-					DataBases dataBases = (DataBases)in.readObject();
-					table = createNewTable(dataBases);
-					System.out.println(dataBases);
-				} catch (Exception e1){
-					System.out.println("No es dataBases");
-					try{
-						Table dataBaseTable = (Table)in.readObject();
-						table = createNewTable(dataBaseTable);
-						System.out.println(dataBaseTable);
-					} catch (Exception e2){
-						System.out.println("No es table");
+				Object obj = in.readObject();
+				if (obj instanceof Table){
+					Path currentRelativePath = Paths.get("");
+					String dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
+					FileInputStream fis1 = new FileInputStream(dataPath+"dbs.bin");
+					BufferedReader br1 = new BufferedReader(new FileReader(dataPath+"dbs.bin"));
+					DataBases dataBases = null;
+					if (br1.readLine() != null)
+					{
+						ObjectInputStream in1 = new ObjectInputStream(fis1);
+						dataBases = (DataBases)in1.readObject();
+						//fis.close();
+						in1.close();
 					}
+					fis1.close();
+					br1.close();
+					if (dataBases != null){
+						//name 
+						String dataBaseName = file.getParentFile().getName();
+						
+						DataBase dataBase = null;
+						
+						for (int i = 0; i < dataBases.getDataBases().size(); i++){
+							if (dataBases.getDataBases().get(i).getName().equals(dataBaseName)){
+								dataBase = dataBases.getDataBases().get(i);
+							}
+						}
+						
+						if (dataBase != null){
+							
+							Table dataBaseTable = dataBase.getTable(name.substring(0, name.length()-4));//quito .bin
+							//System.out.println(dataBaseTable);
+							if (dataBaseTable != null)
+								
+								table = createNewTable(dataBaseTable);
+						}
+						
+						//System.out.println(dataBaseTable);
+						
+					}
+					
+				}else if (obj instanceof DataBases){
+					DataBases dataBases = (DataBases)obj;
+					table = createNewTable(dataBases);
+					//System.out.println(dataBases);
 				}
+					
+				
 				in.close();
 				
 				
 			}
+			br.close();
+			fis.close();
 			
 			if (table != null) scrollPane_1.setViewportView(table);
 			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 				tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
 			
 			//System.out.println(dataBases);
-			fis.close();
+			
 			
 			
 		} catch (Exception e){
+			//e.printStackTrace();
 			System.out.println(e.toString());
 		}
 	}
 	
 	public void addNewTab(DataBases dataBases){
 		String name = "dbs.bin";
-		JScrollPane scrollPane_1 = new JScrollPane();
+		JTable table = null;
+		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.add(scrollPane_1);
 		
-		JTable table = createNewTable(dataBases);		
+		table = createNewTable(dataBases);		
 		if (table != null) scrollPane_1.setViewportView(table);
 		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
 	}
 	
 	public void addNewTab(Table tableObj){
 		String name = tableObj.getName();
-		JScrollPane scrollPane_1 = new JScrollPane();
+		JTable table = null;
+		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.add(scrollPane_1);
 		
-		JTable table = createNewTable(tableObj);		
+		table = createNewTable(tableObj);		
 		if (table != null) scrollPane_1.setViewportView(table);
 		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
 	}
 	
 	public JTable createNewTable(Table table){
-		//dataOutputArea.setText("Todavia no esta listo cerote, aguantala");
-		System.out.println("Todavia no esta listo cerote, aguantala");
-		return new JTable();
+		Object [] columnNames = table.getAtributosNames().toArray();
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+		for (ArrayList<String> tupla: table.getData()){
+			//System.out.println("tupla: "+tupla);
+			Object[] objs = (Object[]) tupla.toArray();
+			tableModel.addRow(objs);
+			
+		}
+		//System.out.println("Ya llego a crear la tabla");
+		JTable nTable = new JTable(tableModel);
+		nTable.setEnabled(false);
+		return nTable;
 	}
 	
 	public JTable createNewTable(DataBases dataBases){
@@ -670,7 +730,7 @@ public class queryView extends JFrame implements ActionListener{
         	mntmSave.setEnabled(true);
         	btnSave.setEnabled(true);
         	try{
-        		FileReader readFile = new FileReader(file.getAbsolutePath());
+        		/*FileReader readFile = new FileReader(file.getAbsolutePath());
         		BufferedReader br = new BufferedReader(readFile);
         		textArea.setText("");
         		String newTxt = "";
@@ -678,15 +738,27 @@ public class queryView extends JFrame implements ActionListener{
         		while ((currentLine = br.readLine()) != null){
         			//textArea.append(currentLine+"\n");
         			newTxt += currentLine+"\n";
+        		}*/
+        		Scanner scanner = new Scanner(file);
+        		String newTxt = "";
+        		while (scanner.hasNextLine()){
+        			newTxt += scanner.nextLine()+"\n";
         		}
-        		textArea.setText(newTxt);
-        		br.close();
+        		SqlDocument doc = new SqlDocument();
+        		textArea.setDocument(new DefaultStyledDocument());
+        		doc.insertString(0, newTxt, null);
+        		
+        		textArea.setDocument(doc);
+        		//System.out.println(newTxt);
+        		scanner.close();
+        		//br.close();
         	} catch (Exception e){
+        		//e.printStackTrace();
         		System.out.println("Error opening file");
         	}
         	
         
-        	System.out.println(file.getAbsolutePath());
+        	//System.out.println(file.getAbsolutePath());
         } else {
         	//JOptionPane.showMessageDialog(null,"\nNo se ha encontrado el archivo","ADVERTENCIA!!!",JOptionPane.WARNING_MESSAGE);
         }
@@ -848,7 +920,10 @@ public class queryView extends JFrame implements ActionListener{
 		        }
 		        //System.out.println(semantic_checker.erroresToString());
 		        
-		        dataOutputArea.setText(semantic_checker.erroresToString());
+		        if (!semantic_checker.erroresToString().isEmpty())
+		        	dataOutputArea.setText(semantic_checker.erroresToString());
+		        else
+		        	dataOutputArea.setText("Terminado");
 		        dataReadArea.setText(textStr);
 		        //splitPane1.setLeftComponent(new SimpleTree());
 		} catch (Exception e){

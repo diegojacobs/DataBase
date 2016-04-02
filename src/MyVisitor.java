@@ -1870,7 +1870,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
 		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
-		String dbsPath = dataPath+"/dbs.bin";//path... /data/
+		
 		if (actual.getName().isEmpty()){
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -1897,6 +1897,25 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public T visitShow_table_statement(sqlParser.Show_table_statementContext ctx){
 		//SHOW TABLES (comprobar use database)
+		if (actual.getName().isEmpty()){
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}else{
+			
+			ArrayList<Atributo> atr = new ArrayList();
+			atr.add(new Atributo("Tables"));
+			
+			ArrayList<ArrayList<String>> values = new ArrayList();
+			for (Table tb: actual.getTables()){
+				ArrayList<String> val = new ArrayList();
+				val.add(tb.getName());
+				values.add(val);
+			}
+			Table tb1 = new Table(actual.getName());
+			tb1.setAtributos(atr);
+			tb1.setData(values);
+			return (T) tb1;
+		}
 		return (T) new String();
 	}
 	
