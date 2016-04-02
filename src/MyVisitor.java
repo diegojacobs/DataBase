@@ -28,7 +28,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
 	private Table table_use = new Table();
-	
+	private int inserted_rows = 0;
 	/**
 	 * @return the errores
 	 */
@@ -1316,28 +1316,69 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitInsert_value(sqlParser.Insert_valueContext ctx) 
 	{
-		int columnas = ctx.getChild(3).getChildCount();
-		int values = ctx.getChild(5).getChildCount();
 		String id = ctx.ID().getText();
-		
 		//debemos revisar si existe la tabla en la base de datos actual
 		table_use = this.actual.getTable(id);
 		
+		ArrayList<String> fila = new ArrayList();
+		
+		//Si no fueron ingresadas columnas tomamos el total en la tabla
+		int columnas;
+		int values;
+		if (ctx.getChildCount()==7)
+		{
+			columnas = ctx.getChild(3).getChildCount();
+			values = ctx.getChild(5).getChildCount();
+			
+		}
+		else
+		{
+			columnas = table_use.getAtributos().size()-1;
+			values = ctx.getChild(4).getChildCount();
+			
+		}
+		
+		//Cantidad de errores antes de hacer el insert
+		int contErrores = this.errores.size();
+		
+		//llenamos la fila con NULL
+		int numCols = table_use.getAtributos().size();
+		for (int i=0;i<numCols;i++)
+		{
+			fila.add("NULL");
+		}
+		
 		if (table_use != null)
 		{
-			//comparamos numerod e columas y valores con y sin parentesis
-			if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
+			//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
+			if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
 			{
-				ArrayList<Atributo> cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));		
-				ArrayList<Value> vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+				
+				ArrayList<Atributo> cols;
+				ArrayList<Value> vals;
+				
+				//Si no fueron ingresadas columnas tomamos todas las de la tabla
+				if (ctx.getChildCount()==7)
+				{
+					cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
+					vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+					
+				}
+				else
+				{
+					cols = table_use.getAtributos();
+					vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+					
+				}
 				
 				//si los array no son del mismo tamaño hubo algun error en el camino
 				//debemos revisar que el tipo del atributo sea igual al tipo del valor
-				int cont = 0;
-				if (cols.size()==vals.size())
+				//int cont = 0;
+				//if (cols.size()==vals.size())
 				{
-					for (Atributo atr : cols)
+					for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
 					{
+						Atributo atr = cols.get(cont);
 						Value valor = vals.get(cont);
 						if (atr.getTipo().equals(valor.getTipo()))
 						{
@@ -1345,18 +1386,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							{
 								if (atr.getSize()>=valor.getSize())
 								{
-									//agrego el valor a la fila
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
 								}
 								else
 								{
 									//error tamaño del valor mayor
-									String rule_5 = "El tamaño del valor que se desea ingresar es mayor al tamaño reservado en la base de datos @line: " + ctx.getStop().getLine();
+									String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
 									this.errores.add(rule_5);
 								}
 							}
 							else
 							{
-								//agrego el valor a la fila
+								//agrego el valor a la fila en el index del atributo
+								int index = this.table_use.getAtributos().indexOf(atr);
+								fila.set(index, valor.getValue());
 							}
 						}
 						else
@@ -1370,7 +1415,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								valor.setValue(num);
 								valor.setTipo("int");
 								
-								//agrego valor a la fila
+								//agrego el valor a la fila en el index del atributo
+								int index2 = this.table_use.getAtributos().indexOf(atr);
+								fila.set(index2, valor.getValue());
 							}
 							else
 							{
@@ -1381,29 +1428,47 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									valor.setValue(num);
 									valor.setTipo("float");
 									
-									//agrego valor a la fila
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
 								}
+								else
+									if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
+									{
+										if (atr.getSize() >= valor.getValue().length())
+										{
+											//agrego el valor a la fila en el index del atributo
+											int index = this.table_use.getAtributos().indexOf(atr);
+											fila.set(index, valor.getValue());
+										}
+										else
+										{
+											//error tamaño del valor mayor
+											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
+									}
 							}
 						}
-						cont++;
+						//cont++;
 					}
 					
-					//debo revisar si se llenaron todas las columnas de la fila
-					//si no lleno las que esten vacias con null
+					//Agrego la fila solo si el numero de errores sigue siendo el mismo
+					if (contErrores == this.errores.size())
+					{
+						this.table_use.addData(fila);
+						this.inserted_rows++;
+						for (String a : fila)
+						{
+							System.out.println(a);
+						}
+					}
 				}
 			}
 			else
 			{	
-				if (columnas<values)
-				{
-					String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
-				else
-				{
-					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
+				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
 			}
 		}
 		else
@@ -1427,13 +1492,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		ArrayList<Value> values = new ArrayList();
 		
+		int cont = 0;
 		for (int i = 0; i < ctx.getChildCount(); i++)
-			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			if (!ctx.getChild(i).getText().equals("(") && !ctx.getChild(i).getText().equals(")") && !ctx.getChild(i).getText().equals(","))
 			{
 				Value valor = new Value();
-				String text = ctx.getChild(i).getText();
+				String text = ctx.literal(cont).getText();
 				String tipo = (String)this.visit(ctx.getChild(i));
-				
+				cont++;
 				if (tipo.equals("char"))
 				{
 					valor = new Value(text,tipo, text.length()-2);
@@ -1471,7 +1537,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<Atributo> columnas = new ArrayList();
 		
 		for (int i = 0; i < ctx.getChildCount(); i++)
-			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			if (!ctx.getChild(i).getText().equals("(") && !ctx.getChild(i).getText().equals(")") && !ctx.getChild(i).getText().equals(","))
 			{
 				
 				String columna = ctx.getChild(i).getText(); 
@@ -1492,6 +1558,38 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	
+	/**************************
+	 * DELETE 
+	 * debo revisar que si exista la tabla en la database actual
+	 * si no existe condicion borro toda la tabla
+	 * si existe reviso que filas cumplen con la condicion
+	 */
+	@Override
+	public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
+		String id = ctx.ID().getText();
+		
+		this.table_use = this.actual.getTable(id);
+		
+		if (this.table_use != null)
+		{
+			if (ctx.getChildCount() == 4)
+			{
+				this.table_use.setData(new ArrayList<ArrayList<String>>());
+			}
+			else
+			{
+				
+			}
+		}
+		else
+		{
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		// TODO Auto-generated method stub
+		return super.visitDelete_value(ctx);
+	}
+
 	/**************************
 	 * Condition
 	 * Revisamos cada comparacion

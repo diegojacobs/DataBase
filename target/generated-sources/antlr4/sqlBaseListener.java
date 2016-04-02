@@ -472,18 +472,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterList_values(@NotNull sqlParser.List_valuesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitList_values(@NotNull sqlParser.List_valuesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExp_relational(@NotNull sqlParser.Exp_relationalContext ctx) { }
 	/**
 	 * {@inheritDoc}
