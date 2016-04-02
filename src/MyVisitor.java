@@ -1388,7 +1388,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									//agrego el valor a la fila en el index del atributo
 									int index = this.table_use.getAtributos().indexOf(atr);
-									fila.add(index, valor.getValue());
+									fila.set(index, valor.getValue());
 								}
 								else
 								{
@@ -1452,6 +1452,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					{
 						this.table_use.addData(fila);
 						this.inserted_rows++;
+						for (String a : fila)
+						{
+							System.out.println(a);
+						}
 					}
 				}
 			}
