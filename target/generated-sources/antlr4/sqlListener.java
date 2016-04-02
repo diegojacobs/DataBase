@@ -164,16 +164,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link sqlParser#comp}.
-	 * @param ctx the parse tree
-	 */
-	void enterComp(@NotNull sqlParser.CompContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#comp}.
-	 * @param ctx the parse tree
-	 */
-	void exitComp(@NotNull sqlParser.CompContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#sql_executable_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -205,6 +195,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitList(@NotNull sqlParser.ListContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code compLit}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompLit(@NotNull sqlParser.CompLitContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code compLit}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompLit(@NotNull sqlParser.CompLitContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code constraintTypeCheck}
 	 * labeled alternative in {@link sqlParser#constraintType}.
@@ -251,6 +253,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExp_logic(@NotNull sqlParser.Exp_logicContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code compId}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompId(@NotNull sqlParser.CompIdContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code compId}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompId(@NotNull sqlParser.CompIdContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#rename_table_statement}.
 	 * @param ctx the parse tree
@@ -443,6 +457,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code compLitId}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompLitId(@NotNull sqlParser.CompLitIdContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code compLitId}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompLitId(@NotNull sqlParser.CompLitIdContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#select_value}.
 	 * @param ctx the parse tree

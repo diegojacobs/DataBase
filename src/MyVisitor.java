@@ -1608,7 +1608,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		for (int i=0;i<cant && contErrores == this.errores.size();i++)
 		{
-			if (ctx.getChild(i).getText().equals("AND") || ctx.getChild(i).getText().equals("AND"))
+			if (this.visit(ctx.getChild(i)).toString().equals("AND") || this.visit(ctx.getChild(i)).toString().equals("OR") || ctx.getChild(i).getText().equals("(") || ctx.getChild(i).getText().equals(")"))
 			{
 				Comp comp = (Comp)this.visit(ctx.getChild(i));
 				array.add(comp);
@@ -1620,12 +1620,12 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	
 	/***************************
-	 * Comp
+	 * CompId
 	 * Revisamos comp que puede tener
 	 * ID relational ID | literal
 	 */
 	@Override 
-	public T visitComp(@NotNull sqlParser.CompContext ctx) 
+	public T visitCompId(@NotNull sqlParser.CompIdContext ctx) 
 	{
 		Comp comp = new Comp();
 		
@@ -1633,217 +1633,98 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID = ctx.ID(0).getText();
 		Atributo atr = this.table_use.getID(ID);
 		
-		if (ctx.getChildCount() == 4)
+		
+		String op = ctx.getChild(1).getText();
+		String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
+		String value = ctx.getChild(2).getText();
+			
+			
+		if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
 		{
-			String op = (String)this.visit(ctx.getChild(2));
-			String tipo = (String)this.visit(ctx.getChild(3)); //si es literal, voy a recibir el tipo
-			String value = ctx.getChild(3).getText();
-			
-			switch (op)
+			if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
 			{
-				case "=":
-					op = "<>";
-					break;
-				case "<>":
-					op = "=";
-					break;
-				case "<":
-					op = ">=";
-					break;
-				case ">":
-					op = "<=";
-					break;
-				case "<=":
-					op = ">";
-					break;
-				case ">=":
-					op = "<";
-					break;
+				comp = new Comp(atr,op,value,tipo);
 			}
-			
-			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			else
 			{
-				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
+				if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
 				{
 					comp = new Comp(atr,op,value,tipo);
 				}
 				else
 				{
-					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+					if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
 					{
 						comp = new Comp(atr,op,value,tipo);
 					}
 					else
 					{
-						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
 						{
 							comp = new Comp(atr,op,value,tipo);
 						}
 						else
 						{
-							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
-							{
-								comp = new Comp(atr,op,value,tipo);
-							}
-							else
-							{
-								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
-							}
+							String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+							this.errores.add(rule_5);
 						}
-							
 					}
-				}
-				
-			}
-			else
-				if (tipo.equals("Error"))
-				{
-					// no acepto la fecha
-					String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
-				else
-				{
-					String columna = ctx.getChild(2).getText();
-					
-					if (this.table_use.hasAtributo(columna))
-					{
-						Atributo id = this.table_use.getID(columna);
 						
-						if (atr.getTipo().equals("int") && (id.getTipo().equals("int") || id.getTipo().equals("float")))
-						{
-							comp = new Comp(atr,op,id);
-						}
-						else
-						{
-							if (atr.getTipo().equals("float") && (id.getTipo().equals("int") || id.getTipo().equals("float")))
-							{
-								comp = new Comp(atr,op,id);
-							}
-							else
-							{
-								if (atr.getTipo().equals("char") && (id.getTipo().equals("char") || id.getTipo().equals("date")))
-								{
-									comp = new Comp(atr,op,id);
-								}
-								else
-								{
-									if (atr.getTipo().equals("date") && (id.getTipo().equals("char") || id.getTipo().equals("date")))
-									{
-										comp = new Comp(atr,op,id);
-									}
-									else
-									{
-										String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + id.getTipo() + " @line: " + ctx.getStop().getLine();
-										this.errores.add(rule_5);
-									}
-								}
-									
-							}
-						}
-					}
-					else
-					{
-						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
-						this.errores.add(rule_5);
-					}
 				}
+			}	
 		}
 		else
-		{
-			String op = ctx.getChild(1).getText();
-			String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
-			String value = ctx.getChild(2).getText();
-			
-			
-			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			if (tipo.equals("Error"))
 			{
-				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
+				// no acepto la fecha
+				String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+			}
+			else
+			{
+				String columna = ctx.getChild(2).getText(); 
+				if (this.table_use.hasAtributo(columna))
 				{
-					comp = new Comp(atr,op,value,tipo);
-				}
-				else
-				{
-					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+					Atributo id = this.table_use.getID(columna);
+					
+					if (atr.getTipo().equals("int") && (id.getTipo().equals("int") || id.getTipo().equals("float")))
 					{
-						comp = new Comp(atr,op,value,tipo);
+						comp = new Comp(atr,op,id);
 					}
 					else
 					{
-						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
-						{
-							comp = new Comp(atr,op,value,tipo);
-						}
-						else
-						{
-							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
-							{
-								comp = new Comp(atr,op,value,tipo);
-							}
-							else
-							{
-								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
-							}
-						}
-							
-					}
-				}	
-			}
-			else
-				if (tipo.equals("Error"))
-				{
-					// no acepto la fecha
-					String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
-				else
-				{
-					String columna = ctx.getChild(2).getText(); 
-					if (this.table_use.hasAtributo(columna))
-					{
-						Atributo id = this.table_use.getID(columna);
-						
-						if (atr.getTipo().equals("int") && (id.getTipo().equals("int") || id.getTipo().equals("float")))
+						if (atr.getTipo().equals("float") && (id.getTipo().equals("int") || id.getTipo().equals("float")))
 						{
 							comp = new Comp(atr,op,id);
 						}
 						else
 						{
-							if (atr.getTipo().equals("float") && (id.getTipo().equals("int") || id.getTipo().equals("float")))
+							if (atr.getTipo().equals("char") && (id.getTipo().equals("char") || id.getTipo().equals("date")))
 							{
 								comp = new Comp(atr,op,id);
 							}
 							else
 							{
-								if (atr.getTipo().equals("char") && (id.getTipo().equals("char") || id.getTipo().equals("date")))
+								if (atr.getTipo().equals("date") && (id.getTipo().equals("char") || id.getTipo().equals("date")))
 								{
 									comp = new Comp(atr,op,id);
 								}
 								else
 								{
-									if (atr.getTipo().equals("date") && (id.getTipo().equals("char") || id.getTipo().equals("date")))
-									{
-										comp = new Comp(atr,op,id);
-									}
-									else
-									{
-										String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + id.getTipo() + " @line: " + ctx.getStop().getLine();
-										this.errores.add(rule_5);
-									}
+									String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + id.getTipo() + " @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
 								}
-									
 							}
+								
 						}
 					}
-					else
-					{
-						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
-						this.errores.add(rule_5);
-					}
 				}
-		}
+				else
+				{
+					String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
+			}
 		
 		return (T)comp; 
 	}
