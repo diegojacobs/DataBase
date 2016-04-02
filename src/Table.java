@@ -217,6 +217,11 @@ public class Table implements Serializable {
 	public void addAtributo(Atributo a)
 	{
 		this.atributos.add(a);
+		for (ArrayList<String> tupla: data){
+			if (tupla.size()==atributos.size()-1){
+				tupla.add("null");
+			}
+		}
 	}
 	
 	public void deleteAtributo(String id)
@@ -235,6 +240,11 @@ public class Table implements Serializable {
 		}
 		
 		if (index != -1)
+			for (ArrayList<String> tupla: data){
+				if (tupla.size()>index){
+					tupla.remove(index);
+				}
+			}
 			this.atributos.remove(index);
 	}
 	
