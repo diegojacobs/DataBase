@@ -192,9 +192,9 @@ delete_value: DELETE FROM ID (WHERE condition)? ';' ;
 
 select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
               
-condition: (logic_not)? comp (logic (logic_not)? (comp))*;         
+condition:  comp (logic comp)*;         
 
-comp : ID relational (ID | literal);    
+comp : (logic_not)? ID relational (ID | literal);    
 
 columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
 
