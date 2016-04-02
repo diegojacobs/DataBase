@@ -104,12 +104,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link sqlParser#comp}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComp(@NotNull sqlParser.CompContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link sqlParser#sql_executable_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -128,6 +122,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitList(@NotNull sqlParser.ListContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code compLit}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompLit(@NotNull sqlParser.CompLitContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code constraintTypeCheck}
 	 * labeled alternative in {@link sqlParser#constraintType}.
@@ -155,6 +156,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExp_logic(@NotNull sqlParser.Exp_logicContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code compId}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompId(@NotNull sqlParser.CompIdContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#rename_table_statement}.
 	 * @param ctx the parse tree
@@ -269,6 +277,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code compLitId}
+	 * labeled alternative in {@link sqlParser#comp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompLitId(@NotNull sqlParser.CompLitIdContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#select_value}.
 	 * @param ctx the parse tree
