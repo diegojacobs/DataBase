@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.misc.NotNull;
@@ -29,7 +28,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
 	private Table table_use = new Table();
-	
+	private int inserted_rows = 0;
 	/**
 	 * @return the errores
 	 */
@@ -184,7 +183,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
         {
         	System.out.println("DataBase \"" + ID + "\" creada exitosamente");
         	this.dataBases.addDataBase(new_DB);
-    		guardarDBs();
+    		//guardarDBs();
         }
 		return (T)"";
 		//return visitChildren(ctx); 
@@ -193,12 +192,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	/* (non-Javadoc)
 	 * @see sqlBaseVisitor#visitDrop_schema_statement(sqlParser.Drop_schema_statementContext)
 	 * 
-	 * FALTAN IMPLEMENTAR LAS SIGUIENTES RESTRICCIONES
-	 * 
-	 *  1. Si existe una referencia HACIA la tabla que se desea borrar, no se debe permitir
-		la acción. De esta manera se garantiza la integridad referencial. El usuario del DBMS deberá primero hacer ALTER TABLE tabla
-		DROP CONSTRAINT constraint, para luego poder borrar la tabla que está siendo referenciada.
-	 *	2. Verificación para DROP DATABASE. Para esta instrucción se debe hacer una doble verificación con el usuario del DBMS
+	 * FALTAN IMPLEMENTAR LA SIGUIENTE RESTRICCION
+	 *	Verificación para DROP DATABASE. Para esta instrucción se debe hacer una doble verificación con el usuario del DBMS
 		mostrando el siguiente mensaje: “¿Borrar base de datos nombre_BD con N registros? (si/no)” Donde N es la sumatoria de los
 		registros de todas las tablas en la base de datos.
 	 * 
@@ -220,9 +215,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					exist = true;
 			if (exist)
 			{
-				this.dataBases.setDataBases(new_dataBases);
 				// Guardar nuevo set de DataBases
-				guardarDBs();
+				this.dataBases.setDataBases(new_dataBases);
+				//guardarDBs();
 				// Verificar si la DataBase actual es la eliminada para quitar la referencia
 				if (this.actual.getName().equals(ID))
 					this.actual = new DataBase();
@@ -291,7 +286,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			if (exist)
 			{
 				// Guardar el cambio
-				guardarDBs();
+				//guardarDBs();
 				// Verificar si hay que cambiar tambien el nombre de la DataBase actual
 				if (this.actual.getName().equals(ID))
 					this.actual.setName(NEW_ID);
@@ -351,7 +346,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						// Renombrar el directorio
 						directory.renameTo(new File(this.dataPath + "\\" + this.actual.getName() + "\\" + NEW_ID + ".bin"));						
 						// Guardar cambio en la DB
-						guardarDBs();
+						//guardarDBs();
 						//System.out.println("After rename");
 						//System.out.println(this.actual);
 					}
@@ -425,7 +420,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							        	errores++;
 									}
 									break;
-								case "Foreign Key":								
+								case "Foreign Key":
 									fks.add(co);								
 									break;
 								case "Check":
@@ -492,7 +487,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							for (String i: ids)
 								if (! attrs_names.contains(i))
 								{
-									String local_id_not_found = "El ID \"" + i + "\" de la Primary Key \"" + pk.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+									String local_id_not_found = "El atributo \"" + i + "\" de la Primary Key \"" + pk.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
 						        	this.errores.add(local_id_not_found);
 						        	errores++;
 								}		
@@ -504,7 +499,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							for (String j: i.getIDS_local())
 								if (! attrs_names.contains(j))										
 								{
-									String local_id_not_found = "El ID \"" + j + "\" de la Foreign Key \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+									String local_id_not_found = "El atributo \"" + j + "\" de la Foreign Key \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
 						        	this.errores.add(local_id_not_found);
 						        	errores++;
 								}
@@ -523,7 +518,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								for (String j: i.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
 									{
-										String ref_id_not_found = "El ID \"" + j + "\" no esta declarado en la tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" @line: " + ctx.getStop().getLine();
+										String ref_id_not_found = "El atributo \"" + j + "\" no esta declarado en la tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" @line: " + ctx.getStop().getLine();
 							        	this.errores.add(ref_id_not_found);
 							        	errores++;
 									}
@@ -536,13 +531,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							String id2 = i.getIDS_local().get(1);
 							if (! attrs_names.contains(id1) )
 							{
-								String local_id_not_found = "El ID \"" + id1 + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+								String local_id_not_found = "El atributo \"" + id1 + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(local_id_not_found);
 					        	errores++;
 							}
 							if (! attrs_names.contains(id2) )
 							{
-								String local_id_not_found = "El ID \"" + id2 + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
+								String local_id_not_found = "El atributo \"" + id2 + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(local_id_not_found);
 					        	errores++;
 							} 
@@ -562,7 +557,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							// Guardar tabla en directorio
 							saveTable(this.actual.getName(), name, new_table);
 							// Guardar cambio en la DB
-							guardarDBs();
+							//guardarDBs();
 						}
 					}
 				}
@@ -801,7 +796,516 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		//return super.visitTipo_lit_int(ctx);
 	}	
 	
-	
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitAlterAddColumn(sqlParser.AlterAddColumnContext)
+	 */
+	@Override
+	public Object visitAlterAddColumn(sqlParser.AlterAddColumnContext ctx) {
+		// TODO Auto-generated method stub
+		String ID_Table = (String) this.visit(ctx.idTable());
+		String ID_Column = (String) this.visit(ctx.idColumn());
+		// Verificar que haya un DB en uso
+		if (this.actual.getName().isEmpty())
+		{
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}
+		else
+		{
+			// Verificar que exista la tabla
+			if (this.actual.existTable(ID_Table))
+			{
+				Table toAlter = this.actual.getTable(ID_Table);
+				ArrayList<String> attrs_names = toAlter.getAtributosNames();
+				// Obtener tipo del atributo
+				Atributo atr = (Atributo) this.visit(ctx.tipo_literal());
+				// Establecer ID del atributo
+				atr.setId(ID_Column);
+				// Obtener constraint
+				Constraint con = (Constraint) this.visit(ctx.constraint());
+				
+				boolean insertAtr = toAlter.canAddAtributo(atr);
+				boolean insertConst = toAlter.canAddConstraint(con);
+				
+				// Verificar que se puedan agregar ambos valores
+				if ( insertAtr && insertConst)
+				{					
+					// Verificar errores de la constraint
+					int errores = 0;
+					
+					// Local IDS pertenecen a la tabla
+					ArrayList<String> ids = con.getIDS_local();								
+					for (String i: ids)
+						if (! attrs_names.contains(i))
+						{
+							String local_id_not_found = "El atributo \"" + i + "\" de la " + con.getTipo() +"\"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+				        	this.errores.add(local_id_not_found);
+				        	errores++;
+						}
+					
+					switch (con.getTipo())
+					{
+						case "Primary Key":
+							// Solo puede haber una PK
+							if (! toAlter.getPrimaryKeys().isEmpty())
+							{
+								String more_than_one_pk = "Una tabla no puede tener declarada mas de una Primary Key @line: " + ctx.getStop().getLine();
+					        	this.errores.add(more_than_one_pk);
+								errores++;								
+							}							
+							break;
+						case "Foreign Key":
+							// Ref IDS
+							// Buscar que exista una tabla con el nombre al que se hace referencia
+							if (! this.actual.existTable(con.getId_ref()))
+							{
+								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(table_not_found);
+					        	errores++;
+							}
+							else
+							{
+								Table table_ref = this.actual.getTable(con.getId_ref());
+								// Verificar que los RefIDS pertenezcan a la tabla
+								for (String j: con.getIDS_refs())
+									if (! table_ref.hasAtributo(j))
+									{
+										String ref_id_not_found = "El atributo \"" + j + "\" no esta declarado en la tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" @line: " + ctx.getStop().getLine();
+							        	this.errores.add(ref_id_not_found);
+							        	errores++;
+									}
+							}
+							break;
+						case "Check":
+							String id1 = con.getIDS_local().get(0);
+							String id2 = con.getIDS_local().get(1);
+							if (! attrs_names.contains(id1) )
+							{
+								String local_id_not_found = "El atributo \"" + id1 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(local_id_not_found);
+					        	errores++;
+							}
+							if (! attrs_names.contains(id2) )
+							{
+								String local_id_not_found = "El atributo \"" + id2 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(local_id_not_found);
+					        	errores++;
+							}
+							break;
+					}
+					
+					if (errores == 0)
+					{
+						// Agregar atributo
+						toAlter.addAtributo(atr);
+						// Agregar constraint
+						toAlter.addConstraint(con);					
+						// Agrega la referencia si es Foreign Key
+						if (con.getTipo().equals("Foreign Key"))
+							this.actual.addRef(con.getId_ref());
+						System.out.println("Columna \"" + ID_Column + "\" y Constraint \"" + con.getId() + "\" agregadas exitosamente a la tabla \"" + toAlter.getName() + "\"");
+					}
+				}
+				else
+				{
+					// Reportar errores
+					if (! insertAtr)
+					{
+						String column_repeated = "No se puede agregar la columna \"" + ID_Column + "\" porque existe otra con el mismo nombre @line: " + ctx.getStop().getLine();
+						this.errores.add(column_repeated);
+					}
+					if (! insertConst)
+					{
+						String constraint_repeated = "No se puede agregar la constraint \"" + con.getId() + "\" porque existe otra con el mismo nombre @line: " + ctx.getStop().getLine();
+						this.errores.add(constraint_repeated);
+					}
+				}				
+			}
+			else
+			{
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				this.errores.add(table_not_found);
+			}
+		}
+		return (T)"";
+		//return super.visitAlterAddColumn(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitAlterAddConstraint(sqlParser.AlterAddConstraintContext)
+	 */
+	@Override
+	public Object visitAlterAddConstraint(sqlParser.AlterAddConstraintContext ctx) {
+		// TODO Auto-generated method stub
+		String ID_Table = (String) this.visit(ctx.idTable());
+		// Verificar que haya un DB en uso
+		if (this.actual.getName().isEmpty())
+		{
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}
+		else
+		{
+			// Verificar que exista la tabla
+			if (this.actual.existTable(ID_Table))
+			{
+				Table toAlter = this.actual.getTable(ID_Table);
+				ArrayList<String> attrs_names = toAlter.getAtributosNames();				
+				// Obtener constraint
+				Constraint con = (Constraint) this.visit(ctx.constraint());
+				
+				boolean insertConst = toAlter.canAddConstraint(con);
+				
+				// Verificar que se puedan agregar la constraint
+				if (insertConst)
+				{					
+					// Verificar errores de la constraint
+					int errores = 0;
+					
+					// Local IDS pertenecen a la tabla
+					ArrayList<String> ids = con.getIDS_local();								
+					for (String i: ids)
+						if (! attrs_names.contains(i))
+						{
+							String local_id_not_found = "El atributo \"" + i + "\" de la " + con.getTipo() +"\"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+				        	this.errores.add(local_id_not_found);
+				        	errores++;
+						}
+					
+					switch (con.getTipo())
+					{
+						case "Primary Key":
+							// Solo puede haber una PK
+							if (! toAlter.getPrimaryKeys().isEmpty())
+							{
+								String more_than_one_pk = "Una tabla no puede tener declarada mas de una Primary Key @line: " + ctx.getStop().getLine();
+					        	this.errores.add(more_than_one_pk);
+								errores++;								
+							}							
+							break;
+						case "Foreign Key":
+							// Ref IDS
+							// Buscar que exista una tabla con el nombre al que se hace referencia
+							if (! this.actual.existTable(con.getId_ref()))
+							{
+								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(table_not_found);
+					        	errores++;
+							}
+							else
+							{
+								Table table_ref = this.actual.getTable(con.getId_ref());
+								// Verificar que los RefIDS pertenezcan a la tabla
+								for (String j: con.getIDS_refs())
+									if (! table_ref.hasAtributo(j))
+									{
+										String ref_id_not_found = "El atributo \"" + j + "\" no esta declarado en la tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" @line: " + ctx.getStop().getLine();
+							        	this.errores.add(ref_id_not_found);
+							        	errores++;
+									}
+							}
+							break;
+						case "Check":
+							String id1 = con.getIDS_local().get(0);
+							String id2 = con.getIDS_local().get(1);
+							if (! attrs_names.contains(id1) )
+							{
+								String local_id_not_found = "El atributo \"" + id1 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(local_id_not_found);
+					        	errores++;
+							}
+							if (! attrs_names.contains(id2) )
+							{
+								String local_id_not_found = "El atributo \"" + id2 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+					        	this.errores.add(local_id_not_found);
+					        	errores++;
+							}
+							break;
+					}
+					
+					if (errores == 0)
+					{
+						// Agregar constraint
+						toAlter.addConstraint(con);					
+						// Agrega la referencia si es Foreign Key
+						if (con.getTipo().equals("Foreign Key"))
+							this.actual.addRef(con.getId_ref());
+						System.out.println("Constraint \"" + con.getId() + "\" agregada exitosamente a la tabla \"" + toAlter.getName() + "\"");
+					}
+				}
+				else
+				{
+					// Reportar errores
+					if (! insertConst)
+					{
+						String constraint_repeated = "No se puede agregar la constraint \"" + con.getId() + "\" porque existe otra con el mismo nombre @line: " + ctx.getStop().getLine();
+						this.errores.add(constraint_repeated);
+					}
+				}				
+			}
+			else
+			{
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				this.errores.add(table_not_found);
+			}
+		}
+		return (T)"";
+
+		//return super.visitAlterAddConstraint(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitAlterDropColumn(sqlParser.AlterDropColumnContext)
+	 */
+	@Override
+	public Object visitAlterDropColumn(sqlParser.AlterDropColumnContext ctx) {
+		// TODO Auto-generated method stub
+		String ID_Table = (String) this.visit(ctx.idTable());
+		String ID_Column = (String) this.visit(ctx.idColumn());
+		// Verificar que haya un DB en uso
+		if (this.actual.getName().isEmpty())
+		{
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}
+		else
+		{
+			// Verificar que exista la tabla
+			if (this.actual.existTable(ID_Table))
+			{
+				Table toAlter = this.actual.getTable(ID_Table);
+				ArrayList<String> attrs_names = toAlter.getAtributosNames();
+				// Verificar que la columna que se quiere borrar pertenezca a la tabla
+				if (attrs_names.contains(ID_Column))
+				{
+					// Verificar errores de referencia
+					int errores = 0;
+					// Pk que lo contiene
+					ArrayList<Constraint> pks = toAlter.getPrimaryKeys();
+					if (! pks.isEmpty())
+					{
+						Constraint pk = pks.get(0);
+						ArrayList<String> locals = pk.getIDS_local();
+						if (locals.contains(ID_Column))
+						{
+							String delete_pk_first = "La Primary Key \"" + pk.getId() + "\" contiene el atributo \"" + ID_Column + "\" que se quiere eliminar, por lo tanto se debe realizar primero el DROP CONSTRAINT correspondiente @ line: " + ctx.getStop().getLine();
+							this.errores.add(delete_pk_first);
+							errores++;
+						}
+					}
+					// Checks lo contiene
+					ArrayList<Constraint> cks = toAlter.getChecks();
+					if (!cks.isEmpty())
+					{
+						for (Constraint i: cks)
+						{
+							ArrayList<String> locals = i.getIDS_local();
+							String id1 = locals.get(0);
+							String id2 = locals.get(1);
+							if ( (id1.equals(ID_Column)) || (id2.equals(ID_Column)) )
+							{
+								String delete_check_first = "El Check \"" + i.getId() + "\" contiene el atributo \"" + ID_Column + "\" que se quiere eliminar, por lo tanto se debe realizar primero el DROP CONSTRAINT correspondiente @ line: " + ctx.getStop().getLine();
+					        	this.errores.add(delete_check_first);
+					        	errores++;
+							}							
+						}
+					}
+					// En Ref_IDs de Fk de otras tablas en la misma DB
+					if (this.actual.existRef(ID_Table))
+					{
+						for (Table i: this.actual.getTables())
+							if (! i.getName().equals(ID_Table))
+								for(Constraint j: i.getForeignKey())
+								{
+									ArrayList<String> refs = j.getIDS_refs();
+									if (refs.contains(ID_Column))
+									{
+										String delete_fk_first = "La Foreign Key \"" + j.getId() + "\" de la Tabla \"" + i.getName() + "\" contiene el atributo \"" + ID_Column + "\" que se quiere eliminar, por lo tanto se debe realizar primero el DROP CONSTRAINT correspondiente @ line: " + ctx.getStop().getLine();
+										this.errores.add(delete_fk_first);
+										errores++;
+									}
+								}
+					}
+					// Si no hay errores se procede a borrar la columna
+					if (errores == 0)
+					{
+						toAlter.deleteAtributo(ID_Column);
+						System.out.println("El atributo \"" + ID_Column + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");					
+					}
+				}
+				else
+				{
+					String attr_not_found = "El atributo \"" + ID_Column + "\" no existe en la Tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+					this.errores.add(attr_not_found);
+				}
+			}
+			else
+			{
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				this.errores.add(table_not_found);
+			}
+		}
+		return (T)"";
+		//return super.visitAlterDropColumn(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitAlterDropConstraint(sqlParser.AlterDropConstraintContext)
+	 */
+	@Override
+	public Object visitAlterDropConstraint(sqlParser.AlterDropConstraintContext ctx) {
+		// TODO Auto-generated method stub
+		String ID_Table = (String) this.visit(ctx.idTable());
+		String ID_Constraint = (String) this.visit(ctx.idConstraint());
+		// Verificar que haya un DB en uso
+		if (this.actual.getName().isEmpty())
+		{
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}
+		else
+		{
+			// Verificar que exista la tabla
+			if (this.actual.existTable(ID_Table))
+			{
+				Table toAlter = this.actual.getTable(ID_Table);
+				// Verificar que exista la Constraint
+				if (toAlter.existeConstraint(ID_Constraint))
+				{
+					// Verificar si hay que borrarlo de constraints_refs
+					Constraint to_drop = toAlter.getConstraint(ID_Constraint);
+					if (to_drop.getTipo().equals("Foreign Key"))
+					{
+						int cont = 0;
+						for (Table i: this.actual.getTables())
+							if (! i.getName().equals(ID_Table))
+							{
+								for (Constraint j: i.getForeignKey())
+									if (j.getId_ref().equals(to_drop.getId_ref()))
+									{
+										cont++;
+										break;
+									}
+							}
+						if (cont == 0)
+							this.actual.deleteRef(to_drop.getId_ref());
+								
+					}
+					// Eliminar constraint
+					toAlter.deleteConstraint(to_drop);
+					System.out.println("La Constraint \"" + ID_Constraint + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");					
+				}
+				else
+				{
+					String const_not_found = "La Constraint \"" + ID_Constraint + "\" no existe en la Tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+					this.errores.add(const_not_found);
+				}
+			}
+			else
+			{
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				this.errores.add(table_not_found);
+			}
+		}
+		return (T)"";
+		//return super.visitAlterDropConstraint(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitIdTable(sqlParser.IdTableContext)
+	 */
+	@Override
+	public Object visitIdTable(sqlParser.IdTableContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)ctx.ID().getText();
+		//return super.visitIdTable(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitIdColumn(sqlParser.IdColumnContext)
+	 */
+	@Override
+	public Object visitIdColumn(sqlParser.IdColumnContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)ctx.ID().getText();
+		//return super.visitIdColumn(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitIdConstraint(sqlParser.IdConstraintContext)
+	 */
+	@Override
+	public Object visitIdConstraint(sqlParser.IdConstraintContext ctx) {
+		// TODO Auto-generated method stub
+		return (T)ctx.ID().getText();
+		//return super.visitIdConstraint(ctx);
+	}
+
+	/* (non-Javadoc)
+	 * @see sqlBaseVisitor#visitDrop_table_statement(sqlParser.Drop_table_statementContext)
+	 */
+	@Override
+	public Object visitDrop_table_statement(sqlParser.Drop_table_statementContext ctx) {
+		// TODO Auto-generated method stub
+		String ID_Table = ctx.ID().getText();
+		// Verificar que haya un DB en uso
+				if (this.actual.getName().isEmpty())
+				{
+					String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+		        	this.errores.add(no_database_in_use);
+				}
+				else
+				{
+					// Verificar que exista la tabla
+					if (this.actual.existTable(ID_Table))
+					{
+						Table toAlter = this.actual.getTable(ID_Table);
+						// Verificar si tiene referencias en fks
+						if (this.actual.existRef(ID_Table))
+						{
+							for (Table i: this.actual.getTables())
+								if (! i.getName().equals(ID_Table))
+								{
+									for (Constraint j: i.getForeignKey())
+										if (j.getId_ref().equals(ID_Table))
+										{
+											String delete_fk_first = "La Foreign Key \"" + j.getId() + "\" de la Tabla \"" + i.getName() + "\" hace referenca a la Tabla \"" + ID_Table + "\" que se quiere eliminar, por lo tanto se debe realizar primero el DROP CONSTRAINT correspondiente @ line: " + ctx.getStop().getLine();
+											this.errores.add(delete_fk_first);
+										}
+								}
+						}
+						else
+						{							
+							// Eliminar tabla de la data persistente
+							try
+							{					    		
+					    		File file = new File(this.dataPath+this.actual.getName()+"\\"+ID_Table+".bin");					    		
+					    		
+					    		if(file.delete())
+					    		{
+					    			// Eliminar tabla del objeto					
+									this.actual.deleteTable(ID_Table);
+					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.actual.getName() + "\"");
+					    		}
+					    		else
+					    			System.out.println("Error al eliminar la Tabla \"" + ID_Table + "\" de la data persistente" );					    	   
+					    	}
+							catch(Exception e)
+							{					    		
+					    		e.printStackTrace();					    		
+					    	}							
+						}
+					}
+					else
+					{
+						String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+						this.errores.add(table_not_found);
+					}
+				}
+		return (T)"";
+		//return super.visitDrop_table_statement(ctx);
+	}
+
 	/**************************
 	 * INSERT
 	 * validamos el numero de columnas y valores
@@ -812,28 +1316,69 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitInsert_value(sqlParser.Insert_valueContext ctx) 
 	{
-		int columnas = ctx.getChild(3).getChildCount();
-		int values = ctx.getChild(5).getChildCount();
 		String id = ctx.ID().getText();
-		
 		//debemos revisar si existe la tabla en la base de datos actual
 		table_use = this.actual.getTable(id);
 		
+		ArrayList<String> fila = new ArrayList();
+		
+		//Si no fueron ingresadas columnas tomamos el total en la tabla
+		int columnas;
+		int values;
+		if (ctx.getChildCount()==7)
+		{
+			columnas = ctx.getChild(3).getChildCount();
+			values = ctx.getChild(5).getChildCount();
+			
+		}
+		else
+		{
+			columnas = table_use.getAtributos().size()-1;
+			values = ctx.getChild(4).getChildCount();
+			
+		}
+		
+		//Cantidad de errores antes de hacer el insert
+		int contErrores = this.errores.size();
+		
+		//llenamos la fila con NULL
+		int numCols = table_use.getAtributos().size();
+		for (int i=0;i<numCols;i++)
+		{
+			fila.add("NULL");
+		}
+		
 		if (table_use != null)
 		{
-			//comparamos numerod e columas y valores con y sin parentesis
-			if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
+			//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
+			if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
 			{
-				ArrayList<Atributo> cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));		
-				ArrayList<Value> vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+				
+				ArrayList<Atributo> cols;
+				ArrayList<Value> vals;
+				
+				//Si no fueron ingresadas columnas tomamos todas las de la tabla
+				if (ctx.getChildCount()==7)
+				{
+					cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
+					vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+					
+				}
+				else
+				{
+					cols = table_use.getAtributos();
+					vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+					
+				}
 				
 				//si los array no son del mismo tamaño hubo algun error en el camino
 				//debemos revisar que el tipo del atributo sea igual al tipo del valor
-				int cont = 0;
-				if (cols.size()==vals.size())
+				//int cont = 0;
+				//if (cols.size()==vals.size())
 				{
-					for (Atributo atr : cols)
+					for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
 					{
+						Atributo atr = cols.get(cont);
 						Value valor = vals.get(cont);
 						if (atr.getTipo().equals(valor.getTipo()))
 						{
@@ -841,7 +1386,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							{
 								if (atr.getSize()>=valor.getSize())
 								{
-									//agrego el valor a la fila
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
 								}
 								else
 								{
@@ -852,7 +1399,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							}
 							else
 							{
-								//agrego el valor a la fila
+								//agrego el valor a la fila en el index del atributo
+								int index = this.table_use.getAtributos().indexOf(atr);
+								fila.set(index, valor.getValue());
 							}
 						}
 						else
@@ -866,7 +1415,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								valor.setValue(num);
 								valor.setTipo("int");
 								
-								//agrego valor a la fila
+								//agrego el valor a la fila en el index del atributo
+								int index2 = this.table_use.getAtributos().indexOf(atr);
+								fila.set(index2, valor.getValue());
 							}
 							else
 							{
@@ -877,29 +1428,41 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									valor.setValue(num);
 									valor.setTipo("float");
 									
-									//agrego valor a la fila
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
 								}
+								else
+									if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
+									{
+										if (atr.getSize() >= valor.getValue().length())
+										{
+											//agrego el valor a la fila en el index del atributo
+											int index = this.table_use.getAtributos().indexOf(atr);
+											fila.set(index, valor.getValue());
+										}
+									}
 							}
 						}
-						cont++;
+						//cont++;
 					}
 					
-					//debo revisar si se llenaron todas las columnas de la fila
-					//si no lleno las que esten vacias con null
+					//Agrego la fila solo si el numero de errores sigue siendo el mismo
+					if (contErrores == this.errores.size())
+					{
+						this.table_use.addData(fila);
+						this.inserted_rows++;
+						for (String a : fila)
+						{
+							System.out.println(a);
+						}
+					}
 				}
 			}
 			else
 			{	
-				if (columnas<values)
-				{
-					String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
-				else
-				{
-					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
+				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
 			}
 		}
 		else
@@ -923,13 +1486,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		ArrayList<Value> values = new ArrayList();
 		
+		int cont = 0;
 		for (int i = 0; i < ctx.getChildCount(); i++)
-			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			if (!ctx.getChild(i).getText().equals("(") && !ctx.getChild(i).getText().equals(")") && !ctx.getChild(i).getText().equals(","))
 			{
 				Value valor = new Value();
-				String text = ctx.getChild(i).getText();
+				String text = ctx.literal(cont).getText();
 				String tipo = (String)this.visit(ctx.getChild(i));
-				
+				cont++;
 				if (tipo.equals("char"))
 				{
 					valor = new Value(text,tipo, text.length()-2);
@@ -967,7 +1531,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<Atributo> columnas = new ArrayList();
 		
 		for (int i = 0; i < ctx.getChildCount(); i++)
-			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			if (!ctx.getChild(i).getText().equals("(") && !ctx.getChild(i).getText().equals(")") && !ctx.getChild(i).getText().equals(","))
 			{
 				
 				String columna = ctx.getChild(i).getText(); 
@@ -1183,6 +1747,38 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			dia = 30;
 		
 		return dia;
+	}
+	
+	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
+		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
+		String dbsPath = dataPath+"/dbs.bin";//path... /data/
+		if (actual.getName().isEmpty()){
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}else{
+			String ID = ctx.getChild(3).getText();
+			Table tb = actual.getTable(ID);
+			if (tb == null){
+				String no_database_in_use = "No hay una Tabla " +ID+" en la Base de Datos " +actual.getName()+" @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+	        	//System.out.println("error de tabla");
+			}else{
+				return (T) tb;
+			}
+		}
+		
+		return (T)new String();
+	}
+	
+	public T visitShow_schema_statement(sqlParser.Show_schema_statementContext ctx){
+		//SHOW DATABASES
+		//System.out.println("llego aqui");
+		return (T) dataBases;
+	}
+	
+	public T visitShow_table_statement(sqlParser.Show_table_statementContext ctx){
+		//SHOW TABLES (comprobar use database)
+		return (T) new String();
 	}
 	
 }

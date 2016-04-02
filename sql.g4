@@ -78,7 +78,7 @@ DESC: D E S C;
 
 fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' ' ..'~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
+fragment ASCII : (' '..'&')('('..'~')| DIGIT  | '\\' | '\"' | '\t' | '\n' ;
 fragment TWO_DIGITS : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS : DIGIT THREE_DIGITS ;
@@ -90,7 +90,6 @@ INT: DIGIT ( DIGIT )*;
 ID : LETTER ( LETTER | DIGIT )* ;
 DATE: '\'' YEAR'-'MONTH'-'DAY  '\'';
 CHAR : '\'' ASCII(ASCII)* '\'' ;
-
 
 WHITESPACE : [\t\r\n\f ]+ -> skip ;
 
@@ -128,7 +127,14 @@ table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
-alter_table_statement: ALTER TABLE ID accion ';' ;
+alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal constraint ';' #alterAddColumn
+					 | ALTER TABLE idTable ADD constraint ';' #alterAddConstraint
+					 | ALTER TABLE idTable DROP COLUMN idColumn ';' #alterDropColumn
+					 | ALTER TABLE idTable DROP CONSTRAINT idConstraint ';' #alterDropConstraint;
+					 
+idTable: ID;
+idColumn: ID;
+idConstraint: ID;
 
 drop_table_statement: DROP TABLE ID ';' ;
 
@@ -167,12 +173,6 @@ exp: logic #exp_logic
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
-accion:
-          ADD COLUMN ID tipo_literal (constraint)
-        | ADD constraint
-        | DROP COLUMN ID 
-        | DROP CONSTRAINT ID ;
-
 show_table_statement: SHOW TABLES ';' ;
 
 show_column_statement: SHOW COLUMNS FROM ID ';' ;         
@@ -184,7 +184,7 @@ logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO ID columns VALUES list ';' ;
+insert_value: INSERT INTO ID (columns)? VALUES list ';' ;
 
 update_value: UPDATE ID SET (columna '=' literal)+ WHERE condition ';' ;
 
@@ -196,14 +196,12 @@ condition: (logic_not)? comp (logic (logic_not)? (comp))*;
 
 comp : ID relational (ID | literal);    
 
-columns:((columna)+ | ('(' (columna)+ ')')) ;
+columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
 
 columna: ID;
-           
-list: list_values 
-	 | '(' list_values ')' ;       
-           
-list_values : (literal (',' (literal))* ) ;
+                      
+list : (literal (',' literal)* )
+			|  '(' (literal (',' literal)* ) ')';
 
 literal:  
         int_literal
