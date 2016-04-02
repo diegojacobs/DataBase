@@ -29,6 +29,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private DataBase actual = new DataBase();
 	private Table table_use = new Table();
 	private int inserted_rows = 0;
+	private int deleted_rows = 0;
 	/**
 	 * @return the errores
 	 */
@@ -1574,6 +1575,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{
 			if (ctx.getChildCount() == 4)
 			{
+				this.deleted_rows += this.table_use.getData().size();
 				this.table_use.setData(new ArrayList<ArrayList<String>>());
 			}
 			else
@@ -1593,8 +1595,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	/**************************
 	 * Condition
 	 * Revisamos cada comparacion
-	 * Si al final la expresion es true devolvemos true
-	 * si no false
+	 * Devolvemos un arrayList de arrraylis de string
+	 * que contiene todas las filas que debemos eliminar
 	 */
 	@Override 
 	public T visitCondition(@NotNull sqlParser.ConditionContext ctx) 
@@ -1625,18 +1627,97 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitComp(@NotNull sqlParser.CompContext ctx) 
 	{
-		String ID1 = ctx.getChild(0).getText();
-		String comp = ctx.getChild(2).getText(); //si es literal, voy a recibir el tipo
+		String comp[] = new String[3];
+		if (ctx.getChildCount() == 4)
+		{
+			String ID1 = ctx.getChild(1).getText();
+			String op = (String)this.visit(ctx.getChild(2));
+			String tipo = (String)this.visit(ctx.getChild(3)); //si es literal, voy a recibir el tipo
+			String value = ctx.getChild(3).getText();
+			
+			switch (op)
+			{
+				case "=":
+					op = "<>";
+					break;
+				case "<>":
+					op = "=";
+					break;
+				case "<":
+					op = ">=";
+					break;
+				case ">":
+					op = "<=";
+					break;
+				case "<=":
+					op = ">";
+					break;
+				case ">=":
+					op = "<";
+					break;
+			}
+			
+			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			{
+				comp[0] = ID1;
+				comp[1] = op;
+				comp[2] = value;	
+			}
+			else
+				if (tipo.equals("Error"))
+				{
+					// no acepto la fecha
+				}
+				else
+				{
+					String columna = ctx.getChild(2).getText(); 
+					if (this.table_use.hasAtributo(columna))
+					{
+						Atributo id = this.table_use.getID(columna);
+						comp[2] = id.getId();
+					}
+					else
+					{
+						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+					}
+				}
+		}
+		else
+		{
+			String ID1 = ctx.getChild(0).getText();
+			String op = (String)this.visit(ctx.getChild(1));
+			String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
+			String value = ctx.getChild(2).getText();
+			
+			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			{
+				comp[0] = ID1;
+				comp[1] = op;
+				comp[2] = value;	
+			}
+			else
+				if (tipo.equals("Error"))
+				{
+					// no acepto la fecha
+				}
+				else
+				{
+					String columna = ctx.getChild(2).getText(); 
+					if (this.table_use.hasAtributo(columna))
+					{
+						Atributo id = this.table_use.getID(columna);
+						comp[2] = id.getId();
+					}
+					else
+					{
+						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+					}
+				}
+		}
 		
-		
-		/* Debemos de alguna forma revisar que el ID1 pertenece 
-		 * a la tabla que estamos trabajando
-		 * si el hijo 2 es ID debemos verificar qeut ambien pertenezca
-		 * a la tabla
-		 * si no solo comparar tipos y luego hacer la comparación
-		*/
-		
-		return (T)"true"; 
+		return (T)comp; 
 	}
 	
 	/****************************
