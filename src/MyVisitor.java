@@ -1393,7 +1393,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								else
 								{
 									//error tamaño del valor mayor
-									String rule_5 = "El tamaño del valor que se desea ingresar es mayor al tamaño reservado en la base de datos @line: " + ctx.getStop().getLine();
+									String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
 									this.errores.add(rule_5);
 								}
 							}
@@ -1440,6 +1440,12 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											//agrego el valor a la fila en el index del atributo
 											int index = this.table_use.getAtributos().indexOf(atr);
 											fila.set(index, valor.getValue());
+										}
+										else
+										{
+											//error tamaño del valor mayor
+											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
 										}
 									}
 							}
@@ -1552,6 +1558,38 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}
 
 	
+	/**************************
+	 * DELETE 
+	 * debo revisar que si exista la tabla en la database actual
+	 * si no existe condicion borro toda la tabla
+	 * si existe reviso que filas cumplen con la condicion
+	 */
+	@Override
+	public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
+		String id = ctx.ID().getText();
+		
+		this.table_use = this.actual.getTable(id);
+		
+		if (this.table_use != null)
+		{
+			if (ctx.getChildCount() == 4)
+			{
+				this.table_use.setData(new ArrayList<ArrayList<String>>());
+			}
+			else
+			{
+				
+			}
+		}
+		else
+		{
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		// TODO Auto-generated method stub
+		return super.visitDelete_value(ctx);
+	}
+
 	/**************************
 	 * Condition
 	 * Revisamos cada comparacion
