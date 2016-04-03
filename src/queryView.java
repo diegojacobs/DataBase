@@ -83,7 +83,7 @@ public class queryView extends JFrame implements ActionListener{
 	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete;
 	//JTextArea textArea;
 	JTextPane textArea, dataOutputArea, dataReadArea;
-	JTextField status;
+	JTextField status, dataBaseUse;
 	JSplitPane splitPane1;
 	JTabbedPane tabbedPane;
 	
@@ -92,6 +92,8 @@ public class queryView extends JFrame implements ActionListener{
 	JFileChooser fc;
 	File file;
 	SimpleTree explorer;
+	
+	MyVisitor<Object> semantic_checker = new MyVisitor();
 	
 	String commentSeq = "//", textStr = "";
 	int caretLine = 1, caretColumn = 1;
@@ -351,6 +353,12 @@ public class queryView extends JFrame implements ActionListener{
 		btnDelete.addActionListener(this);
 		btnDelete.setToolTipText("Delete All");
 		toolBar.add(btnDelete);
+		
+		dataBaseUse = new JTextField();
+		dataBaseUse.setEditable(false);
+		dataBaseUse.setText("Database: ");
+		toolBar.add(dataBaseUse);
+		
 		
 		splitPane1 = new JSplitPane();
 		splitPane1.setResizeWeight(0.2);
@@ -926,11 +934,15 @@ public class queryView extends JFrame implements ActionListener{
 	        }
 	        
 	        
-	        
-	        MyVisitor<String> semantic_checker = new MyVisitor();
-	        
 	        Object obj = (Object)semantic_checker.visit(tree);
 	        semantic_checker.guardarDBs();
+	        
+	        if (semantic_checker.getActual().getName().isEmpty()){
+	        	dataBaseUse.setText("Database: ");
+	        }else{
+	        	dataBaseUse.setText("Database: "+semantic_checker.getActual().getName());
+	        }
+
 	        long estimatedTime = System.nanoTime()-startTime;
 	        if (obj instanceof DataBases){
 	        	DataBases dbs = (DataBases) obj;

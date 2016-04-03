@@ -154,12 +154,12 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			if (i.getName().equals(ID))
 			{
 				find = true;
-				this.actual = i;
+				this.setActual(i);
 				break;
 			}
 		if (find == false)
 		{
-			this.actual = new DataBase();
+			this.setActual(new DataBase());
 			String rule_5 = "No se puede usar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
@@ -224,8 +224,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.dataBases.setDataBases(new_dataBases);
 				//guardarDBs();
 				// Verificar si la DataBase actual es la eliminada para quitar la referencia
-				if (this.actual.getName().equals(ID))
-					this.actual = new DataBase();
+				if (this.getActual().getName().equals(ID))
+					this.setActual(new DataBase());
 				// Borrar directorio
 				File[] currList;
 				Stack<File> stack = new Stack<File>();
@@ -293,8 +293,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				// Guardar el cambio
 				//guardarDBs();
 				// Verificar si hay que cambiar tambien el nombre de la DataBase actual
-				if (this.actual.getName().equals(ID))
-					this.actual.setName(NEW_ID);
+				if (this.getActual().getName().equals(ID))
+					this.getActual().setName(NEW_ID);
 				// Renombrar el directorio
 				directory.renameTo(new File(this.dataPath + NEW_ID));
 				System.out.println("DataBase \"" + ID + "\" renombrada a \"" + NEW_ID +"\" exitosamente");
@@ -322,7 +322,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		if (! ID.equals(NEW_ID))
 		{
 			// Verificar que se este utilizando una base de datos
-			if (this.actual.getName().isEmpty())
+			if (this.getActual().getName().isEmpty())
 			{
 				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
 	        	this.errores.add(no_database_in_use);
@@ -330,26 +330,26 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			else
 			{
 				// Verificar que la tabla con ID exista
-				if (this.actual.existTable(ID))
+				if (this.getActual().existTable(ID))
 				{
 					// Verificar que no exista una tabla ya creada con ID == NEW_ID
-					if (! this.actual.existTable(NEW_ID))
+					if (! this.getActual().existTable(NEW_ID))
 					{						
 						//System.out.println("Before rename");
 						//System.out.println(this.actual);
 						// Renombrar referencias
-						if (this.actual.existRef(ID))
+						if (this.getActual().existRef(ID))
 						{
-							for (Table i: this.actual.getTables())
+							for (Table i: this.getActual().getTables())
 								i.renameRefIdFK(ID, NEW_ID);
 						}
-						this.actual.renameRef(ID, NEW_ID);
+						this.getActual().renameRef(ID, NEW_ID);
 						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
-						Table new_table = this.actual.getTable(ID);
+						Table new_table = this.getActual().getTable(ID);
 						new_table.setName(NEW_ID);
-						File directory = new File(this.dataPath + "\\" + this.actual.getName() + "\\" + ID + ".bin");
+						File directory = new File(this.dataPath + "\\" + this.getActual().getName() + "\\" + ID + ".bin");
 						// Renombrar el directorio
-						directory.renameTo(new File(this.dataPath + "\\" + this.actual.getName() + "\\" + NEW_ID + ".bin"));						
+						directory.renameTo(new File(this.dataPath + "\\" + this.getActual().getName() + "\\" + NEW_ID + ".bin"));						
 						// Guardar cambio en la DB
 						//guardarDBs();
 						//System.out.println("After rename");
@@ -357,13 +357,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 					else
 					{
-						String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+						String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 			        	this.errores.add(table_already_exist);
 					}
 				}
 				else
 				{
-					String table_not_found = "La Tabla \"" + ID + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+					String table_not_found = "La Tabla \"" + ID + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					this.errores.add(table_not_found);
 				}
 			}
@@ -386,7 +386,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<String> const_ids = new ArrayList<String>();
 		int errores = 0;
 		// Verificar que se este utilizando una base de datos
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -395,7 +395,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{		
 			// No se puede repetir nombre en las tablas
-			if (! this.actual.existTable(name))
+			if (! this.getActual().existTable(name))
 			{
 				for(int i = 4; i < ctx.getChildCount()-2; i++)
 				{			
@@ -510,15 +510,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								}
 							// Ref IDS
 							// Buscar que exista una tabla con el nombre al que se hace referencia
-							if (! this.actual.existTable(i.getId_ref()))
+							if (! this.getActual().existTable(i.getId_ref()))
 							{
-								String table_not_found = "La tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+								String table_not_found = "La tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" no esta declarada en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(table_not_found);
 					        	errores++;
 							}
 							else
 							{
-								Table table_ref = this.actual.getTable(i.getId_ref());
+								Table table_ref = this.getActual().getTable(i.getId_ref());
 								// Verificar que los RefIDS pertenezcan a la tabla
 								for (String j: i.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
@@ -553,14 +553,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							Table new_table = new Table(name, atrs, pks, fks, checks);
 							// Agregar referencias de las Foreign Key
 							for (Constraint i: fks)
-								this.actual.addRef(i.getId_ref());
+								this.getActual().addRef(i.getId_ref());
 							// Agregar tabla a la DB
-							this.actual.addTable(new_table);
-							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
+							this.getActual().addTable(new_table);
+							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.getActual().getName() + "\"");
 							System.out.println();
-							System.out.println(this.actual.toString());
+							System.out.println(this.getActual().toString());
 							// Guardar tabla en directorio
-							saveTable(this.actual.getName(), name, new_table);
+							saveTable(this.getActual().getName(), name, new_table);
 							// Guardar cambio en la DB
 							//guardarDBs();
 						}
@@ -569,7 +569,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{				
-				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 	        	this.errores.add(table_already_exist);
 			}
 		}
@@ -810,7 +810,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Column = (String) this.visit(ctx.idColumn());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -818,9 +818,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();
 				// Obtener tipo del atributo
 				Atributo atr = (Atributo) this.visit(ctx.tipo_literal());
@@ -862,15 +862,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						case "Foreign Key":
 							// Ref IDS
 							// Buscar que exista una tabla con el nombre al que se hace referencia
-							if (! this.actual.existTable(con.getId_ref()))
+							if (! this.getActual().existTable(con.getId_ref()))
 							{
-								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(table_not_found);
 					        	errores++;
 							}
 							else
 							{
-								Table table_ref = this.actual.getTable(con.getId_ref());
+								Table table_ref = this.getActual().getTable(con.getId_ref());
 								// Verificar que los RefIDS pertenezcan a la tabla
 								for (String j: con.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
@@ -907,7 +907,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						toAlter.addConstraint(con);					
 						// Agrega la referencia si es Foreign Key
 						if (con.getTipo().equals("Foreign Key"))
-							this.actual.addRef(con.getId_ref());
+							this.getActual().addRef(con.getId_ref());
 						System.out.println("Columna \"" + ID_Column + "\" y Constraint \"" + con.getId() + "\" agregadas exitosamente a la tabla \"" + toAlter.getName() + "\"");
 					}
 				}
@@ -928,7 +928,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -944,7 +944,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		String ID_Table = (String) this.visit(ctx.idTable());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -952,9 +952,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();				
 				// Obtener constraint
 				Constraint con = (Constraint) this.visit(ctx.constraint());
@@ -991,15 +991,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						case "Foreign Key":
 							// Ref IDS
 							// Buscar que exista una tabla con el nombre al que se hace referencia
-							if (! this.actual.existTable(con.getId_ref()))
+							if (! this.getActual().existTable(con.getId_ref()))
 							{
-								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(table_not_found);
 					        	errores++;
 							}
 							else
 							{
-								Table table_ref = this.actual.getTable(con.getId_ref());
+								Table table_ref = this.getActual().getTable(con.getId_ref());
 								// Verificar que los RefIDS pertenezcan a la tabla
 								for (String j: con.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
@@ -1034,7 +1034,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						toAlter.addConstraint(con);					
 						// Agrega la referencia si es Foreign Key
 						if (con.getTipo().equals("Foreign Key"))
-							this.actual.addRef(con.getId_ref());
+							this.getActual().addRef(con.getId_ref());
 						System.out.println("Constraint \"" + con.getId() + "\" agregada exitosamente a la tabla \"" + toAlter.getName() + "\"");
 					}
 				}
@@ -1050,7 +1050,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -1068,7 +1068,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Column = (String) this.visit(ctx.idColumn());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -1076,9 +1076,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();
 				// Verificar que la columna que se quiere borrar pertenezca a la tabla
 				if (attrs_names.contains(ID_Column))
@@ -1116,9 +1116,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						}
 					}
 					// En Ref_IDs de Fk de otras tablas en la misma DB
-					if (this.actual.existRef(ID_Table))
+					if (this.getActual().existRef(ID_Table))
 					{
-						for (Table i: this.actual.getTables())
+						for (Table i: this.getActual().getTables())
 							if (! i.getName().equals(ID_Table))
 								for(Constraint j: i.getForeignKey())
 								{
@@ -1146,7 +1146,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -1163,7 +1163,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Constraint = (String) this.visit(ctx.idConstraint());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -1171,9 +1171,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				// Verificar que exista la Constraint
 				if (toAlter.existeConstraint(ID_Constraint))
 				{
@@ -1182,7 +1182,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					if (to_drop.getTipo().equals("Foreign Key"))
 					{
 						int cont = 0;
-						for (Table i: this.actual.getTables())
+						for (Table i: this.getActual().getTables())
 							if (! i.getName().equals(ID_Table))
 							{
 								for (Constraint j: i.getForeignKey())
@@ -1193,7 +1193,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									}
 							}
 						if (cont == 0)
-							this.actual.deleteRef(to_drop.getId_ref());
+							this.getActual().deleteRef(to_drop.getId_ref());
 								
 					}
 					// Eliminar constraint
@@ -1208,7 +1208,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -1254,7 +1254,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		String ID_Table = ctx.ID().getText();
 		// Verificar que haya un DB en uso
-				if (this.actual.getName().isEmpty())
+				if (this.getActual().getName().isEmpty())
 				{
 					String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
 		        	this.errores.add(no_database_in_use);
@@ -1262,13 +1262,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				else
 				{
 					// Verificar que exista la tabla
-					if (this.actual.existTable(ID_Table))
+					if (this.getActual().existTable(ID_Table))
 					{
-						Table toAlter = this.actual.getTable(ID_Table);
+						Table toAlter = this.getActual().getTable(ID_Table);
 						// Verificar si tiene referencias en fks
-						if (this.actual.existRef(ID_Table))
+						if (this.getActual().existRef(ID_Table))
 						{
-							for (Table i: this.actual.getTables())
+							for (Table i: this.getActual().getTables())
 								if (! i.getName().equals(ID_Table))
 								{
 									for (Constraint j: i.getForeignKey())
@@ -1284,13 +1284,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							// Eliminar tabla de la data persistente
 							try
 							{					    		
-					    		File file = new File(this.dataPath+this.actual.getName()+"\\"+ID_Table+".bin");					    		
+					    		File file = new File(this.dataPath+this.getActual().getName()+"\\"+ID_Table+".bin");					    		
 					    		
 					    		if(file.delete())
 					    		{
 					    			// Eliminar tabla del objeto					
-									this.actual.deleteTable(ID_Table);
-					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.actual.getName() + "\"");
+									this.getActual().deleteTable(ID_Table);
+					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
 					    		}
 					    		else
 					    			System.out.println("Error al eliminar la Tabla \"" + ID_Table + "\" de la data persistente" );					    	   
@@ -1303,7 +1303,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 					else
 					{
-						String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+						String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 						this.errores.add(table_not_found);
 					}
 				}
@@ -1323,7 +1323,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	{
 		String id = ctx.ID().getText();
 		//debemos revisar si existe la tabla en la base de datos actual
-		table_use = this.actual.getTable(id);
+		table_use = this.getActual().getTable(id);
 		
 		ArrayList<String> fila = new ArrayList();
 		
@@ -1474,7 +1474,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		else
 		{
-			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
 		
@@ -1569,7 +1569,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
 		String id = ctx.ID().getText();
 		
-		this.table_use = this.actual.getTable(id);
+		this.table_use = this.getActual().getTable(id);
 		
 		if (this.table_use != null)
 		{
@@ -1585,7 +1585,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		else
 		{
-			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
 		// TODO Auto-generated method stub
@@ -3241,14 +3241,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
 		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
 		
-		if (actual.getName().isEmpty()){
+		if (getActual().getName().isEmpty()){
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
 		}else{
 			String ID = ctx.getChild(3).getText();
-			Table tb = actual.getTable(ID);
+			Table tb = getActual().getTable(ID);
 			if (tb == null){
-				String no_database_in_use = "No hay una Tabla " +ID+" en la Base de Datos " +actual.getName()+" @line: " + ctx.getStop().getLine();
+				String no_database_in_use = "No hay una Tabla " +ID+" en la Base de Datos " +getActual().getName()+" @line: " + ctx.getStop().getLine();
 	        	this.errores.add(no_database_in_use);
 	        	//System.out.println("error de tabla");
 			}else{
@@ -3267,7 +3267,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public T visitShow_table_statement(sqlParser.Show_table_statementContext ctx){
 		//SHOW TABLES (comprobar use database)
-		if (actual.getName().isEmpty()){
+		if (getActual().getName().isEmpty()){
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
 		}else{
@@ -3276,17 +3276,25 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			atr.add(new Atributo("Tables"));
 			
 			ArrayList<ArrayList<String>> values = new ArrayList();
-			for (Table tb: actual.getTables()){
+			for (Table tb: getActual().getTables()){
 				ArrayList<String> val = new ArrayList();
 				val.add(tb.getName());
 				values.add(val);
 			}
-			Table tb1 = new Table(actual.getName());
+			Table tb1 = new Table(getActual().getName());
 			tb1.setAtributos(atr);
 			tb1.setData(values);
 			return (T) tb1;
 		}
 		return (T) new String();
+	}
+
+	public DataBase getActual() {
+		return actual;
+	}
+
+	public void setActual(DataBase actual) {
+		this.actual = actual;
 	}
 	
 }
