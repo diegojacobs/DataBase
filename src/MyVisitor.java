@@ -1607,10 +1607,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		for (int i=0;i<cant && contErrores == this.errores.size();i++)
 		{
-			if (this.visit(ctx.getChild(i)).toString().equals("AND") || this.visit(ctx.getChild(i)).toString().equals("OR") || ctx.getChild(i).getText().equals("(") || ctx.getChild(i).getText().equals(")"))
+			if (!this.visit(ctx.getChild(i)).toString().equals("AND") || !this.visit(ctx.getChild(i)).toString().equals("OR") || !ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
 			{
-				Comp comp = (Comp)this.visit(ctx.getChild(i));
-				array.add(comp);
+				LinkedHashSet<Integer> comp = (LinkedHashSet<Integer>)this.visit(ctx.getChild(i));
+				array.add(new Comp());
 			}
 		}
 		
@@ -1627,20 +1627,25 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public T visitCompId(@NotNull sqlParser.CompIdContext ctx) 
 	{
 		LinkedHashSet<Integer> list = new LinkedHashSet();
-		String op = ctx.getChild(1).getText();
+		String op = ctx.getChild(1).getText(); //agarro el relational
 		
 		
-		String id = ctx.getChild(0).getText();
-		if (this.table_use.hasAtributo(id))
+		String id = ctx.getChild(0).getText(); //agarro el primer id
+		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
 		{
+			//tomo el atributo de la tabla y el indice de este
 			Atributo atr = this.table_use.getID(id);
 			Atributo id2 = new Atributo();
 			int index = this.table_use.getAtributos().indexOf(atr);
 			
+			//visito el ultimo hijo 
 			String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
 			String value = ctx.getChild(2).getText();
-				
+			
+			//creo una bandera para ver si voy a poder castear los tipos
 			boolean flag = false;
+			
+			//Si es un literal
 			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
 			{
 				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
@@ -1684,6 +1689,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				else
 				{
+					//Si es una columna de la tabla
 					String columna = ctx.getChild(2).getText(); 
 					if (this.table_use.hasAtributo(columna))
 					{
@@ -1731,9 +1737,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			
 			if (flag)
 			{
+				/*
+				 * CompareTo devuelve 0 si son iguales
+				 * mas de 0 si el primero es mayor al segundo
+				 * y menos de 0 si el primero es menor al tercero
+				 */
 				switch (op)
 				{
+					//Igual
 					case "=":
+						//si es un literal y de tipo int o float
 						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
 						{
 							Double valor = Double.parseDouble(value);
@@ -1741,12 +1754,309 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
 								Double comp = Double.parseDouble(fila.get(index));
-								if (valor==comp)
+								if (valor.compareTo(comp)==0)
 									list.add(cont);
 								cont++;
 							}
 						}
-						else
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									int index2 = this.table_use.getAtributos().indexOf(id2);
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String valor = fila.get(index2);
+										String comp = fila.get(index);
+										if (valor.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						
+						break;
+					//Distinto
+					case "<>":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)!=0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)!=0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{	//Si es char o date
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)!=0)
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									int index2 = this.table_use.getAtributos().indexOf(id2);
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String valor = fila.get(index2);
+										String comp = fila.get(index);
+										if (valor.compareTo(comp)!=0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Menor
+					case "<":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)>0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)>0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si es char o date
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)>0)
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									int index2 = this.table_use.getAtributos().indexOf(id2);
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String valor = fila.get(index2);
+										String comp = fila.get(index);
+										if (valor.compareTo(comp)>0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Mayor
+					case ">":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)<0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)<0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)<0)
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									int index2 = this.table_use.getAtributos().indexOf(id2);
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String valor = fila.get(index2);
+										String comp = fila.get(index);
+										if (valor.compareTo(comp)<0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Menor Igual
+					case "<=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)>0 || valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)>0 || valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)>0 || value.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									int index2 = this.table_use.getAtributos().indexOf(id2);
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String valor = fila.get(index2);
+										String comp = fila.get(index);
+										if (valor.compareTo(comp)>0 || valor.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Mayor Igual	
+					case ">=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)<0 || valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
 						{
 							int index2 = this.table_use.getAtributos().indexOf(id2);
 							int cont = 0;
@@ -1754,25 +2064,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							{
 								Double valor = Double.parseDouble(fila.get(index2));
 								Double comp = Double.parseDouble(fila.get(index));
-								if (valor==comp)
+								if (valor.compareTo(comp)<0 || valor.compareTo(comp)==0)
 									list.add(cont);
 								cont++;
 							}
 						}
-						
-						break;
-					case "<>":
-						break;
-					case "<":
-						break;
-					case ">":
-						break;
-					case "<=":
-						break;
-					case ">=":
 						break;
 				}
 			}
+			return (T)list;
 		}
 		else
 		{
@@ -1780,7 +2080,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			this.errores.add(rule_5);
 		}
 		
-		return (T)list; 
+		return (T)null; 
 	}
 	
 	/****************************
