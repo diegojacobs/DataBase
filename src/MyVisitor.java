@@ -1599,22 +1599,29 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	 * que contiene todas las filas que debemos eliminar
 	 */
 	@Override 
-	public T visitCondition(@NotNull sqlParser.ConditionContext ctx) 
+	public T visitConditionNot(sqlParser.ConditionNotContext ctx) 
 	{ 
-		int cant = ctx.getChildCount();
-		ArrayList<Comp> array = new ArrayList();
-		int contErrores = this.errores.size();
-		
-		for (int i=0;i<cant && contErrores == this.errores.size();i++)
-		{
-			if (!this.visit(ctx.getChild(i)).toString().equals("AND") || !this.visit(ctx.getChild(i)).toString().equals("OR") || !ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
-			{
-				LinkedHashSet<Integer> comp = (LinkedHashSet<Integer>)this.visit(ctx.getChild(i));
-				array.add(new Comp());
-			}
+		Object obj = visit(ctx.getChild(1));
+		if (obj == null){
+			return null;
 		}
 		
-		return (T)array;
+		if (!(obj instanceof LinkedHashSet)){
+			return null;
+		}
+		
+		LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>) obj;
+		
+		int size = table_use.getData().size();
+		
+		LinkedHashSet<Integer> nIndices = new LinkedHashSet();
+		
+		for (int i = 0; i < size; i++){
+			if (!indices.contains(i))
+				nIndices.add(i);
+		}
+		
+		return (T)nIndices;
 	}
 	
 	

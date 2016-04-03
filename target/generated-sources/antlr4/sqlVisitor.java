@@ -29,6 +29,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code conditionComp}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConditionComp(@NotNull sqlParser.ConditionCompContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#idRef}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -85,6 +92,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code conditionCond}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConditionCond(@NotNull sqlParser.ConditionCondContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#delete_value}.
 	 * @param ctx the parse tree
@@ -143,12 +157,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link sqlParser#condition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCondition(@NotNull sqlParser.ConditionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code exp_logic}
 	 * labeled alternative in {@link sqlParser#exp}.
@@ -329,6 +337,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code conditionNot}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConditionNot(@NotNull sqlParser.ConditionNotContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree
