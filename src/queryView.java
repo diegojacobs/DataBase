@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.*;
 
 import views.*;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.EventQueue;
@@ -444,9 +445,9 @@ public class queryView extends JFrame implements ActionListener{
 			
 			//JScrollPane scrollPane_1 = new JScrollPane();
 			
-			JTable table = null;
-			JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			tabbedPane.add(scrollPane_1);
+			//JTable table = null;
+			//JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			//tabbedPane.add(scrollPane_1);
 			
 			if (br.readLine() != null)
 			{
@@ -484,8 +485,8 @@ public class queryView extends JFrame implements ActionListener{
 							Table dataBaseTable = dataBase.getTable(name.substring(0, name.length()-4));//quito .bin
 							//System.out.println(dataBaseTable);
 							if (dataBaseTable != null)
-								
-								table = createNewTable(dataBaseTable);
+								addNewTab(dataBaseTable);
+								//table = createNewTable(dataBaseTable);
 						}
 						
 						//System.out.println(dataBaseTable);
@@ -494,7 +495,8 @@ public class queryView extends JFrame implements ActionListener{
 					
 				}else if (obj instanceof DataBases){
 					DataBases dataBases = (DataBases)obj;
-					table = createNewTable(dataBases);
+					addNewTab(dataBases);
+					//table = createNewTable(dataBases);
 					//System.out.println(dataBases);
 				}
 					
@@ -506,13 +508,13 @@ public class queryView extends JFrame implements ActionListener{
 			br.close();
 			fis.close();
 			
-			if (table != null) scrollPane_1.setViewportView(table);
+			/*if (table != null) scrollPane_1.setViewportView(table);
 			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 				tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
 			
 			//System.out.println(dataBases);
-			
+			*/
 			
 			
 		} catch (Exception e){
@@ -526,13 +528,19 @@ public class queryView extends JFrame implements ActionListener{
 		JTable table = null;
 		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//JScrollPane scrollPane_1 = new JScrollPane();
-		tabbedPane.add(scrollPane_1);
 		
-		table = createNewTable(dataBases);		
-		if (table != null) scrollPane_1.setViewportView(table);
-		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+		
+		table = createNewTable(dataBases);	
+		if (table != null){
+			LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPane_1,table);
+			scrollPane_1.setRowHeaderView(tableLineNumber);
+			scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			tabbedPane.add(scrollPane_1);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount()-2);
+		}
 	}
 	
 	public void addNewTab(Table tableObj){
@@ -540,13 +548,20 @@ public class queryView extends JFrame implements ActionListener{
 		JTable table = null;
 		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//JScrollPane scrollPane_1 = new JScrollPane();
-		tabbedPane.add(scrollPane_1);
 		
-		table = createNewTable(tableObj);		
-		if (table != null) scrollPane_1.setViewportView(table);
-		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+		
+		table = createNewTable(tableObj);
+		if (table != null){
+			LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPane_1,table);
+			//tableLineNumber.setBackground(Color.LIGHT_GRAY);
+			scrollPane_1.setRowHeaderView(tableLineNumber);
+			scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			tabbedPane.add(scrollPane_1);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount()-2);
+		}
 	}
 	
 	public JTable createNewTable(Table table){
@@ -555,13 +570,17 @@ public class queryView extends JFrame implements ActionListener{
 		for (ArrayList<String> tupla: table.getData()){
 			//System.out.println("tupla: "+tupla);
 			Object[] objs = (Object[]) tupla.toArray();
-			tableModel.addRow(objs);
+			if (objs.length > 0)
+				tableModel.addRow(objs);
 			
 		}
 		//System.out.println("Ya llego a crear la tabla");
-		JTable nTable = new JTable(tableModel);
-		nTable.setEnabled(false);
-		return nTable;
+		if (tableModel.getRowCount()>0){
+			JTable nTable = new JTable(tableModel);
+			nTable.setEnabled(false);
+			return nTable;
+		}
+		return null;
 	}
 	
 	public JTable createNewTable(DataBases dataBases){
@@ -569,12 +588,15 @@ public class queryView extends JFrame implements ActionListener{
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 		for (DataBase st: dataBases.getDataBases()){
 			Object[] objs = {st.getName(), st.getTables().size()};
-			tableModel.addRow(objs);
+			if (objs.length > 0)
+				tableModel.addRow(objs);
 		}
-		JTable nTable = new JTable(tableModel);
-		nTable.setEnabled(false);
-		
-		return nTable;
+		if (tableModel.getRowCount()>0){
+			JTable nTable = new JTable(tableModel);
+			nTable.setEnabled(false);
+			return nTable;
+		}
+		return null;
 	}
 	
 	public void addTreeSelection(JTree tree){
@@ -910,7 +932,7 @@ public class queryView extends JFrame implements ActionListener{
 	        Object obj = (Object)semantic_checker.visit(tree);
 	        semantic_checker.guardarDBs();
 	        long estimatedTime = System.nanoTime()-startTime;
-	        if (obj instanceof DataBase){
+	        if (obj instanceof DataBases){
 	        	DataBases dbs = (DataBases) obj;
 	        	addNewTab(dbs);
 	        }else if (obj instanceof Table){
