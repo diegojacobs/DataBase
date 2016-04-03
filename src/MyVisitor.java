@@ -1623,8 +1623,85 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		return (T)nIndices;
 	}
-	
-	
+
+	public T visitConditionComp (sqlParser.ConditionCompContext ctx){
+		if (ctx.getChildCount() <= 1) return (T)visitChildren(ctx);
+		
+		Object objComp = visit(ctx.getChild(0));
+		if (objComp == null) return null;
+		
+		if (!(objComp instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> compIndex = (LinkedHashSet<Integer>) objComp;
+		
+		String logic = (String) visit(ctx.getChild(1));
+		
+		Object objCond = visit(ctx.getChild(0));
+		if (objCond == null) return null;
+		
+		if (!(objCond instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> condIndex = (LinkedHashSet<Integer>) objCond;
+		LinkedHashSet<Integer> result = null;
+		
+		switch (logic){
+			case "OR":
+				compIndex.addAll(condIndex);
+				result = new LinkedHashSet<Integer>();
+				result.addAll(compIndex);
+				break;
+			case "AND":
+				result = new LinkedHashSet<Integer>();
+				for (int i: compIndex){
+					if (condIndex.contains(i))
+						result.add(i);
+				}
+				break;
+		}
+		
+		
+		return (T)result;
+	}
+
+	public T visitConditionCond (sqlParser.ConditionCondContext ctx){
+		if (ctx.getChildCount() <= 3) return (T) visit(ctx.getChild(1));
+		
+		Object obj1 = visit(ctx.getChild(1));
+		if (obj1 == null) return null;
+		
+		if (!(obj1 instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> cond1Index = (LinkedHashSet<Integer>) obj1;
+		
+		Object obj2 = visit(ctx.getChild(4));
+		if (obj2 == null) return null;
+		
+		if (!(obj2 instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> cond2Index = (LinkedHashSet<Integer>) obj2;
+		
+		String logic = (String)visit(ctx.getChild(3));
+		
+		LinkedHashSet<Integer> result = null;
+		
+		switch (logic){
+			case "OR":
+				cond1Index.addAll(cond2Index);
+				result = new LinkedHashSet<Integer>();
+				result.addAll(cond1Index);
+				break;
+			case "AND":
+				result = new LinkedHashSet<Integer>();
+				for (int i: cond1Index){
+					if (cond2Index.contains(i))
+						result.add(i);
+				}
+				break;
+		}
+		
+		
+		return (T)result;
+	}
 	/***************************
 	 * CompId
 	 * Revisamos comp que puede tener
