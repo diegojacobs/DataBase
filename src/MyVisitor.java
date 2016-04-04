@@ -41,6 +41,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private int deleted_rows = 0;
 	private int updated_rows = 0;
 	
+	public void resetValues(){
+		errores = new ArrayList<String>();
+		table_use = new Table();
+		inserted_rows = 0;
+		deleted_rows = 0;
+		updated_rows = 0;
+	}
+	
 	public int getInserted_rows() {
 		return inserted_rows;
 	}
