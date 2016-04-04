@@ -18,6 +18,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#asignacion}.
+	 * @param ctx the parse tree
+	 */
+	void enterAsignacion(@NotNull sqlParser.AsignacionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#asignacion}.
+	 * @param ctx the parse tree
+	 */
+	void exitAsignacion(@NotNull sqlParser.AsignacionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#table_definition}.
 	 * @param ctx the parse tree
 	 */
