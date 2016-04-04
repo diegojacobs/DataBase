@@ -24,7 +24,7 @@ public class Table implements Serializable {
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
 		this.data = new ArrayList<ArrayList<String>>();
-		this.othersIds = new ArrayList<String>(); 
+		this.setOthersIds(new ArrayList<String>()); 
 	}
 
 	public Table(String name) {		
@@ -34,7 +34,7 @@ public class Table implements Serializable {
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
 		this.data = new ArrayList<ArrayList<String>>();
-		this.othersIds = new ArrayList<String>();
+		this.setOthersIds(new ArrayList<String>());
 	}	
 
 	public Table(String name, ArrayList<Atributo> atributos, ArrayList<Constraint> primaryKeys, ArrayList<Constraint> foreignKey, ArrayList<Constraint> checks) {
@@ -44,11 +44,11 @@ public class Table implements Serializable {
 		ForeignKey = foreignKey;
 		this.Checks = checks;
 		this.data = new ArrayList<ArrayList<String>>();
-		this.othersIds = new ArrayList<String>();
+		this.setOthersIds(new ArrayList<String>());
 		for (Atributo atr : this.atributos)
 		{
 			String col = name+"."+atr.getId();
-			this.othersIds.add(col);
+			this.getOthersIds().add(col);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class Table implements Serializable {
 		for (Atributo i: this.atributos)
 			ret.add(i.getId());
 		
-		for (String name : this.othersIds)
+		for (String name : this.getOthersIds())
 			ret.add(name);
 		return ret;
 	}
@@ -154,7 +154,7 @@ public class Table implements Serializable {
 			}
 		
 		if (!flag)
-			for (String name : this.othersIds)
+			for (String name : this.getOthersIds())
 				if (id.equals(name))
 				{
 					flag=true;
@@ -178,11 +178,11 @@ public class Table implements Serializable {
 		
 		if (atr.equals(null))
 		{
-			for (String name : this.othersIds)
+			for (String name : this.getOthersIds())
 			{
 				if (name.equals(id))
 				{
-					int index = this.othersIds.indexOf(name);
+					int index = this.getOthersIds().indexOf(name);
 					atr = this.atributos.get(index);
 				}
 			}
@@ -471,6 +471,44 @@ public class Table implements Serializable {
 			cont++;
 		}
 		return ret;
+	}
+	
+	public boolean isAmbiguous(String id){
+		int contador = 0;
+		for (String st: getOthersIds()){
+			if (st.equals(id))
+				contador ++;
+		}
+		if (contador>0) return true;
+		
+		for (Atributo at: atributos){
+			if (at.getId().equals(id))
+				contador ++;
+		}
+		
+		if (contador > 0) return true;
+		
+		return false;
+		
+	}
+	
+	/**
+	 * agrega a othersIds los nombres de tal forma que sea:
+	 * nombreTabla.nombreAtributo al momento de hacer el select
+	 */
+	public void setNamesByTable(){
+		ArrayList<String> st = new ArrayList();
+		for (Atributo at: atributos)
+			st.add(getName()+"."+at.getId());
+		this.setOthersIds(st);
+	}
+
+	public ArrayList<String> getOthersIds() {
+		return othersIds;
+	}
+
+	public void setOthersIds(ArrayList<String> othersIds) {
+		this.othersIds = othersIds;
 	}
 
 }
