@@ -578,17 +578,17 @@ public class queryView extends JFrame implements ActionListener{
 		for (ArrayList<String> tupla: table.getData()){
 			//System.out.println("tupla: "+tupla);
 			Object[] objs = (Object[]) tupla.toArray();
-			if (objs.length > 0)
+			//if (objs.length > 0)
 				tableModel.addRow(objs);
 			
 		}
 		//System.out.println("Ya llego a crear la tabla");
-		if (tableModel.getRowCount()>0){
+		//if (tableModel.getRowCount()>0){
 			JTable nTable = new JTable(tableModel);
 			nTable.setEnabled(false);
 			return nTable;
-		}
-		return null;
+		//}
+		//return null;
 	}
 	
 	public JTable createNewTable(DataBases dataBases){
@@ -596,15 +596,15 @@ public class queryView extends JFrame implements ActionListener{
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 		for (DataBase st: dataBases.getDataBases()){
 			Object[] objs = {st.getName(), st.getTables().size()};
-			if (objs.length > 0)
+			//if (objs.length > 0)
 				tableModel.addRow(objs);
 		}
-		if (tableModel.getRowCount()>0){
+		//if (tableModel.getRowCount()>0){
 			JTable nTable = new JTable(tableModel);
 			nTable.setEnabled(false);
 			return nTable;
-		}
-		return null;
+		//}
+		//return null;
 	}
 	
 	public void addTreeSelection(JTree tree){

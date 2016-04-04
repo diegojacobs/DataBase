@@ -1,3 +1,4 @@
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -1571,25 +1573,39 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		this.table_use = this.getActual().getTable(id);
 		
-		if (this.table_use != null)
-		{
-			if (ctx.getChildCount() == 4)
-			{
-				this.deleted_rows += this.table_use.getData().size();
-				this.table_use.setData(new ArrayList<ArrayList<String>>());
-			}
-			else
-			{
-				
-			}
-		}
-		else
-		{
+		if (table_use == null){
 			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
+			return null;
 		}
-		// TODO Auto-generated method stub
-		return super.visitDelete_value(ctx);
+		
+		if (ctx.getChildCount() <= 4){
+			table_use.setData(new ArrayList<ArrayList<String>>());
+			return table_use;
+		}
+		
+		Object obj = (Object) visit(ctx.getChild(4));
+		if (obj == null){
+			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}
+		
+		if (!(obj instanceof LinkedHashSet)){
+			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}
+		
+		LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+		ArrayList<Integer> index= new ArrayList(indices);
+		Collections.reverse(index);
+		for (int i: index){
+			table_use.getData().remove(i);
+		}
+		
+		
+		return (T) table_use;
 	}
 
 	/**************************
@@ -3289,6 +3305,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return (T) new String();
 	}
 
+	
 	public DataBase getActual() {
 		return actual;
 	}
