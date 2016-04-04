@@ -195,7 +195,7 @@ delete_value: DELETE FROM ID (WHERE condition)? ';' ;
 select_value: SELECT ('*' | nlocalIDS ) FROM localIDS (WHERE condition)?  ( order )? ';' ;
 
 nID: ID
-	|ID.ID;
+	|ID '.' ID;
 	
 nlocalIDS: nID
 		  | nID ',' nlocalIDS;
