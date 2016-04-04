@@ -3307,6 +3307,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return (T) new String();
 	}
 
+	public Object visitSelect_value (sqlParser.Select_valueContext ctx){
+		
+		return null;
+	}
 	
 	public DataBase getActual() {
 		return actual;
