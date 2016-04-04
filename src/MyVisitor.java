@@ -18,6 +18,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import javax.swing.JOptionPane;
+
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -224,13 +226,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	}	
 	
 	/* (non-Javadoc)
-	 * @see sqlBaseVisitor#visitDrop_schema_statement(sqlParser.Drop_schema_statementContext)
-	 * 
-	 * FALTAN IMPLEMENTAR LA SIGUIENTE RESTRICCION
-	 *	Verificación para DROP DATABASE. Para esta instrucción se debe hacer una doble verificación con el usuario del DBMS
-		mostrando el siguiente mensaje: “¿Borrar base de datos nombre_BD con N registros? (si/no)” Donde N es la sumatoria de los
-		registros de todas las tablas en la base de datos.
-	 * 
+	 * @see sqlBaseVisitor#visitDrop_schema_statement(sqlParser.Drop_schema_statementContext) 
 	 */
 	@Override
 	public Object visitDrop_schema_statement(sqlParser.Drop_schema_statementContext ctx) {
@@ -241,44 +237,57 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{			
 			// Establecer nuevo set de DataBases
 			ArrayList<DataBase> new_dataBases = new ArrayList<DataBase>();
+			DataBase toDelete = new DataBase();
 			boolean exist = false;
 			for(DataBase i: this.dataBases.getDataBases())
 				if (! i.getName().equals(ID))
 					new_dataBases.add(i);
 				else
+				{
 					exist = true;
+					toDelete = i;
+				}
 			if (exist)
 			{
-				// Guardar nuevo set de DataBases
-				this.dataBases.setDataBases(new_dataBases);
-				//guardarDBs();
-				// Verificar si la DataBase actual es la eliminada para quitar la referencia
-				if (this.getActual().getName().equals(ID))
-					this.setActual(new DataBase());
-				// Borrar directorio
-				File[] currList;
-				Stack<File> stack = new Stack<File>();
-				stack.push(directory);
-				while (! stack.isEmpty())
-				{
-				    if (stack.lastElement().isDirectory())
-				    {
-				        currList = stack.lastElement().listFiles();
-				        if (currList != null)
-				        {
-					        if (currList.length > 0)
+				// Verificar si el usuario quiere eliminar la DB con una ventana de confirmacion
+				// Contar registros totales en la DB
+				int n_registros = 0;
+				for (Table i: toDelete.getTables())
+					n_registros += i.getData().size();
+				int reply = JOptionPane.showConfirmDialog(null, "Borrar base de datos \"" + ID + "\" con " + Integer.toString(n_registros) + " registros?", "DROP DATABASE", JOptionPane.YES_NO_OPTION);
+		        if (reply == JOptionPane.YES_OPTION)
+		        {		        
+					// Guardar nuevo set de DataBases
+					this.dataBases.setDataBases(new_dataBases);
+					//guardarDBs();
+					// Verificar si la DataBase actual es la eliminada para quitar la referencia
+					if (this.getActual().getName().equals(ID))
+						this.setActual(new DataBase());
+					// Borrar directorio
+					File[] currList;
+					Stack<File> stack = new Stack<File>();
+					stack.push(directory);
+					while (! stack.isEmpty())
+					{
+					    if (stack.lastElement().isDirectory())
+					    {
+					        currList = stack.lastElement().listFiles();
+					        if (currList != null)
 					        {
-					            for (File curr: currList)
-					                stack.push(curr);
+						        if (currList.length > 0)
+						        {
+						            for (File curr: currList)
+						                stack.push(curr);
+						        }
+						        else			        
+						            stack.pop().delete();
 					        }
-					        else			        
-					            stack.pop().delete();
-				        }
-				    } 
-				    else
-				        stack.pop().delete();
-				}
-				System.out.println("DataBase \"" + ID + "\" eliminada exitosamente");
+					    } 
+					    else
+					        stack.pop().delete();
+					}
+					System.out.println("DataBase \"" + ID + "\" eliminada exitosamente");
+		        }
 			}
 			else
 			{
