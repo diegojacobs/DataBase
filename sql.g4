@@ -192,7 +192,9 @@ asignacion : columna '=' literal (',' columna '=' literal)*;
 
 delete_value: DELETE FROM ID (WHERE condition)? ';' ;
 
-select_value: SELECT ('*' | ID (',' ID)* ) FROM ID (',' ID)* (WHERE condition)?  (ORDER BY ID (ASC | DESC)? (',' ID (ASC | DESC)?)* )? ';' ;
+select_value: SELECT ('*' | localIDS ) FROM localIDS (WHERE condition)?  ( order )? ';' ;
+order: ORDER BY ID ( ASC | DESC )?
+	| ORDER BY ID (ASC | DESC )? ',' order;
               
 condition: '(' condition ')' (logic condition)? #conditionCond
                  | comp (logic condition)? #conditionComp

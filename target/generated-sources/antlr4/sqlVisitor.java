@@ -124,6 +124,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrder(@NotNull sqlParser.OrderContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#sql_executable_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
