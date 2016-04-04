@@ -1608,6 +1608,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return (T) table_use;
 	}
 
+	
+	
 	/**************************
 	 * Condition
 	 * Revisamos cada comparacion
