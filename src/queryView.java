@@ -80,7 +80,7 @@ public class queryView extends JFrame implements ActionListener{
 	
 	//private JFrame frame;
 	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment, mntmPrueba;
-	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete;
+	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete, btnReload;
 	//JTextArea textArea;
 	JTextPane textArea, dataOutputArea, dataReadArea;
 	JTextField status, dataBaseUse;
@@ -348,6 +348,20 @@ public class queryView extends JFrame implements ActionListener{
 			System.out.println("Error in resources/images/1playButton.png");
 		}
 		toolBar.add(btnRun);
+		
+		btnReload = new JButton("Reload");
+		btnReload.addActionListener(this);
+		btnReload.setToolTipText("Reload");
+		try{
+			Image img = ImageIO.read(getClass().getClassLoader().getResource("resources/images/9reloadButton.png"));
+			btnReload.setIcon(new ImageIcon(img));
+			btnReload.setText("");
+			Border emptyBorder = BorderFactory.createEmptyBorder();
+			btnReload.setBorder(emptyBorder);
+		} catch (Exception e){
+			System.out.println("Error in resources/images/9reloadButton.png");
+		}
+		toolBar.add(btnReload);
 		
 		btnDelete = new JButton("Delete All");
 		btnDelete.addActionListener(this);
@@ -756,6 +770,9 @@ public class queryView extends JFrame implements ActionListener{
 			addNewTab(new File("C:/"));
 		}else if (e.getSource() == btnDelete){
 			textArea.setText("");
+		}else if (e.getSource() == btnReload){
+			explorer = new SimpleTree();
+			System.out.println("nuevoTree");
 		}
 		
 	}
