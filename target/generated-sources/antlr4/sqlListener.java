@@ -38,6 +38,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code conditionComp}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionComp(@NotNull sqlParser.ConditionCompContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code conditionComp}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionComp(@NotNull sqlParser.ConditionCompContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#idRef}.
 	 * @param ctx the parse tree
 	 */
@@ -133,6 +145,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConstraintTypeForeignKey(@NotNull sqlParser.ConstraintTypeForeignKeyContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code conditionCond}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionCond(@NotNull sqlParser.ConditionCondContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code conditionCond}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionCond(@NotNull sqlParser.ConditionCondContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#delete_value}.
 	 * @param ctx the parse tree
@@ -231,16 +255,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#condition}.
-	 * @param ctx the parse tree
-	 */
-	void enterCondition(@NotNull sqlParser.ConditionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#condition}.
-	 * @param ctx the parse tree
-	 */
-	void exitCondition(@NotNull sqlParser.ConditionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code exp_logic}
 	 * labeled alternative in {@link sqlParser#exp}.
@@ -545,6 +559,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code conditionNot}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionNot(@NotNull sqlParser.ConditionNotContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code conditionNot}
+	 * labeled alternative in {@link sqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionNot(@NotNull sqlParser.ConditionNotContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#insert_value}.
 	 * @param ctx the parse tree

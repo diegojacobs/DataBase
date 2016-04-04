@@ -2500,36 +2500,85 @@ public class sqlParser extends Parser {
 	}
 
 	public static class ConditionContext extends ParserRuleContext {
-		public ConditionContext condition(int i) {
-			return getRuleContext(ConditionContext.class,i);
+		public ConditionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
 		}
+		@Override public int getRuleIndex() { return RULE_condition; }
+	 
+		public ConditionContext() { }
+		public void copyFrom(ConditionContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class ConditionNotContext extends ConditionContext {
 		public Logic_notContext logic_not() {
 			return getRuleContext(Logic_notContext.class,0);
 		}
+		public ConditionContext condition() {
+			return getRuleContext(ConditionContext.class,0);
+		}
+		public ConditionNotContext(ConditionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConditionNot(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConditionNot(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConditionNot(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ConditionCondContext extends ConditionContext {
+		public ConditionContext condition(int i) {
+			return getRuleContext(ConditionContext.class,i);
+		}
+		public LogicContext logic() {
+			return getRuleContext(LogicContext.class,0);
+		}
+		public List<ConditionContext> condition() {
+			return getRuleContexts(ConditionContext.class);
+		}
+		public ConditionCondContext(ConditionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConditionCond(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConditionCond(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConditionCond(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ConditionCompContext extends ConditionContext {
 		public LogicContext logic() {
 			return getRuleContext(LogicContext.class,0);
 		}
 		public CompContext comp() {
 			return getRuleContext(CompContext.class,0);
 		}
-		public List<ConditionContext> condition() {
-			return getRuleContexts(ConditionContext.class);
+		public ConditionContext condition() {
+			return getRuleContext(ConditionContext.class,0);
 		}
-		public ConditionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_condition; }
+		public ConditionCompContext(ConditionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterCondition(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConditionComp(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitCondition(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConditionComp(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitCondition(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConditionComp(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2542,6 +2591,7 @@ public class sqlParser extends Parser {
 			setState(377);
 			switch (_input.LA(1)) {
 			case T__5:
+				_localctx = new ConditionCondContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(360); match(T__5);
@@ -2563,6 +2613,7 @@ public class sqlParser extends Parser {
 			case ID:
 			case DATE:
 			case CHAR:
+				_localctx = new ConditionCompContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(368); comp();
@@ -2578,6 +2629,7 @@ public class sqlParser extends Parser {
 				}
 				break;
 			case RES_NOT:
+				_localctx = new ConditionNotContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(374); logic_not();
