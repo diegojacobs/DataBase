@@ -14,6 +14,7 @@ public class Table implements Serializable {
 	private ArrayList<Constraint> ForeignKey;
 	private ArrayList<Constraint> Checks;
 	private ArrayList<ArrayList<String>> data;
+	private ArrayList<String> othersIds;
 	
 	public Table()
 	{
@@ -23,6 +24,7 @@ public class Table implements Serializable {
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
 		this.data = new ArrayList<ArrayList<String>>();
+		this.othersIds = new ArrayList<String>(); 
 	}
 
 	public Table(String name) {		
@@ -32,6 +34,7 @@ public class Table implements Serializable {
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
 		this.data = new ArrayList<ArrayList<String>>();
+		this.othersIds = new ArrayList<String>();
 	}	
 
 	public Table(String name, ArrayList<Atributo> atributos, ArrayList<Constraint> primaryKeys, ArrayList<Constraint> foreignKey, ArrayList<Constraint> checks) {
@@ -41,6 +44,12 @@ public class Table implements Serializable {
 		ForeignKey = foreignKey;
 		this.Checks = checks;
 		this.data = new ArrayList<ArrayList<String>>();
+		this.othersIds = new ArrayList<String>();
+		for (Atributo atr : this.atributos)
+		{
+			String col = name+"."+atr.getId();
+			this.othersIds.add(col);
+		}
 	}
 
 	/**
@@ -78,6 +87,9 @@ public class Table implements Serializable {
 		ArrayList<String> ret = new ArrayList<String>();
 		for (Atributo i: this.atributos)
 			ret.add(i.getId());
+		
+		for (String name : this.othersIds)
+			ret.add(name);
 		return ret;
 	}
 
@@ -141,6 +153,14 @@ public class Table implements Serializable {
 				break;
 			}
 		
+		if (!flag)
+			for (String name : this.othersIds)
+				if (id.equals(name))
+				{
+					flag=true;
+					break;
+				}
+		
 		return flag;
 	}
 	
@@ -153,6 +173,18 @@ public class Table implements Serializable {
 			if (i.getId().equals(id))
 			{
 				atr = i;
+			}
+		}
+		
+		if (atr.equals(null))
+		{
+			for (String name : this.othersIds)
+			{
+				if (name.equals(id))
+				{
+					int index = this.othersIds.indexOf(name);
+					atr = this.atributos.get(index);
+				}
 			}
 		}
 		
