@@ -39,6 +39,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private int deleted_rows = 0;
 	private int updated_rows = 0;
 	
+	public void resetValues(){
+		errores = new ArrayList<String>();
+		table_use = new Table();
+		inserted_rows = 0;
+		deleted_rows = 0;
+		updated_rows = 0;
+	}
 	
 	public int getInserted_rows() {
 		return inserted_rows;
@@ -1599,10 +1606,46 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
 		
 		String id = ctx.getChild(1).getText();
+		int contErrores = this.errores.size();
 		
 		if (this.actual.existTable(id))
 		{
+			this.table_use = this.actual.getTable(id);
+			int size = this.table_use.getData().size();
 			
+			if (ctx.getChildCount() == 5)
+			{
+				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+				
+				for (int i = 0; i<size && contErrores==this.errores.size();i++)
+				{
+					this.table_use.getData().set(i, newfila);
+				}
+			}
+			else
+			{
+				Object obj = (Object) visit(ctx.getChild(5));
+				if (obj == null){
+					String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+					return null;
+				}
+				
+				if (!(obj instanceof LinkedHashSet)){
+					String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+					return null;
+				}
+				
+				LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+				ArrayList<Integer> index= new ArrayList(indices);
+				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+				
+				if (contErrores == this.errores.size())
+					for (int i: index){
+						table_use.getData().set(i, newfila);
+					}
+			}
 		}
 		else
 		{
@@ -1621,8 +1664,41 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	 */
 	@Override
 	public Object visitAsignacion(sqlParser.AsignacionContext ctx) {
+		
+		ArrayList<String> newfila = new ArrayList<String>();
+		
+		int numCols = this.table_use.getAtributos().size();
+		for (int i=0;i<numCols;i++)
+			newfila.add("NULL");
+		
+		int index = 0;
+		for (int j=0;j<ctx.getChildCount();j++)
+		{
+			String text = ctx.getChild(j).getText();
+			if (!text.equals("=") && !text.equals("="))
+			{
+				if (j==0 || j%4==0)
+				{
+					if (this.table_use.hasAtributo(text))
+					{
+						Atributo atr = this.table_use.getID(text);
+						index = this.table_use.getAtributos().indexOf(atr);
+					}
+					else
+					{
+						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + text + " @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+					}
+				}
+				else
+				{
+					newfila.set(index, text);
+				}
+			}
+		}
+		
 		// TODO Auto-generated method stub
-		return super.visitAsignacion(ctx);
+		return newfila;
 	}
 	
 	
