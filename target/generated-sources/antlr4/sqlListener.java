@@ -198,6 +198,16 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrder(@NotNull sqlParser.OrderContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrder(@NotNull sqlParser.OrderContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#sql_executable_statement}.
 	 * @param ctx the parse tree
 	 */

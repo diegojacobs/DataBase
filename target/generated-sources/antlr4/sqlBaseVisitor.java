@@ -143,6 +143,13 @@ public class sqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements sq
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitOrder(@NotNull sqlParser.OrderContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitSql_executable_statement(@NotNull sqlParser.Sql_executable_statementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
