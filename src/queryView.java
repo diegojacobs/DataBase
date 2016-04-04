@@ -975,6 +975,7 @@ public class queryView extends JFrame implements ActionListener{
 	        else
 	        	dataOutputArea.setText("Terminado"+"\n"+calculateTime(estimatedTime));
 	        dataReadArea.setText(textStr);
+	        semantic_checker.resetValues();
 	        //splitPane1.setLeftComponent(new SimpleTree());
 		} catch (Exception e){
 			dataReadArea.setText("Unexpected error: " + e.getStackTrace().toString());
