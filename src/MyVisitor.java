@@ -3312,6 +3312,50 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return null;
 	}
 	
+	/**
+	 * requiere un paso base
+	 * a tb1 se debe llamar tb1.setNamesByTable() fuera del metodo
+	 * el metodo supone que tb1 es el crossJoin de otras tablas, 
+	 * por lo que solo se debe agregar tb2 al crossJoin 
+	 * 
+	 * @param tb1
+	 * @param tb2
+	 * @return
+	 */
+	public Table crossJoin(Table tb1, Table tb2){
+		//tb1.setNameByTable(); ya estan mezclados
+		tb2.setNamesByTable();
+		Table nTb = new Table();
+		
+		nTb.setName("Select");
+		
+		//agregamos todos los atributos
+		ArrayList<Atributo> at = new ArrayList();
+		at.addAll(tb1.getAtributos());
+		at.addAll(tb2.getAtributos());
+		nTb.setAtributos(at);
+		
+		//agregamos nuevos nombres tabla.atributo
+		ArrayList<String> otN = new ArrayList();
+		otN.addAll(tb1.getOthersIds());
+		otN.addAll(tb2.getOthersIds());
+		nTb.setOthersIds(otN);
+		
+		//vergueo con data
+		ArrayList<ArrayList<String>> data = new ArrayList();
+		for (ArrayList<String> tupla1: tb1.getData()){
+			for (ArrayList<String> tupla2: tb2.getData()){
+				ArrayList<String> tupla = new ArrayList();
+				tupla.addAll(tupla1);
+				tupla.addAll(tupla2);
+				data.add(tupla);
+			}
+		}
+		nTb.setData(data);
+		
+		return nTb;
+	}
+	
 	public DataBase getActual() {
 		return actual;
 	}
