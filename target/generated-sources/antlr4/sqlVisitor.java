@@ -35,6 +35,18 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#nID}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNID(@NotNull sqlParser.NIDContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link sqlParser#nlocalIDS}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNlocalIDS(@NotNull sqlParser.NlocalIDSContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code conditionComp}
 	 * labeled alternative in {@link sqlParser#condition}.
 	 * @param ctx the parse tree
