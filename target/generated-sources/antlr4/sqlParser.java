@@ -45,10 +45,10 @@ public class sqlParser extends Parser {
 		RULE_idRef = 21, RULE_localIDS = 22, RULE_refIDS = 23, RULE_exp = 24, 
 		RULE_rename_table_statement = 25, RULE_show_table_statement = 26, RULE_show_column_statement = 27, 
 		RULE_logic = 28, RULE_logic_not = 29, RULE_relational = 30, RULE_insert_value = 31, 
-		RULE_update_value = 32, RULE_delete_value = 33, RULE_select_value = 34, 
-		RULE_condition = 35, RULE_comp = 36, RULE_columns = 37, RULE_columna = 38, 
-		RULE_list = 39, RULE_literal = 40, RULE_int_literal = 41, RULE_float_literal = 42, 
-		RULE_date_literal = 43, RULE_char_literal = 44;
+		RULE_update_value = 32, RULE_asignacion = 33, RULE_delete_value = 34, 
+		RULE_select_value = 35, RULE_condition = 36, RULE_comp = 37, RULE_columns = 38, 
+		RULE_columna = 39, RULE_list = 40, RULE_literal = 41, RULE_int_literal = 42, 
+		RULE_float_literal = 43, RULE_date_literal = 44, RULE_char_literal = 45;
 	public static final String[] ruleNames = {
 		"sql2003Parser", "sql_executable_statement", "sql_schema_statement", "sql_schema_definition_statement", 
 		"sql_schema_manipulation_statement", "sql_data_statement", "schema_definition", 
@@ -57,9 +57,9 @@ public class sqlParser extends Parser {
 		"show_schema_statement", "use_schema_statement", "column", "tipo_literal", 
 		"constraint", "constraintType", "idRef", "localIDS", "refIDS", "exp", 
 		"rename_table_statement", "show_table_statement", "show_column_statement", 
-		"logic", "logic_not", "relational", "insert_value", "update_value", "delete_value", 
-		"select_value", "condition", "comp", "columns", "columna", "list", "literal", 
-		"int_literal", "float_literal", "date_literal", "char_literal"
+		"logic", "logic_not", "relational", "insert_value", "update_value", "asignacion", 
+		"delete_value", "select_value", "condition", "comp", "columns", "columna", 
+		"list", "literal", "int_literal", "float_literal", "date_literal", "char_literal"
 	};
 
 	@Override
@@ -114,16 +114,16 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(91); 
+			setState(93); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(90); sql_executable_statement();
+				setState(92); sql_executable_statement();
 				}
 				}
-				setState(93); 
+				setState(95); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CREATE) | (1L << DROP) | (1L << ALTER) | (1L << SHOW) | (1L << USE) | (1L << INSERT) | (1L << UPDATE) | (1L << DELETE) | (1L << SELECT))) != 0) );
@@ -170,7 +170,7 @@ public class sqlParser extends Parser {
 		Sql_executable_statementContext _localctx = new Sql_executable_statementContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_sql_executable_statement);
 		try {
-			setState(97);
+			setState(99);
 			switch (_input.LA(1)) {
 			case CREATE:
 			case DROP:
@@ -179,7 +179,7 @@ public class sqlParser extends Parser {
 			case USE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(95); sql_schema_statement();
+				setState(97); sql_schema_statement();
 				}
 				break;
 			case INSERT:
@@ -188,7 +188,7 @@ public class sqlParser extends Parser {
 			case SELECT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(96); sql_data_statement();
+				setState(98); sql_data_statement();
 				}
 				break;
 			default:
@@ -236,12 +236,12 @@ public class sqlParser extends Parser {
 		Sql_schema_statementContext _localctx = new Sql_schema_statementContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_sql_schema_statement);
 		try {
-			setState(101);
+			setState(103);
 			switch (_input.LA(1)) {
 			case CREATE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(99); sql_schema_definition_statement();
+				setState(101); sql_schema_definition_statement();
 				}
 				break;
 			case DROP:
@@ -250,7 +250,7 @@ public class sqlParser extends Parser {
 			case USE:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(100); sql_schema_manipulation_statement();
+				setState(102); sql_schema_manipulation_statement();
 				}
 				break;
 			default:
@@ -298,18 +298,18 @@ public class sqlParser extends Parser {
 		Sql_schema_definition_statementContext _localctx = new Sql_schema_definition_statementContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_sql_schema_definition_statement);
 		try {
-			setState(105);
+			setState(107);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(103); schema_definition();
+				setState(105); schema_definition();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(104); table_definition();
+				setState(106); table_definition();
 				}
 				break;
 			}
@@ -376,60 +376,60 @@ public class sqlParser extends Parser {
 		Sql_schema_manipulation_statementContext _localctx = new Sql_schema_manipulation_statementContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_sql_schema_manipulation_statement);
 		try {
-			setState(116);
+			setState(118);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(107); drop_schema_statement();
+				setState(109); drop_schema_statement();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(108); alter_table_statement();
+				setState(110); alter_table_statement();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(109); drop_table_statement();
+				setState(111); drop_table_statement();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(110); alter_database_statement();
+				setState(112); alter_database_statement();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(111); use_schema_statement();
+				setState(113); use_schema_statement();
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(112); show_schema_statement();
+				setState(114); show_schema_statement();
 				}
 				break;
 			case 7:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(113); rename_table_statement();
+				setState(115); rename_table_statement();
 				}
 				break;
 			case 8:
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(114); show_table_statement();
+				setState(116); show_table_statement();
 				}
 				break;
 			case 9:
 				enterOuterAlt(_localctx, 9);
 				{
-				setState(115); show_column_statement();
+				setState(117); show_column_statement();
 				}
 				break;
 			}
@@ -481,30 +481,30 @@ public class sqlParser extends Parser {
 		Sql_data_statementContext _localctx = new Sql_data_statementContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_sql_data_statement);
 		try {
-			setState(122);
+			setState(124);
 			switch (_input.LA(1)) {
 			case SELECT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(118); select_value();
+				setState(120); select_value();
 				}
 				break;
 			case INSERT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(119); insert_value();
+				setState(121); insert_value();
 				}
 				break;
 			case DELETE:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(120); delete_value();
+				setState(122); delete_value();
 				}
 				break;
 			case UPDATE:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(121); update_value();
+				setState(123); update_value();
 				}
 				break;
 			default:
@@ -551,10 +551,10 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(124); match(CREATE);
-			setState(125); match(DATABASE);
-			setState(126); match(ID);
-			setState(127); match(T__11);
+			setState(126); match(CREATE);
+			setState(127); match(DATABASE);
+			setState(128); match(ID);
+			setState(129); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -604,27 +604,27 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(129); match(CREATE);
-			setState(130); match(TABLE);
-			setState(131); match(ID);
-			setState(132); match(T__5);
-			setState(133); column();
-			setState(138);
+			setState(131); match(CREATE);
+			setState(132); match(TABLE);
+			setState(133); match(ID);
+			setState(134); match(T__5);
+			setState(135); column();
+			setState(140);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__2) {
 				{
 				{
-				setState(134); match(T__2);
-				setState(135); column();
+				setState(136); match(T__2);
+				setState(137); column();
 				}
 				}
-				setState(140);
+				setState(142);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(141); match(T__4);
-			setState(142); match(T__11);
+			setState(143); match(T__4);
+			setState(144); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -667,10 +667,10 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(144); match(DROP);
-			setState(145); match(DATABASE);
-			setState(146); match(ID);
-			setState(147); match(T__11);
+			setState(146); match(DROP);
+			setState(147); match(DATABASE);
+			setState(148); match(ID);
+			setState(149); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -809,59 +809,59 @@ public class sqlParser extends Parser {
 		Alter_table_statementContext _localctx = new Alter_table_statementContext(_ctx, getState());
 		enterRule(_localctx, 18, RULE_alter_table_statement);
 		try {
-			setState(182);
+			setState(184);
 			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				_localctx = new AlterAddColumnContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(149); match(ALTER);
-				setState(150); match(TABLE);
-				setState(151); idTable();
-				setState(152); match(ADD);
-				setState(153); match(COLUMN);
-				setState(154); idColumn();
-				setState(155); tipo_literal();
-				setState(156); constraint();
-				setState(157); match(T__11);
+				setState(151); match(ALTER);
+				setState(152); match(TABLE);
+				setState(153); idTable();
+				setState(154); match(ADD);
+				setState(155); match(COLUMN);
+				setState(156); idColumn();
+				setState(157); tipo_literal();
+				setState(158); constraint();
+				setState(159); match(T__11);
 				}
 				break;
 			case 2:
 				_localctx = new AlterAddConstraintContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(159); match(ALTER);
-				setState(160); match(TABLE);
-				setState(161); idTable();
-				setState(162); match(ADD);
-				setState(163); constraint();
-				setState(164); match(T__11);
+				setState(161); match(ALTER);
+				setState(162); match(TABLE);
+				setState(163); idTable();
+				setState(164); match(ADD);
+				setState(165); constraint();
+				setState(166); match(T__11);
 				}
 				break;
 			case 3:
 				_localctx = new AlterDropColumnContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(166); match(ALTER);
-				setState(167); match(TABLE);
-				setState(168); idTable();
-				setState(169); match(DROP);
-				setState(170); match(COLUMN);
-				setState(171); idColumn();
-				setState(172); match(T__11);
+				setState(168); match(ALTER);
+				setState(169); match(TABLE);
+				setState(170); idTable();
+				setState(171); match(DROP);
+				setState(172); match(COLUMN);
+				setState(173); idColumn();
+				setState(174); match(T__11);
 				}
 				break;
 			case 4:
 				_localctx = new AlterDropConstraintContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(174); match(ALTER);
-				setState(175); match(TABLE);
-				setState(176); idTable();
-				setState(177); match(DROP);
-				setState(178); match(CONSTRAINT);
-				setState(179); idConstraint();
-				setState(180); match(T__11);
+				setState(176); match(ALTER);
+				setState(177); match(TABLE);
+				setState(178); idTable();
+				setState(179); match(DROP);
+				setState(180); match(CONSTRAINT);
+				setState(181); idConstraint();
+				setState(182); match(T__11);
 				}
 				break;
 			}
@@ -904,7 +904,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(184); match(ID);
+			setState(186); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -945,7 +945,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(186); match(ID);
+			setState(188); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -986,7 +986,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(188); match(ID);
+			setState(190); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1029,10 +1029,10 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(190); match(DROP);
-			setState(191); match(TABLE);
-			setState(192); match(ID);
-			setState(193); match(T__11);
+			setState(192); match(DROP);
+			setState(193); match(TABLE);
+			setState(194); match(ID);
+			setState(195); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1080,13 +1080,13 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(195); match(ALTER);
-			setState(196); match(DATABASE);
-			setState(197); match(ID);
-			setState(198); match(RENAME);
-			setState(199); match(TO);
-			setState(200); match(ID);
-			setState(201); match(T__11);
+			setState(197); match(ALTER);
+			setState(198); match(DATABASE);
+			setState(199); match(ID);
+			setState(200); match(RENAME);
+			setState(201); match(TO);
+			setState(202); match(ID);
+			setState(203); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1128,9 +1128,9 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(203); match(SHOW);
-			setState(204); match(DATABASES);
-			setState(205); match(T__11);
+			setState(205); match(SHOW);
+			setState(206); match(DATABASES);
+			setState(207); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1173,10 +1173,10 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(207); match(USE);
-			setState(208); match(DATABASE);
-			setState(209); match(ID);
-			setState(210); match(T__11);
+			setState(209); match(USE);
+			setState(210); match(DATABASE);
+			setState(211); match(ID);
+			setState(212); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1245,21 +1245,21 @@ public class sqlParser extends Parser {
 		ColumnContext _localctx = new ColumnContext(_ctx, getState());
 		enterRule(_localctx, 34, RULE_column);
 		try {
-			setState(215);
+			setState(217);
 			switch (_input.LA(1)) {
 			case ID:
 				_localctx = new Column_literalContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(212); match(ID);
-				setState(213); tipo_literal();
+				setState(214); match(ID);
+				setState(215); tipo_literal();
 				}
 				break;
 			case CONSTRAINT:
 				_localctx = new Column_constraintContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(214); constraint();
+				setState(216); constraint();
 				}
 				break;
 			default:
@@ -1362,20 +1362,20 @@ public class sqlParser extends Parser {
 		Tipo_literalContext _localctx = new Tipo_literalContext(_ctx, getState());
 		enterRule(_localctx, 36, RULE_tipo_literal);
 		try {
-			setState(224);
+			setState(226);
 			switch (_input.LA(1)) {
 			case RES_INT:
 				_localctx = new Tipo_lit_intContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(217); match(RES_INT);
+				setState(219); match(RES_INT);
 				}
 				break;
 			case RES_FLOAT:
 				_localctx = new Tipo_lit_floatContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(218); match(RES_FLOAT);
+				setState(220); match(RES_FLOAT);
 				}
 				break;
 			case RES_CHAR:
@@ -1383,10 +1383,10 @@ public class sqlParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				{
-				setState(219); match(RES_CHAR);
-				setState(220); match(T__5);
-				setState(221); match(INT);
-				setState(222); match(T__4);
+				setState(221); match(RES_CHAR);
+				setState(222); match(T__5);
+				setState(223); match(INT);
+				setState(224); match(T__4);
 				}
 				}
 				break;
@@ -1394,7 +1394,7 @@ public class sqlParser extends Parser {
 				_localctx = new Tipo_lit_dateContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(223); match(RES_DATE);
+				setState(225); match(RES_DATE);
 				}
 				break;
 			default:
@@ -1442,8 +1442,8 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(226); match(CONSTRAINT);
-			setState(227); constraintType();
+			setState(228); match(CONSTRAINT);
+			setState(229); constraintType();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1548,48 +1548,48 @@ public class sqlParser extends Parser {
 		ConstraintTypeContext _localctx = new ConstraintTypeContext(_ctx, getState());
 		enterRule(_localctx, 40, RULE_constraintType);
 		try {
-			setState(256);
+			setState(258);
 			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				_localctx = new ConstraintTypePrimaryKeyContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(229); match(ID);
-				setState(230); match(PRIMARY);
-				setState(231); match(KEY);
-				setState(232); match(T__5);
-				setState(233); localIDS();
-				setState(234); match(T__4);
+				setState(231); match(ID);
+				setState(232); match(PRIMARY);
+				setState(233); match(KEY);
+				setState(234); match(T__5);
+				setState(235); localIDS();
+				setState(236); match(T__4);
 				}
 				break;
 			case 2:
 				_localctx = new ConstraintTypeForeignKeyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(236); match(ID);
-				setState(237); match(FOREIGN);
-				setState(238); match(KEY);
-				setState(239); match(T__5);
-				setState(240); localIDS();
-				setState(241); match(T__4);
-				setState(242); match(REFERENCES);
-				setState(243); idRef();
-				setState(244); match(T__5);
-				setState(245); refIDS();
-				setState(246); match(T__4);
+				setState(238); match(ID);
+				setState(239); match(FOREIGN);
+				setState(240); match(KEY);
+				setState(241); match(T__5);
+				setState(242); localIDS();
+				setState(243); match(T__4);
+				setState(244); match(REFERENCES);
+				setState(245); idRef();
+				setState(246); match(T__5);
+				setState(247); refIDS();
+				setState(248); match(T__4);
 				}
 				break;
 			case 3:
 				_localctx = new ConstraintTypeCheckContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(248); match(ID);
-				setState(249); match(CHECK);
-				setState(250); match(T__5);
-				setState(251); match(ID);
-				setState(252); exp();
+				setState(250); match(ID);
+				setState(251); match(CHECK);
+				setState(252); match(T__5);
 				setState(253); match(ID);
-				setState(254); match(T__4);
+				setState(254); exp();
+				setState(255); match(ID);
+				setState(256); match(T__4);
 				}
 				break;
 			}
@@ -1632,7 +1632,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(258); match(ID);
+			setState(260); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1674,20 +1674,20 @@ public class sqlParser extends Parser {
 		LocalIDSContext _localctx = new LocalIDSContext(_ctx, getState());
 		enterRule(_localctx, 44, RULE_localIDS);
 		try {
-			setState(264);
+			setState(266);
 			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(260); match(ID);
+				setState(262); match(ID);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(261); match(ID);
-				setState(262); match(T__2);
-				setState(263); localIDS();
+				setState(263); match(ID);
+				setState(264); match(T__2);
+				setState(265); localIDS();
 				}
 				break;
 			}
@@ -1731,20 +1731,20 @@ public class sqlParser extends Parser {
 		RefIDSContext _localctx = new RefIDSContext(_ctx, getState());
 		enterRule(_localctx, 46, RULE_refIDS);
 		try {
-			setState(270);
+			setState(272);
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(266); match(ID);
+				setState(268); match(ID);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(267); match(ID);
-				setState(268); match(T__2);
-				setState(269); refIDS();
+				setState(269); match(ID);
+				setState(270); match(T__2);
+				setState(271); refIDS();
 				}
 				break;
 			}
@@ -1833,21 +1833,21 @@ public class sqlParser extends Parser {
 		ExpContext _localctx = new ExpContext(_ctx, getState());
 		enterRule(_localctx, 48, RULE_exp);
 		try {
-			setState(275);
+			setState(277);
 			switch (_input.LA(1)) {
 			case RES_AND:
 			case RES_OR:
 				_localctx = new Exp_logicContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(272); logic();
+				setState(274); logic();
 				}
 				break;
 			case RES_NOT:
 				_localctx = new Exp_logic_notContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(273); logic_not();
+				setState(275); logic_not();
 				}
 				break;
 			case T__12:
@@ -1859,7 +1859,7 @@ public class sqlParser extends Parser {
 				_localctx = new Exp_relationalContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(274); relational();
+				setState(276); relational();
 				}
 				break;
 			default:
@@ -1911,13 +1911,13 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(277); match(ALTER);
-			setState(278); match(TABLE);
-			setState(279); match(ID);
-			setState(280); match(RENAME);
-			setState(281); match(TO);
-			setState(282); match(ID);
-			setState(283); match(T__11);
+			setState(279); match(ALTER);
+			setState(280); match(TABLE);
+			setState(281); match(ID);
+			setState(282); match(RENAME);
+			setState(283); match(TO);
+			setState(284); match(ID);
+			setState(285); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1959,9 +1959,9 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(285); match(SHOW);
-			setState(286); match(TABLES);
-			setState(287); match(T__11);
+			setState(287); match(SHOW);
+			setState(288); match(TABLES);
+			setState(289); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2005,11 +2005,11 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(289); match(SHOW);
-			setState(290); match(COLUMNS);
-			setState(291); match(FROM);
-			setState(292); match(ID);
-			setState(293); match(T__11);
+			setState(291); match(SHOW);
+			setState(292); match(COLUMNS);
+			setState(293); match(FROM);
+			setState(294); match(ID);
+			setState(295); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2073,20 +2073,20 @@ public class sqlParser extends Parser {
 		LogicContext _localctx = new LogicContext(_ctx, getState());
 		enterRule(_localctx, 56, RULE_logic);
 		try {
-			setState(297);
+			setState(299);
 			switch (_input.LA(1)) {
 			case RES_AND:
 				_localctx = new Logic_andContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(295); match(RES_AND);
+				setState(297); match(RES_AND);
 				}
 				break;
 			case RES_OR:
 				_localctx = new Logic_orContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(296); match(RES_OR);
+				setState(298); match(RES_OR);
 				}
 				break;
 			default:
@@ -2131,7 +2131,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(299); match(RES_NOT);
+			setState(301); match(RES_NOT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2172,7 +2172,7 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(301);
+			setState(303);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__12) | (1L << T__10) | (1L << T__9) | (1L << T__8) | (1L << T__7) | (1L << T__6))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -2228,20 +2228,20 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(303); match(INSERT);
-			setState(304); match(INTO);
-			setState(305); match(ID);
-			setState(307);
+			setState(305); match(INSERT);
+			setState(306); match(INTO);
+			setState(307); match(ID);
+			setState(309);
 			_la = _input.LA(1);
 			if (_la==T__5 || _la==ID) {
 				{
-				setState(306); columns();
+				setState(308); columns();
 				}
 			}
 
-			setState(309); match(VALUES);
-			setState(310); list();
-			setState(311); match(T__11);
+			setState(311); match(VALUES);
+			setState(312); list();
+			setState(313); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2257,18 +2257,9 @@ public class sqlParser extends Parser {
 
 	public static class Update_valueContext extends ParserRuleContext {
 		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public LiteralContext literal(int i) {
-			return getRuleContext(LiteralContext.class,i);
-		}
 		public TerminalNode UPDATE() { return getToken(sqlParser.UPDATE, 0); }
-		public List<ColumnaContext> columna() {
-			return getRuleContexts(ColumnaContext.class);
-		}
-		public ColumnaContext columna(int i) {
-			return getRuleContext(ColumnaContext.class,i);
-		}
-		public List<LiteralContext> literal() {
-			return getRuleContexts(LiteralContext.class);
+		public AsignacionContext asignacion() {
+			return getRuleContext(AsignacionContext.class,0);
 		}
 		public TerminalNode WHERE() { return getToken(sqlParser.WHERE, 0); }
 		public TerminalNode SET() { return getToken(sqlParser.SET, 0); }
@@ -2301,27 +2292,91 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(313); match(UPDATE);
-			setState(314); match(ID);
-			setState(315); match(SET);
-			setState(320); 
+			setState(315); match(UPDATE);
+			setState(316); match(ID);
+			setState(317); match(SET);
+			setState(318); asignacion();
+			setState(321);
+			_la = _input.LA(1);
+			if (_la==WHERE) {
+				{
+				setState(319); match(WHERE);
+				setState(320); condition();
+				}
+			}
+
+			setState(323); match(T__11);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class AsignacionContext extends ParserRuleContext {
+		public LiteralContext literal(int i) {
+			return getRuleContext(LiteralContext.class,i);
+		}
+		public List<ColumnaContext> columna() {
+			return getRuleContexts(ColumnaContext.class);
+		}
+		public ColumnaContext columna(int i) {
+			return getRuleContext(ColumnaContext.class,i);
+		}
+		public List<LiteralContext> literal() {
+			return getRuleContexts(LiteralContext.class);
+		}
+		public AsignacionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_asignacion; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAsignacion(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAsignacion(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAsignacion(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final AsignacionContext asignacion() throws RecognitionException {
+		AsignacionContext _localctx = new AsignacionContext(_ctx, getState());
+		enterRule(_localctx, 66, RULE_asignacion);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(325); columna();
+			setState(326); match(T__9);
+			setState(327); literal();
+			setState(335);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			do {
+			while (_la==T__2) {
 				{
 				{
-				setState(316); columna();
-				setState(317); match(T__9);
-				setState(318); literal();
+				setState(328); match(T__2);
+				setState(329); columna();
+				setState(330); match(T__9);
+				setState(331); literal();
 				}
 				}
-				setState(322); 
+				setState(337);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( _la==ID );
-			setState(324); match(WHERE);
-			setState(325); condition();
-			setState(326); match(T__11);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -2364,24 +2419,24 @@ public class sqlParser extends Parser {
 
 	public final Delete_valueContext delete_value() throws RecognitionException {
 		Delete_valueContext _localctx = new Delete_valueContext(_ctx, getState());
-		enterRule(_localctx, 66, RULE_delete_value);
+		enterRule(_localctx, 68, RULE_delete_value);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(328); match(DELETE);
-			setState(329); match(FROM);
-			setState(330); match(ID);
-			setState(333);
+			setState(338); match(DELETE);
+			setState(339); match(FROM);
+			setState(340); match(ID);
+			setState(343);
 			_la = _input.LA(1);
 			if (_la==WHERE) {
 				{
-				setState(331); match(WHERE);
-				setState(332); condition();
+				setState(341); match(WHERE);
+				setState(342); condition();
 				}
 			}
 
-			setState(335); match(T__11);
+			setState(345); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2397,15 +2452,21 @@ public class sqlParser extends Parser {
 
 	public static class Select_valueContext extends ParserRuleContext {
 		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
-		public TerminalNode ASC() { return getToken(sqlParser.ASC, 0); }
+		public List<TerminalNode> ASC() { return getTokens(sqlParser.ASC); }
 		public TerminalNode ORDER() { return getToken(sqlParser.ORDER, 0); }
+		public TerminalNode ASC(int i) {
+			return getToken(sqlParser.ASC, i);
+		}
 		public TerminalNode WHERE() { return getToken(sqlParser.WHERE, 0); }
+		public TerminalNode DESC(int i) {
+			return getToken(sqlParser.DESC, i);
+		}
 		public TerminalNode FROM() { return getToken(sqlParser.FROM, 0); }
 		public TerminalNode ID(int i) {
 			return getToken(sqlParser.ID, i);
 		}
 		public TerminalNode SELECT() { return getToken(sqlParser.SELECT, 0); }
-		public TerminalNode DESC() { return getToken(sqlParser.DESC, 0); }
+		public List<TerminalNode> DESC() { return getTokens(sqlParser.DESC); }
 		public TerminalNode BY() { return getToken(sqlParser.BY, 0); }
 		public ConditionContext condition() {
 			return getRuleContext(ConditionContext.class,0);
@@ -2431,33 +2492,33 @@ public class sqlParser extends Parser {
 
 	public final Select_valueContext select_value() throws RecognitionException {
 		Select_valueContext _localctx = new Select_valueContext(_ctx, getState());
-		enterRule(_localctx, 68, RULE_select_value);
+		enterRule(_localctx, 70, RULE_select_value);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(337); match(SELECT);
-			setState(347);
+			setState(347); match(SELECT);
+			setState(357);
 			switch (_input.LA(1)) {
 			case T__3:
 				{
-				setState(338); match(T__3);
+				setState(348); match(T__3);
 				}
 				break;
 			case ID:
 				{
-				setState(339); match(ID);
-				setState(344);
+				setState(349); match(ID);
+				setState(354);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==T__2) {
 					{
 					{
-					setState(340); match(T__2);
-					setState(341); match(ID);
+					setState(350); match(T__2);
+					setState(351); match(ID);
 					}
 					}
-					setState(346);
+					setState(356);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -2466,26 +2527,82 @@ public class sqlParser extends Parser {
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(349); match(FROM);
-			setState(350); match(ID);
-			setState(351); match(WHERE);
-			setState(352); condition();
-			setState(356);
+			setState(359); match(FROM);
+			setState(360); match(ID);
+			setState(365);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==ORDER) {
+			while (_la==T__2) {
 				{
-				setState(353); match(ORDER);
-				setState(354); match(BY);
-				setState(355);
-				_la = _input.LA(1);
-				if ( !(_la==ASC || _la==DESC) ) {
-				_errHandler.recoverInline(this);
+				{
+				setState(361); match(T__2);
+				setState(362); match(ID);
 				}
-				consume();
+				}
+				setState(367);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(370);
+			_la = _input.LA(1);
+			if (_la==WHERE) {
+				{
+				setState(368); match(WHERE);
+				setState(369); condition();
 				}
 			}
 
-			setState(358); match(T__11);
+			setState(388);
+			_la = _input.LA(1);
+			if (_la==ORDER) {
+				{
+				setState(372); match(ORDER);
+				setState(373); match(BY);
+				setState(374); match(ID);
+				setState(376);
+				_la = _input.LA(1);
+				if (_la==ASC || _la==DESC) {
+					{
+					setState(375);
+					_la = _input.LA(1);
+					if ( !(_la==ASC || _la==DESC) ) {
+					_errHandler.recoverInline(this);
+					}
+					consume();
+					}
+				}
+
+				setState(385);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==T__2) {
+					{
+					{
+					setState(378); match(T__2);
+					setState(379); match(ID);
+					setState(381);
+					_la = _input.LA(1);
+					if (_la==ASC || _la==DESC) {
+						{
+						setState(380);
+						_la = _input.LA(1);
+						if ( !(_la==ASC || _la==DESC) ) {
+						_errHandler.recoverInline(this);
+						}
+						consume();
+						}
+					}
+
+					}
+					}
+					setState(387);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				}
+			}
+
+			setState(390); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2585,24 +2702,24 @@ public class sqlParser extends Parser {
 
 	public final ConditionContext condition() throws RecognitionException {
 		ConditionContext _localctx = new ConditionContext(_ctx, getState());
-		enterRule(_localctx, 70, RULE_condition);
+		enterRule(_localctx, 72, RULE_condition);
 		int _la;
 		try {
-			setState(377);
+			setState(409);
 			switch (_input.LA(1)) {
 			case T__5:
 				_localctx = new ConditionCondContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(360); match(T__5);
-				setState(361); condition();
-				setState(362); match(T__4);
-				setState(366);
+				setState(392); match(T__5);
+				setState(393); condition();
+				setState(394); match(T__4);
+				setState(398);
 				_la = _input.LA(1);
 				if (_la==RES_AND || _la==RES_OR) {
 					{
-					setState(363); logic();
-					setState(364); condition();
+					setState(395); logic();
+					setState(396); condition();
 					}
 				}
 
@@ -2616,13 +2733,13 @@ public class sqlParser extends Parser {
 				_localctx = new ConditionCompContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(368); comp();
-				setState(372);
+				setState(400); comp();
+				setState(404);
 				_la = _input.LA(1);
 				if (_la==RES_AND || _la==RES_OR) {
 					{
-					setState(369); logic();
-					setState(370); condition();
+					setState(401); logic();
+					setState(402); condition();
 					}
 				}
 
@@ -2632,8 +2749,8 @@ public class sqlParser extends Parser {
 				_localctx = new ConditionNotContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(374); logic_not();
-				setState(375); condition();
+				setState(406); logic_not();
+				setState(407); condition();
 				}
 				break;
 			default:
@@ -2739,21 +2856,21 @@ public class sqlParser extends Parser {
 
 	public final CompContext comp() throws RecognitionException {
 		CompContext _localctx = new CompContext(_ctx, getState());
-		enterRule(_localctx, 72, RULE_comp);
+		enterRule(_localctx, 74, RULE_comp);
 		try {
-			setState(393);
-			switch ( getInterpreter().adaptivePredict(_input,25,_ctx) ) {
+			setState(425);
+			switch ( getInterpreter().adaptivePredict(_input,31,_ctx) ) {
 			case 1:
 				_localctx = new CompIdContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(379); match(ID);
-				setState(380); relational();
-				setState(383);
+				setState(411); match(ID);
+				setState(412); relational();
+				setState(415);
 				switch (_input.LA(1)) {
 				case ID:
 					{
-					setState(381); match(ID);
+					setState(413); match(ID);
 					}
 					break;
 				case T__1:
@@ -2761,7 +2878,7 @@ public class sqlParser extends Parser {
 				case DATE:
 				case CHAR:
 					{
-					setState(382); literal();
+					setState(414); literal();
 					}
 					break;
 				default:
@@ -2773,18 +2890,18 @@ public class sqlParser extends Parser {
 				_localctx = new CompLitIdContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(385); literal();
-				setState(386); relational();
-				setState(387); match(ID);
+				setState(417); literal();
+				setState(418); relational();
+				setState(419); match(ID);
 				}
 				break;
 			case 3:
 				_localctx = new CompLitContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(389); literal();
-				setState(390); relational();
-				setState(391); literal();
+				setState(421); literal();
+				setState(422); relational();
+				setState(423); literal();
 				}
 				break;
 			}
@@ -2828,27 +2945,27 @@ public class sqlParser extends Parser {
 
 	public final ColumnsContext columns() throws RecognitionException {
 		ColumnsContext _localctx = new ColumnsContext(_ctx, getState());
-		enterRule(_localctx, 74, RULE_columns);
+		enterRule(_localctx, 76, RULE_columns);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(414);
+			setState(446);
 			switch (_input.LA(1)) {
 			case ID:
 				{
-				setState(395); columna();
-				setState(400);
+				setState(427); columna();
+				setState(432);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==T__2) {
 					{
 					{
-					setState(396); match(T__2);
-					setState(397); columna();
+					setState(428); match(T__2);
+					setState(429); columna();
 					}
 					}
-					setState(402);
+					setState(434);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -2857,23 +2974,23 @@ public class sqlParser extends Parser {
 			case T__5:
 				{
 				{
-				setState(403); match(T__5);
-				setState(404); columna();
-				setState(409);
+				setState(435); match(T__5);
+				setState(436); columna();
+				setState(441);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==T__2) {
 					{
 					{
-					setState(405); match(T__2);
-					setState(406); columna();
+					setState(437); match(T__2);
+					setState(438); columna();
 					}
 					}
-					setState(411);
+					setState(443);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(412); match(T__4);
+				setState(444); match(T__4);
 				}
 				}
 				break;
@@ -2916,11 +3033,11 @@ public class sqlParser extends Parser {
 
 	public final ColumnaContext columna() throws RecognitionException {
 		ColumnaContext _localctx = new ColumnaContext(_ctx, getState());
-		enterRule(_localctx, 76, RULE_columna);
+		enterRule(_localctx, 78, RULE_columna);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(416); match(ID);
+			setState(448); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2962,10 +3079,10 @@ public class sqlParser extends Parser {
 
 	public final ListContext list() throws RecognitionException {
 		ListContext _localctx = new ListContext(_ctx, getState());
-		enterRule(_localctx, 78, RULE_list);
+		enterRule(_localctx, 80, RULE_list);
 		int _la;
 		try {
-			setState(437);
+			setState(469);
 			switch (_input.LA(1)) {
 			case T__1:
 			case INT:
@@ -2974,18 +3091,18 @@ public class sqlParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				{
-				setState(418); literal();
-				setState(423);
+				setState(450); literal();
+				setState(455);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==T__2) {
 					{
 					{
-					setState(419); match(T__2);
-					setState(420); literal();
+					setState(451); match(T__2);
+					setState(452); literal();
 					}
 					}
-					setState(425);
+					setState(457);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -2995,25 +3112,25 @@ public class sqlParser extends Parser {
 			case T__5:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(426); match(T__5);
+				setState(458); match(T__5);
 				{
-				setState(427); literal();
-				setState(432);
+				setState(459); literal();
+				setState(464);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==T__2) {
 					{
 					{
-					setState(428); match(T__2);
-					setState(429); literal();
+					setState(460); match(T__2);
+					setState(461); literal();
 					}
 					}
-					setState(434);
+					setState(466);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
 				}
-				setState(435); match(T__4);
+				setState(467); match(T__4);
 				}
 				break;
 			default:
@@ -3065,32 +3182,32 @@ public class sqlParser extends Parser {
 
 	public final LiteralContext literal() throws RecognitionException {
 		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 80, RULE_literal);
+		enterRule(_localctx, 82, RULE_literal);
 		try {
-			setState(443);
-			switch ( getInterpreter().adaptivePredict(_input,32,_ctx) ) {
+			setState(475);
+			switch ( getInterpreter().adaptivePredict(_input,38,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(439); int_literal();
+				setState(471); int_literal();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(440); float_literal();
+				setState(472); float_literal();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(441); date_literal();
+				setState(473); date_literal();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(442); char_literal();
+				setState(474); char_literal();
 				}
 				break;
 			}
@@ -3129,20 +3246,20 @@ public class sqlParser extends Parser {
 
 	public final Int_literalContext int_literal() throws RecognitionException {
 		Int_literalContext _localctx = new Int_literalContext(_ctx, getState());
-		enterRule(_localctx, 82, RULE_int_literal);
+		enterRule(_localctx, 84, RULE_int_literal);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(446);
+			setState(478);
 			_la = _input.LA(1);
 			if (_la==T__1) {
 				{
-				setState(445); match(T__1);
+				setState(477); match(T__1);
 				}
 			}
 
-			setState(448); match(INT);
+			setState(480); match(INT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3182,26 +3299,26 @@ public class sqlParser extends Parser {
 
 	public final Float_literalContext float_literal() throws RecognitionException {
 		Float_literalContext _localctx = new Float_literalContext(_ctx, getState());
-		enterRule(_localctx, 84, RULE_float_literal);
+		enterRule(_localctx, 86, RULE_float_literal);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(451);
+			setState(483);
 			_la = _input.LA(1);
 			if (_la==T__1) {
 				{
-				setState(450); match(T__1);
+				setState(482); match(T__1);
 				}
 			}
 
-			setState(453); match(INT);
-			setState(456);
+			setState(485); match(INT);
+			setState(488);
 			_la = _input.LA(1);
 			if (_la==T__0) {
 				{
-				setState(454); match(T__0);
-				setState(455); match(INT);
+				setState(486); match(T__0);
+				setState(487); match(INT);
 				}
 			}
 
@@ -3241,11 +3358,11 @@ public class sqlParser extends Parser {
 
 	public final Date_literalContext date_literal() throws RecognitionException {
 		Date_literalContext _localctx = new Date_literalContext(_ctx, getState());
-		enterRule(_localctx, 86, RULE_date_literal);
+		enterRule(_localctx, 88, RULE_date_literal);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(458); match(DATE);
+			setState(490); match(DATE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3282,11 +3399,11 @@ public class sqlParser extends Parser {
 
 	public final Char_literalContext char_literal() throws RecognitionException {
 		Char_literalContext _localctx = new Char_literalContext(_ctx, getState());
-		enterRule(_localctx, 88, RULE_char_literal);
+		enterRule(_localctx, 90, RULE_char_literal);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(460); match(CHAR);
+			setState(492); match(CHAR);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3301,162 +3418,176 @@ public class sqlParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3=\u01d1\4\2\t\2\4"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3=\u01f1\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
 		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\4+\t+\4"+
-		",\t,\4-\t-\4.\t.\3\2\6\2^\n\2\r\2\16\2_\3\3\3\3\5\3d\n\3\3\4\3\4\5\4h"+
-		"\n\4\3\5\3\5\5\5l\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6w\n\6\3\7"+
-		"\3\7\3\7\3\7\5\7}\n\7\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t"+
-		"\7\t\u008b\n\t\f\t\16\t\u008e\13\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\13"+
+		",\t,\4-\t-\4.\t.\4/\t/\3\2\6\2`\n\2\r\2\16\2a\3\3\3\3\5\3f\n\3\3\4\3\4"+
+		"\5\4j\n\4\3\5\3\5\5\5n\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6y\n"+
+		"\6\3\7\3\7\3\7\3\7\5\7\177\n\7\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t"+
+		"\3\t\3\t\7\t\u008d\n\t\f\t\16\t\u0090\13\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n"+
+		"\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13"+
 		"\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13"+
-		"\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13"+
-		"\3\13\3\13\3\13\3\13\5\13\u00b9\n\13\3\f\3\f\3\r\3\r\3\16\3\16\3\17\3"+
-		"\17\3\17\3\17\3\17\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\21\3\21\3"+
-		"\21\3\21\3\22\3\22\3\22\3\22\3\22\3\23\3\23\3\23\5\23\u00da\n\23\3\24"+
-		"\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u00e3\n\24\3\25\3\25\3\25\3\26\3\26"+
+		"\3\13\3\13\3\13\3\13\3\13\3\13\5\13\u00bb\n\13\3\f\3\f\3\r\3\r\3\16\3"+
+		"\16\3\17\3\17\3\17\3\17\3\17\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3"+
+		"\21\3\21\3\21\3\21\3\22\3\22\3\22\3\22\3\22\3\23\3\23\3\23\5\23\u00dc"+
+		"\n\23\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u00e5\n\24\3\25\3\25\3\25"+
 		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26"+
-		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\5\26\u0103\n\26"+
-		"\3\27\3\27\3\30\3\30\3\30\3\30\5\30\u010b\n\30\3\31\3\31\3\31\3\31\5\31"+
-		"\u0111\n\31\3\32\3\32\3\32\5\32\u0116\n\32\3\33\3\33\3\33\3\33\3\33\3"+
-		"\33\3\33\3\33\3\34\3\34\3\34\3\34\3\35\3\35\3\35\3\35\3\35\3\35\3\36\3"+
-		"\36\5\36\u012c\n\36\3\37\3\37\3 \3 \3!\3!\3!\3!\5!\u0136\n!\3!\3!\3!\3"+
-		"!\3\"\3\"\3\"\3\"\3\"\3\"\3\"\6\"\u0143\n\"\r\"\16\"\u0144\3\"\3\"\3\""+
-		"\3\"\3#\3#\3#\3#\3#\5#\u0150\n#\3#\3#\3$\3$\3$\3$\3$\7$\u0159\n$\f$\16"+
-		"$\u015c\13$\5$\u015e\n$\3$\3$\3$\3$\3$\3$\3$\5$\u0167\n$\3$\3$\3%\3%\3"+
-		"%\3%\3%\3%\5%\u0171\n%\3%\3%\3%\3%\5%\u0177\n%\3%\3%\3%\5%\u017c\n%\3"+
-		"&\3&\3&\3&\5&\u0182\n&\3&\3&\3&\3&\3&\3&\3&\3&\5&\u018c\n&\3\'\3\'\3\'"+
-		"\7\'\u0191\n\'\f\'\16\'\u0194\13\'\3\'\3\'\3\'\3\'\7\'\u019a\n\'\f\'\16"+
-		"\'\u019d\13\'\3\'\3\'\5\'\u01a1\n\'\3(\3(\3)\3)\3)\7)\u01a8\n)\f)\16)"+
-		"\u01ab\13)\3)\3)\3)\3)\7)\u01b1\n)\f)\16)\u01b4\13)\3)\3)\5)\u01b8\n)"+
-		"\3*\3*\3*\3*\5*\u01be\n*\3+\5+\u01c1\n+\3+\3+\3,\5,\u01c6\n,\3,\3,\3,"+
-		"\5,\u01cb\n,\3-\3-\3.\3.\3.\2\2/\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36"+
-		" \"$&(*,.\60\62\64\668:<>@BDFHJLNPRTVXZ\2\4\4\2\3\3\5\t\3\2\66\67\u01da"+
-		"\2]\3\2\2\2\4c\3\2\2\2\6g\3\2\2\2\bk\3\2\2\2\nv\3\2\2\2\f|\3\2\2\2\16"+
-		"~\3\2\2\2\20\u0083\3\2\2\2\22\u0092\3\2\2\2\24\u00b8\3\2\2\2\26\u00ba"+
-		"\3\2\2\2\30\u00bc\3\2\2\2\32\u00be\3\2\2\2\34\u00c0\3\2\2\2\36\u00c5\3"+
-		"\2\2\2 \u00cd\3\2\2\2\"\u00d1\3\2\2\2$\u00d9\3\2\2\2&\u00e2\3\2\2\2(\u00e4"+
-		"\3\2\2\2*\u0102\3\2\2\2,\u0104\3\2\2\2.\u010a\3\2\2\2\60\u0110\3\2\2\2"+
-		"\62\u0115\3\2\2\2\64\u0117\3\2\2\2\66\u011f\3\2\2\28\u0123\3\2\2\2:\u012b"+
-		"\3\2\2\2<\u012d\3\2\2\2>\u012f\3\2\2\2@\u0131\3\2\2\2B\u013b\3\2\2\2D"+
-		"\u014a\3\2\2\2F\u0153\3\2\2\2H\u017b\3\2\2\2J\u018b\3\2\2\2L\u01a0\3\2"+
-		"\2\2N\u01a2\3\2\2\2P\u01b7\3\2\2\2R\u01bd\3\2\2\2T\u01c0\3\2\2\2V\u01c5"+
-		"\3\2\2\2X\u01cc\3\2\2\2Z\u01ce\3\2\2\2\\^\5\4\3\2]\\\3\2\2\2^_\3\2\2\2"+
-		"_]\3\2\2\2_`\3\2\2\2`\3\3\2\2\2ad\5\6\4\2bd\5\f\7\2ca\3\2\2\2cb\3\2\2"+
-		"\2d\5\3\2\2\2eh\5\b\5\2fh\5\n\6\2ge\3\2\2\2gf\3\2\2\2h\7\3\2\2\2il\5\16"+
-		"\b\2jl\5\20\t\2ki\3\2\2\2kj\3\2\2\2l\t\3\2\2\2mw\5\22\n\2nw\5\24\13\2"+
-		"ow\5\34\17\2pw\5\36\20\2qw\5\"\22\2rw\5 \21\2sw\5\64\33\2tw\5\66\34\2"+
-		"uw\58\35\2vm\3\2\2\2vn\3\2\2\2vo\3\2\2\2vp\3\2\2\2vq\3\2\2\2vr\3\2\2\2"+
-		"vs\3\2\2\2vt\3\2\2\2vu\3\2\2\2w\13\3\2\2\2x}\5F$\2y}\5@!\2z}\5D#\2{}\5"+
-		"B\"\2|x\3\2\2\2|y\3\2\2\2|z\3\2\2\2|{\3\2\2\2}\r\3\2\2\2~\177\7\20\2\2"+
-		"\177\u0080\7\21\2\2\u0080\u0081\79\2\2\u0081\u0082\7\4\2\2\u0082\17\3"+
-		"\2\2\2\u0083\u0084\7\20\2\2\u0084\u0085\7\23\2\2\u0085\u0086\79\2\2\u0086"+
-		"\u0087\7\n\2\2\u0087\u008c\5$\23\2\u0088\u0089\7\r\2\2\u0089\u008b\5$"+
-		"\23\2\u008a\u0088\3\2\2\2\u008b\u008e\3\2\2\2\u008c\u008a\3\2\2\2\u008c"+
-		"\u008d\3\2\2\2\u008d\u008f\3\2\2\2\u008e\u008c\3\2\2\2\u008f\u0090\7\13"+
-		"\2\2\u0090\u0091\7\4\2\2\u0091\21\3\2\2\2\u0092\u0093\7\25\2\2\u0093\u0094"+
-		"\7\21\2\2\u0094\u0095\79\2\2\u0095\u0096\7\4\2\2\u0096\23\3\2\2\2\u0097"+
-		"\u0098\7\26\2\2\u0098\u0099\7\23\2\2\u0099\u009a\5\26\f\2\u009a\u009b"+
-		"\7%\2\2\u009b\u009c\7&\2\2\u009c\u009d\5\30\r\2\u009d\u009e\5&\24\2\u009e"+
-		"\u009f\5(\25\2\u009f\u00a0\7\4\2\2\u00a0\u00b9\3\2\2\2\u00a1\u00a2\7\26"+
-		"\2\2\u00a2\u00a3\7\23\2\2\u00a3\u00a4\5\26\f\2\u00a4\u00a5\7%\2\2\u00a5"+
-		"\u00a6\5(\25\2\u00a6\u00a7\7\4\2\2\u00a7\u00b9\3\2\2\2\u00a8\u00a9\7\26"+
-		"\2\2\u00a9\u00aa\7\23\2\2\u00aa\u00ab\5\26\f\2\u00ab\u00ac\7\25\2\2\u00ac"+
-		"\u00ad\7&\2\2\u00ad\u00ae\5\30\r\2\u00ae\u00af\7\4\2\2\u00af\u00b9\3\2"+
-		"\2\2\u00b0\u00b1\7\26\2\2\u00b1\u00b2\7\23\2\2\u00b2\u00b3\5\26\f\2\u00b3"+
-		"\u00b4\7\25\2\2\u00b4\u00b5\7\37\2\2\u00b5\u00b6\5\32\16\2\u00b6\u00b7"+
-		"\7\4\2\2\u00b7\u00b9\3\2\2\2\u00b8\u0097\3\2\2\2\u00b8\u00a1\3\2\2\2\u00b8"+
-		"\u00a8\3\2\2\2\u00b8\u00b0\3\2\2\2\u00b9\25\3\2\2\2\u00ba\u00bb\79\2\2"+
-		"\u00bb\27\3\2\2\2\u00bc\u00bd\79\2\2\u00bd\31\3\2\2\2\u00be\u00bf\79\2"+
-		"\2\u00bf\33\3\2\2\2\u00c0\u00c1\7\25\2\2\u00c1\u00c2\7\23\2\2\u00c2\u00c3"+
-		"\79\2\2\u00c3\u00c4\7\4\2\2\u00c4\35\3\2\2\2\u00c5\u00c6\7\26\2\2\u00c6"+
-		"\u00c7\7\21\2\2\u00c7\u00c8\79\2\2\u00c8\u00c9\7\27\2\2\u00c9\u00ca\7"+
-		"\30\2\2\u00ca\u00cb\79\2\2\u00cb\u00cc\7\4\2\2\u00cc\37\3\2\2\2\u00cd"+
-		"\u00ce\7\31\2\2\u00ce\u00cf\7\22\2\2\u00cf\u00d0\7\4\2\2\u00d0!\3\2\2"+
-		"\2\u00d1\u00d2\7\32\2\2\u00d2\u00d3\7\21\2\2\u00d3\u00d4\79\2\2\u00d4"+
-		"\u00d5\7\4\2\2\u00d5#\3\2\2\2\u00d6\u00d7\79\2\2\u00d7\u00da\5&\24\2\u00d8"+
-		"\u00da\5(\25\2\u00d9\u00d6\3\2\2\2\u00d9\u00d8\3\2\2\2\u00da%\3\2\2\2"+
-		"\u00db\u00e3\7\33\2\2\u00dc\u00e3\7\34\2\2\u00dd\u00de\7\35\2\2\u00de"+
-		"\u00df\7\n\2\2\u00df\u00e0\78\2\2\u00e0\u00e3\7\13\2\2\u00e1\u00e3\7\36"+
-		"\2\2\u00e2\u00db\3\2\2\2\u00e2\u00dc\3\2\2\2\u00e2\u00dd\3\2\2\2\u00e2"+
-		"\u00e1\3\2\2\2\u00e3\'\3\2\2\2\u00e4\u00e5\7\37\2\2\u00e5\u00e6\5*\26"+
-		"\2\u00e6)\3\2\2\2\u00e7\u00e8\79\2\2\u00e8\u00e9\7!\2\2\u00e9\u00ea\7"+
-		" \2\2\u00ea\u00eb\7\n\2\2\u00eb\u00ec\5.\30\2\u00ec\u00ed\7\13\2\2\u00ed"+
-		"\u0103\3\2\2\2\u00ee\u00ef\79\2\2\u00ef\u00f0\7\"\2\2\u00f0\u00f1\7 \2"+
-		"\2\u00f1\u00f2\7\n\2\2\u00f2\u00f3\5.\30\2\u00f3\u00f4\7\13\2\2\u00f4"+
-		"\u00f5\7#\2\2\u00f5\u00f6\5,\27\2\u00f6\u00f7\7\n\2\2\u00f7\u00f8\5\60"+
-		"\31\2\u00f8\u00f9\7\13\2\2\u00f9\u0103\3\2\2\2\u00fa\u00fb\79\2\2\u00fb"+
-		"\u00fc\7$\2\2\u00fc\u00fd\7\n\2\2\u00fd\u00fe\79\2\2\u00fe\u00ff\5\62"+
-		"\32\2\u00ff\u0100\79\2\2\u0100\u0101\7\13\2\2\u0101\u0103\3\2\2\2\u0102"+
-		"\u00e7\3\2\2\2\u0102\u00ee\3\2\2\2\u0102\u00fa\3\2\2\2\u0103+\3\2\2\2"+
-		"\u0104\u0105\79\2\2\u0105-\3\2\2\2\u0106\u010b\79\2\2\u0107\u0108\79\2"+
-		"\2\u0108\u0109\7\r\2\2\u0109\u010b\5.\30\2\u010a\u0106\3\2\2\2\u010a\u0107"+
-		"\3\2\2\2\u010b/\3\2\2\2\u010c\u0111\79\2\2\u010d\u010e\79\2\2\u010e\u010f"+
-		"\7\r\2\2\u010f\u0111\5\60\31\2\u0110\u010c\3\2\2\2\u0110\u010d\3\2\2\2"+
-		"\u0111\61\3\2\2\2\u0112\u0116\5:\36\2\u0113\u0116\5<\37\2\u0114\u0116"+
-		"\5> \2\u0115\u0112\3\2\2\2\u0115\u0113\3\2\2\2\u0115\u0114\3\2\2\2\u0116"+
-		"\63\3\2\2\2\u0117\u0118\7\26\2\2\u0118\u0119\7\23\2\2\u0119\u011a\79\2"+
-		"\2\u011a\u011b\7\27\2\2\u011b\u011c\7\30\2\2\u011c\u011d\79\2\2\u011d"+
-		"\u011e\7\4\2\2\u011e\65\3\2\2\2\u011f\u0120\7\31\2\2\u0120\u0121\7\24"+
-		"\2\2\u0121\u0122\7\4\2\2\u0122\67\3\2\2\2\u0123\u0124\7\31\2\2\u0124\u0125"+
-		"\7\'\2\2\u0125\u0126\7(\2\2\u0126\u0127\79\2\2\u0127\u0128\7\4\2\2\u0128"+
-		"9\3\2\2\2\u0129\u012c\7)\2\2\u012a\u012c\7*\2\2\u012b\u0129\3\2\2\2\u012b"+
-		"\u012a\3\2\2\2\u012c;\3\2\2\2\u012d\u012e\7+\2\2\u012e=\3\2\2\2\u012f"+
-		"\u0130\t\2\2\2\u0130?\3\2\2\2\u0131\u0132\7,\2\2\u0132\u0133\7-\2\2\u0133"+
-		"\u0135\79\2\2\u0134\u0136\5L\'\2\u0135\u0134\3\2\2\2\u0135\u0136\3\2\2"+
-		"\2\u0136\u0137\3\2\2\2\u0137\u0138\7.\2\2\u0138\u0139\5P)\2\u0139\u013a"+
-		"\7\4\2\2\u013aA\3\2\2\2\u013b\u013c\7/\2\2\u013c\u013d\79\2\2\u013d\u0142"+
-		"\7\60\2\2\u013e\u013f\5N(\2\u013f\u0140\7\6\2\2\u0140\u0141\5R*\2\u0141"+
-		"\u0143\3\2\2\2\u0142\u013e\3\2\2\2\u0143\u0144\3\2\2\2\u0144\u0142\3\2"+
-		"\2\2\u0144\u0145\3\2\2\2\u0145\u0146\3\2\2\2\u0146\u0147\7\61\2\2\u0147"+
-		"\u0148\5H%\2\u0148\u0149\7\4\2\2\u0149C\3\2\2\2\u014a\u014b\7\62\2\2\u014b"+
-		"\u014c\7(\2\2\u014c\u014f\79\2\2\u014d\u014e\7\61\2\2\u014e\u0150\5H%"+
-		"\2\u014f\u014d\3\2\2\2\u014f\u0150\3\2\2\2\u0150\u0151\3\2\2\2\u0151\u0152"+
-		"\7\4\2\2\u0152E\3\2\2\2\u0153\u015d\7\63\2\2\u0154\u015e\7\f\2\2\u0155"+
-		"\u015a\79\2\2\u0156\u0157\7\r\2\2\u0157\u0159\79\2\2\u0158\u0156\3\2\2"+
-		"\2\u0159\u015c\3\2\2\2\u015a\u0158\3\2\2\2\u015a\u015b\3\2\2\2\u015b\u015e"+
-		"\3\2\2\2\u015c\u015a\3\2\2\2\u015d\u0154\3\2\2\2\u015d\u0155\3\2\2\2\u015e"+
-		"\u015f\3\2\2\2\u015f\u0160\7(\2\2\u0160\u0161\79\2\2\u0161\u0162\7\61"+
-		"\2\2\u0162\u0166\5H%\2\u0163\u0164\7\64\2\2\u0164\u0165\7\65\2\2\u0165"+
-		"\u0167\t\3\2\2\u0166\u0163\3\2\2\2\u0166\u0167\3\2\2\2\u0167\u0168\3\2"+
-		"\2\2\u0168\u0169\7\4\2\2\u0169G\3\2\2\2\u016a\u016b\7\n\2\2\u016b\u016c"+
-		"\5H%\2\u016c\u0170\7\13\2\2\u016d\u016e\5:\36\2\u016e\u016f\5H%\2\u016f"+
-		"\u0171\3\2\2\2\u0170\u016d\3\2\2\2\u0170\u0171\3\2\2\2\u0171\u017c\3\2"+
-		"\2\2\u0172\u0176\5J&\2\u0173\u0174\5:\36\2\u0174\u0175\5H%\2\u0175\u0177"+
-		"\3\2\2\2\u0176\u0173\3\2\2\2\u0176\u0177\3\2\2\2\u0177\u017c\3\2\2\2\u0178"+
-		"\u0179\5<\37\2\u0179\u017a\5H%\2\u017a\u017c\3\2\2\2\u017b\u016a\3\2\2"+
-		"\2\u017b\u0172\3\2\2\2\u017b\u0178\3\2\2\2\u017cI\3\2\2\2\u017d\u017e"+
-		"\79\2\2\u017e\u0181\5> \2\u017f\u0182\79\2\2\u0180\u0182\5R*\2\u0181\u017f"+
-		"\3\2\2\2\u0181\u0180\3\2\2\2\u0182\u018c\3\2\2\2\u0183\u0184\5R*\2\u0184"+
-		"\u0185\5> \2\u0185\u0186\79\2\2\u0186\u018c\3\2\2\2\u0187\u0188\5R*\2"+
-		"\u0188\u0189\5> \2\u0189\u018a\5R*\2\u018a\u018c\3\2\2\2\u018b\u017d\3"+
-		"\2\2\2\u018b\u0183\3\2\2\2\u018b\u0187\3\2\2\2\u018cK\3\2\2\2\u018d\u0192"+
-		"\5N(\2\u018e\u018f\7\r\2\2\u018f\u0191\5N(\2\u0190\u018e\3\2\2\2\u0191"+
-		"\u0194\3\2\2\2\u0192\u0190\3\2\2\2\u0192\u0193\3\2\2\2\u0193\u01a1\3\2"+
-		"\2\2\u0194\u0192\3\2\2\2\u0195\u0196\7\n\2\2\u0196\u019b\5N(\2\u0197\u0198"+
-		"\7\r\2\2\u0198\u019a\5N(\2\u0199\u0197\3\2\2\2\u019a\u019d\3\2\2\2\u019b"+
-		"\u0199\3\2\2\2\u019b\u019c\3\2\2\2\u019c\u019e\3\2\2\2\u019d\u019b\3\2"+
-		"\2\2\u019e\u019f\7\13\2\2\u019f\u01a1\3\2\2\2\u01a0\u018d\3\2\2\2\u01a0"+
-		"\u0195\3\2\2\2\u01a1M\3\2\2\2\u01a2\u01a3\79\2\2\u01a3O\3\2\2\2\u01a4"+
-		"\u01a9\5R*\2\u01a5\u01a6\7\r\2\2\u01a6\u01a8\5R*\2\u01a7\u01a5\3\2\2\2"+
-		"\u01a8\u01ab\3\2\2\2\u01a9\u01a7\3\2\2\2\u01a9\u01aa\3\2\2\2\u01aa\u01b8"+
-		"\3\2\2\2\u01ab\u01a9\3\2\2\2\u01ac\u01ad\7\n\2\2\u01ad\u01b2\5R*\2\u01ae"+
-		"\u01af\7\r\2\2\u01af\u01b1\5R*\2\u01b0\u01ae\3\2\2\2\u01b1\u01b4\3\2\2"+
-		"\2\u01b2\u01b0\3\2\2\2\u01b2\u01b3\3\2\2\2\u01b3\u01b5\3\2\2\2\u01b4\u01b2"+
-		"\3\2\2\2\u01b5\u01b6\7\13\2\2\u01b6\u01b8\3\2\2\2\u01b7\u01a4\3\2\2\2"+
-		"\u01b7\u01ac\3\2\2\2\u01b8Q\3\2\2\2\u01b9\u01be\5T+\2\u01ba\u01be\5V,"+
-		"\2\u01bb\u01be\5X-\2\u01bc\u01be\5Z.\2\u01bd\u01b9\3\2\2\2\u01bd\u01ba"+
-		"\3\2\2\2\u01bd\u01bb\3\2\2\2\u01bd\u01bc\3\2\2\2\u01beS\3\2\2\2\u01bf"+
-		"\u01c1\7\16\2\2\u01c0\u01bf\3\2\2\2\u01c0\u01c1\3\2\2\2\u01c1\u01c2\3"+
-		"\2\2\2\u01c2\u01c3\78\2\2\u01c3U\3\2\2\2\u01c4\u01c6\7\16\2\2\u01c5\u01c4"+
-		"\3\2\2\2\u01c5\u01c6\3\2\2\2\u01c6\u01c7\3\2\2\2\u01c7\u01ca\78\2\2\u01c8"+
-		"\u01c9\7\17\2\2\u01c9\u01cb\78\2\2\u01ca\u01c8\3\2\2\2\u01ca\u01cb\3\2"+
-		"\2\2\u01cbW\3\2\2\2\u01cc\u01cd\7:\2\2\u01cdY\3\2\2\2\u01ce\u01cf\7;\2"+
-		"\2\u01cf[\3\2\2\2&_cgkv|\u008c\u00b8\u00d9\u00e2\u0102\u010a\u0110\u0115"+
-		"\u012b\u0135\u0144\u014f\u015a\u015d\u0166\u0170\u0176\u017b\u0181\u018b"+
-		"\u0192\u019b\u01a0\u01a9\u01b2\u01b7\u01bd\u01c0\u01c5\u01ca";
+		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\5\26"+
+		"\u0105\n\26\3\27\3\27\3\30\3\30\3\30\3\30\5\30\u010d\n\30\3\31\3\31\3"+
+		"\31\3\31\5\31\u0113\n\31\3\32\3\32\3\32\5\32\u0118\n\32\3\33\3\33\3\33"+
+		"\3\33\3\33\3\33\3\33\3\33\3\34\3\34\3\34\3\34\3\35\3\35\3\35\3\35\3\35"+
+		"\3\35\3\36\3\36\5\36\u012e\n\36\3\37\3\37\3 \3 \3!\3!\3!\3!\5!\u0138\n"+
+		"!\3!\3!\3!\3!\3\"\3\"\3\"\3\"\3\"\3\"\5\"\u0144\n\"\3\"\3\"\3#\3#\3#\3"+
+		"#\3#\3#\3#\3#\7#\u0150\n#\f#\16#\u0153\13#\3$\3$\3$\3$\3$\5$\u015a\n$"+
+		"\3$\3$\3%\3%\3%\3%\3%\7%\u0163\n%\f%\16%\u0166\13%\5%\u0168\n%\3%\3%\3"+
+		"%\3%\7%\u016e\n%\f%\16%\u0171\13%\3%\3%\5%\u0175\n%\3%\3%\3%\3%\5%\u017b"+
+		"\n%\3%\3%\3%\5%\u0180\n%\7%\u0182\n%\f%\16%\u0185\13%\5%\u0187\n%\3%\3"+
+		"%\3&\3&\3&\3&\3&\3&\5&\u0191\n&\3&\3&\3&\3&\5&\u0197\n&\3&\3&\3&\5&\u019c"+
+		"\n&\3\'\3\'\3\'\3\'\5\'\u01a2\n\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\5\'"+
+		"\u01ac\n\'\3(\3(\3(\7(\u01b1\n(\f(\16(\u01b4\13(\3(\3(\3(\3(\7(\u01ba"+
+		"\n(\f(\16(\u01bd\13(\3(\3(\5(\u01c1\n(\3)\3)\3*\3*\3*\7*\u01c8\n*\f*\16"+
+		"*\u01cb\13*\3*\3*\3*\3*\7*\u01d1\n*\f*\16*\u01d4\13*\3*\3*\5*\u01d8\n"+
+		"*\3+\3+\3+\3+\5+\u01de\n+\3,\5,\u01e1\n,\3,\3,\3-\5-\u01e6\n-\3-\3-\3"+
+		"-\5-\u01eb\n-\3.\3.\3/\3/\3/\2\2\60\2\4\6\b\n\f\16\20\22\24\26\30\32\34"+
+		"\36 \"$&(*,.\60\62\64\668:<>@BDFHJLNPRTVXZ\\\2\4\4\2\3\3\5\t\3\2\66\67"+
+		"\u01ff\2_\3\2\2\2\4e\3\2\2\2\6i\3\2\2\2\bm\3\2\2\2\nx\3\2\2\2\f~\3\2\2"+
+		"\2\16\u0080\3\2\2\2\20\u0085\3\2\2\2\22\u0094\3\2\2\2\24\u00ba\3\2\2\2"+
+		"\26\u00bc\3\2\2\2\30\u00be\3\2\2\2\32\u00c0\3\2\2\2\34\u00c2\3\2\2\2\36"+
+		"\u00c7\3\2\2\2 \u00cf\3\2\2\2\"\u00d3\3\2\2\2$\u00db\3\2\2\2&\u00e4\3"+
+		"\2\2\2(\u00e6\3\2\2\2*\u0104\3\2\2\2,\u0106\3\2\2\2.\u010c\3\2\2\2\60"+
+		"\u0112\3\2\2\2\62\u0117\3\2\2\2\64\u0119\3\2\2\2\66\u0121\3\2\2\28\u0125"+
+		"\3\2\2\2:\u012d\3\2\2\2<\u012f\3\2\2\2>\u0131\3\2\2\2@\u0133\3\2\2\2B"+
+		"\u013d\3\2\2\2D\u0147\3\2\2\2F\u0154\3\2\2\2H\u015d\3\2\2\2J\u019b\3\2"+
+		"\2\2L\u01ab\3\2\2\2N\u01c0\3\2\2\2P\u01c2\3\2\2\2R\u01d7\3\2\2\2T\u01dd"+
+		"\3\2\2\2V\u01e0\3\2\2\2X\u01e5\3\2\2\2Z\u01ec\3\2\2\2\\\u01ee\3\2\2\2"+
+		"^`\5\4\3\2_^\3\2\2\2`a\3\2\2\2a_\3\2\2\2ab\3\2\2\2b\3\3\2\2\2cf\5\6\4"+
+		"\2df\5\f\7\2ec\3\2\2\2ed\3\2\2\2f\5\3\2\2\2gj\5\b\5\2hj\5\n\6\2ig\3\2"+
+		"\2\2ih\3\2\2\2j\7\3\2\2\2kn\5\16\b\2ln\5\20\t\2mk\3\2\2\2ml\3\2\2\2n\t"+
+		"\3\2\2\2oy\5\22\n\2py\5\24\13\2qy\5\34\17\2ry\5\36\20\2sy\5\"\22\2ty\5"+
+		" \21\2uy\5\64\33\2vy\5\66\34\2wy\58\35\2xo\3\2\2\2xp\3\2\2\2xq\3\2\2\2"+
+		"xr\3\2\2\2xs\3\2\2\2xt\3\2\2\2xu\3\2\2\2xv\3\2\2\2xw\3\2\2\2y\13\3\2\2"+
+		"\2z\177\5H%\2{\177\5@!\2|\177\5F$\2}\177\5B\"\2~z\3\2\2\2~{\3\2\2\2~|"+
+		"\3\2\2\2~}\3\2\2\2\177\r\3\2\2\2\u0080\u0081\7\20\2\2\u0081\u0082\7\21"+
+		"\2\2\u0082\u0083\79\2\2\u0083\u0084\7\4\2\2\u0084\17\3\2\2\2\u0085\u0086"+
+		"\7\20\2\2\u0086\u0087\7\23\2\2\u0087\u0088\79\2\2\u0088\u0089\7\n\2\2"+
+		"\u0089\u008e\5$\23\2\u008a\u008b\7\r\2\2\u008b\u008d\5$\23\2\u008c\u008a"+
+		"\3\2\2\2\u008d\u0090\3\2\2\2\u008e\u008c\3\2\2\2\u008e\u008f\3\2\2\2\u008f"+
+		"\u0091\3\2\2\2\u0090\u008e\3\2\2\2\u0091\u0092\7\13\2\2\u0092\u0093\7"+
+		"\4\2\2\u0093\21\3\2\2\2\u0094\u0095\7\25\2\2\u0095\u0096\7\21\2\2\u0096"+
+		"\u0097\79\2\2\u0097\u0098\7\4\2\2\u0098\23\3\2\2\2\u0099\u009a\7\26\2"+
+		"\2\u009a\u009b\7\23\2\2\u009b\u009c\5\26\f\2\u009c\u009d\7%\2\2\u009d"+
+		"\u009e\7&\2\2\u009e\u009f\5\30\r\2\u009f\u00a0\5&\24\2\u00a0\u00a1\5("+
+		"\25\2\u00a1\u00a2\7\4\2\2\u00a2\u00bb\3\2\2\2\u00a3\u00a4\7\26\2\2\u00a4"+
+		"\u00a5\7\23\2\2\u00a5\u00a6\5\26\f\2\u00a6\u00a7\7%\2\2\u00a7\u00a8\5"+
+		"(\25\2\u00a8\u00a9\7\4\2\2\u00a9\u00bb\3\2\2\2\u00aa\u00ab\7\26\2\2\u00ab"+
+		"\u00ac\7\23\2\2\u00ac\u00ad\5\26\f\2\u00ad\u00ae\7\25\2\2\u00ae\u00af"+
+		"\7&\2\2\u00af\u00b0\5\30\r\2\u00b0\u00b1\7\4\2\2\u00b1\u00bb\3\2\2\2\u00b2"+
+		"\u00b3\7\26\2\2\u00b3\u00b4\7\23\2\2\u00b4\u00b5\5\26\f\2\u00b5\u00b6"+
+		"\7\25\2\2\u00b6\u00b7\7\37\2\2\u00b7\u00b8\5\32\16\2\u00b8\u00b9\7\4\2"+
+		"\2\u00b9\u00bb\3\2\2\2\u00ba\u0099\3\2\2\2\u00ba\u00a3\3\2\2\2\u00ba\u00aa"+
+		"\3\2\2\2\u00ba\u00b2\3\2\2\2\u00bb\25\3\2\2\2\u00bc\u00bd\79\2\2\u00bd"+
+		"\27\3\2\2\2\u00be\u00bf\79\2\2\u00bf\31\3\2\2\2\u00c0\u00c1\79\2\2\u00c1"+
+		"\33\3\2\2\2\u00c2\u00c3\7\25\2\2\u00c3\u00c4\7\23\2\2\u00c4\u00c5\79\2"+
+		"\2\u00c5\u00c6\7\4\2\2\u00c6\35\3\2\2\2\u00c7\u00c8\7\26\2\2\u00c8\u00c9"+
+		"\7\21\2\2\u00c9\u00ca\79\2\2\u00ca\u00cb\7\27\2\2\u00cb\u00cc\7\30\2\2"+
+		"\u00cc\u00cd\79\2\2\u00cd\u00ce\7\4\2\2\u00ce\37\3\2\2\2\u00cf\u00d0\7"+
+		"\31\2\2\u00d0\u00d1\7\22\2\2\u00d1\u00d2\7\4\2\2\u00d2!\3\2\2\2\u00d3"+
+		"\u00d4\7\32\2\2\u00d4\u00d5\7\21\2\2\u00d5\u00d6\79\2\2\u00d6\u00d7\7"+
+		"\4\2\2\u00d7#\3\2\2\2\u00d8\u00d9\79\2\2\u00d9\u00dc\5&\24\2\u00da\u00dc"+
+		"\5(\25\2\u00db\u00d8\3\2\2\2\u00db\u00da\3\2\2\2\u00dc%\3\2\2\2\u00dd"+
+		"\u00e5\7\33\2\2\u00de\u00e5\7\34\2\2\u00df\u00e0\7\35\2\2\u00e0\u00e1"+
+		"\7\n\2\2\u00e1\u00e2\78\2\2\u00e2\u00e5\7\13\2\2\u00e3\u00e5\7\36\2\2"+
+		"\u00e4\u00dd\3\2\2\2\u00e4\u00de\3\2\2\2\u00e4\u00df\3\2\2\2\u00e4\u00e3"+
+		"\3\2\2\2\u00e5\'\3\2\2\2\u00e6\u00e7\7\37\2\2\u00e7\u00e8\5*\26\2\u00e8"+
+		")\3\2\2\2\u00e9\u00ea\79\2\2\u00ea\u00eb\7!\2\2\u00eb\u00ec\7 \2\2\u00ec"+
+		"\u00ed\7\n\2\2\u00ed\u00ee\5.\30\2\u00ee\u00ef\7\13\2\2\u00ef\u0105\3"+
+		"\2\2\2\u00f0\u00f1\79\2\2\u00f1\u00f2\7\"\2\2\u00f2\u00f3\7 \2\2\u00f3"+
+		"\u00f4\7\n\2\2\u00f4\u00f5\5.\30\2\u00f5\u00f6\7\13\2\2\u00f6\u00f7\7"+
+		"#\2\2\u00f7\u00f8\5,\27\2\u00f8\u00f9\7\n\2\2\u00f9\u00fa\5\60\31\2\u00fa"+
+		"\u00fb\7\13\2\2\u00fb\u0105\3\2\2\2\u00fc\u00fd\79\2\2\u00fd\u00fe\7$"+
+		"\2\2\u00fe\u00ff\7\n\2\2\u00ff\u0100\79\2\2\u0100\u0101\5\62\32\2\u0101"+
+		"\u0102\79\2\2\u0102\u0103\7\13\2\2\u0103\u0105\3\2\2\2\u0104\u00e9\3\2"+
+		"\2\2\u0104\u00f0\3\2\2\2\u0104\u00fc\3\2\2\2\u0105+\3\2\2\2\u0106\u0107"+
+		"\79\2\2\u0107-\3\2\2\2\u0108\u010d\79\2\2\u0109\u010a\79\2\2\u010a\u010b"+
+		"\7\r\2\2\u010b\u010d\5.\30\2\u010c\u0108\3\2\2\2\u010c\u0109\3\2\2\2\u010d"+
+		"/\3\2\2\2\u010e\u0113\79\2\2\u010f\u0110\79\2\2\u0110\u0111\7\r\2\2\u0111"+
+		"\u0113\5\60\31\2\u0112\u010e\3\2\2\2\u0112\u010f\3\2\2\2\u0113\61\3\2"+
+		"\2\2\u0114\u0118\5:\36\2\u0115\u0118\5<\37\2\u0116\u0118\5> \2\u0117\u0114"+
+		"\3\2\2\2\u0117\u0115\3\2\2\2\u0117\u0116\3\2\2\2\u0118\63\3\2\2\2\u0119"+
+		"\u011a\7\26\2\2\u011a\u011b\7\23\2\2\u011b\u011c\79\2\2\u011c\u011d\7"+
+		"\27\2\2\u011d\u011e\7\30\2\2\u011e\u011f\79\2\2\u011f\u0120\7\4\2\2\u0120"+
+		"\65\3\2\2\2\u0121\u0122\7\31\2\2\u0122\u0123\7\24\2\2\u0123\u0124\7\4"+
+		"\2\2\u0124\67\3\2\2\2\u0125\u0126\7\31\2\2\u0126\u0127\7\'\2\2\u0127\u0128"+
+		"\7(\2\2\u0128\u0129\79\2\2\u0129\u012a\7\4\2\2\u012a9\3\2\2\2\u012b\u012e"+
+		"\7)\2\2\u012c\u012e\7*\2\2\u012d\u012b\3\2\2\2\u012d\u012c\3\2\2\2\u012e"+
+		";\3\2\2\2\u012f\u0130\7+\2\2\u0130=\3\2\2\2\u0131\u0132\t\2\2\2\u0132"+
+		"?\3\2\2\2\u0133\u0134\7,\2\2\u0134\u0135\7-\2\2\u0135\u0137\79\2\2\u0136"+
+		"\u0138\5N(\2\u0137\u0136\3\2\2\2\u0137\u0138\3\2\2\2\u0138\u0139\3\2\2"+
+		"\2\u0139\u013a\7.\2\2\u013a\u013b\5R*\2\u013b\u013c\7\4\2\2\u013cA\3\2"+
+		"\2\2\u013d\u013e\7/\2\2\u013e\u013f\79\2\2\u013f\u0140\7\60\2\2\u0140"+
+		"\u0143\5D#\2\u0141\u0142\7\61\2\2\u0142\u0144\5J&\2\u0143\u0141\3\2\2"+
+		"\2\u0143\u0144\3\2\2\2\u0144\u0145\3\2\2\2\u0145\u0146\7\4\2\2\u0146C"+
+		"\3\2\2\2\u0147\u0148\5P)\2\u0148\u0149\7\6\2\2\u0149\u0151\5T+\2\u014a"+
+		"\u014b\7\r\2\2\u014b\u014c\5P)\2\u014c\u014d\7\6\2\2\u014d\u014e\5T+\2"+
+		"\u014e\u0150\3\2\2\2\u014f\u014a\3\2\2\2\u0150\u0153\3\2\2\2\u0151\u014f"+
+		"\3\2\2\2\u0151\u0152\3\2\2\2\u0152E\3\2\2\2\u0153\u0151\3\2\2\2\u0154"+
+		"\u0155\7\62\2\2\u0155\u0156\7(\2\2\u0156\u0159\79\2\2\u0157\u0158\7\61"+
+		"\2\2\u0158\u015a\5J&\2\u0159\u0157\3\2\2\2\u0159\u015a\3\2\2\2\u015a\u015b"+
+		"\3\2\2\2\u015b\u015c\7\4\2\2\u015cG\3\2\2\2\u015d\u0167\7\63\2\2\u015e"+
+		"\u0168\7\f\2\2\u015f\u0164\79\2\2\u0160\u0161\7\r\2\2\u0161\u0163\79\2"+
+		"\2\u0162\u0160\3\2\2\2\u0163\u0166\3\2\2\2\u0164\u0162\3\2\2\2\u0164\u0165"+
+		"\3\2\2\2\u0165\u0168\3\2\2\2\u0166\u0164\3\2\2\2\u0167\u015e\3\2\2\2\u0167"+
+		"\u015f\3\2\2\2\u0168\u0169\3\2\2\2\u0169\u016a\7(\2\2\u016a\u016f\79\2"+
+		"\2\u016b\u016c\7\r\2\2\u016c\u016e\79\2\2\u016d\u016b\3\2\2\2\u016e\u0171"+
+		"\3\2\2\2\u016f\u016d\3\2\2\2\u016f\u0170\3\2\2\2\u0170\u0174\3\2\2\2\u0171"+
+		"\u016f\3\2\2\2\u0172\u0173\7\61\2\2\u0173\u0175\5J&\2\u0174\u0172\3\2"+
+		"\2\2\u0174\u0175\3\2\2\2\u0175\u0186\3\2\2\2\u0176\u0177\7\64\2\2\u0177"+
+		"\u0178\7\65\2\2\u0178\u017a\79\2\2\u0179\u017b\t\3\2\2\u017a\u0179\3\2"+
+		"\2\2\u017a\u017b\3\2\2\2\u017b\u0183\3\2\2\2\u017c\u017d\7\r\2\2\u017d"+
+		"\u017f\79\2\2\u017e\u0180\t\3\2\2\u017f\u017e\3\2\2\2\u017f\u0180\3\2"+
+		"\2\2\u0180\u0182\3\2\2\2\u0181\u017c\3\2\2\2\u0182\u0185\3\2\2\2\u0183"+
+		"\u0181\3\2\2\2\u0183\u0184\3\2\2\2\u0184\u0187\3\2\2\2\u0185\u0183\3\2"+
+		"\2\2\u0186\u0176\3\2\2\2\u0186\u0187\3\2\2\2\u0187\u0188\3\2\2\2\u0188"+
+		"\u0189\7\4\2\2\u0189I\3\2\2\2\u018a\u018b\7\n\2\2\u018b\u018c\5J&\2\u018c"+
+		"\u0190\7\13\2\2\u018d\u018e\5:\36\2\u018e\u018f\5J&\2\u018f\u0191\3\2"+
+		"\2\2\u0190\u018d\3\2\2\2\u0190\u0191\3\2\2\2\u0191\u019c\3\2\2\2\u0192"+
+		"\u0196\5L\'\2\u0193\u0194\5:\36\2\u0194\u0195\5J&\2\u0195\u0197\3\2\2"+
+		"\2\u0196\u0193\3\2\2\2\u0196\u0197\3\2\2\2\u0197\u019c\3\2\2\2\u0198\u0199"+
+		"\5<\37\2\u0199\u019a\5J&\2\u019a\u019c\3\2\2\2\u019b\u018a\3\2\2\2\u019b"+
+		"\u0192\3\2\2\2\u019b\u0198\3\2\2\2\u019cK\3\2\2\2\u019d\u019e\79\2\2\u019e"+
+		"\u01a1\5> \2\u019f\u01a2\79\2\2\u01a0\u01a2\5T+\2\u01a1\u019f\3\2\2\2"+
+		"\u01a1\u01a0\3\2\2\2\u01a2\u01ac\3\2\2\2\u01a3\u01a4\5T+\2\u01a4\u01a5"+
+		"\5> \2\u01a5\u01a6\79\2\2\u01a6\u01ac\3\2\2\2\u01a7\u01a8\5T+\2\u01a8"+
+		"\u01a9\5> \2\u01a9\u01aa\5T+\2\u01aa\u01ac\3\2\2\2\u01ab\u019d\3\2\2\2"+
+		"\u01ab\u01a3\3\2\2\2\u01ab\u01a7\3\2\2\2\u01acM\3\2\2\2\u01ad\u01b2\5"+
+		"P)\2\u01ae\u01af\7\r\2\2\u01af\u01b1\5P)\2\u01b0\u01ae\3\2\2\2\u01b1\u01b4"+
+		"\3\2\2\2\u01b2\u01b0\3\2\2\2\u01b2\u01b3\3\2\2\2\u01b3\u01c1\3\2\2\2\u01b4"+
+		"\u01b2\3\2\2\2\u01b5\u01b6\7\n\2\2\u01b6\u01bb\5P)\2\u01b7\u01b8\7\r\2"+
+		"\2\u01b8\u01ba\5P)\2\u01b9\u01b7\3\2\2\2\u01ba\u01bd\3\2\2\2\u01bb\u01b9"+
+		"\3\2\2\2\u01bb\u01bc\3\2\2\2\u01bc\u01be\3\2\2\2\u01bd\u01bb\3\2\2\2\u01be"+
+		"\u01bf\7\13\2\2\u01bf\u01c1\3\2\2\2\u01c0\u01ad\3\2\2\2\u01c0\u01b5\3"+
+		"\2\2\2\u01c1O\3\2\2\2\u01c2\u01c3\79\2\2\u01c3Q\3\2\2\2\u01c4\u01c9\5"+
+		"T+\2\u01c5\u01c6\7\r\2\2\u01c6\u01c8\5T+\2\u01c7\u01c5\3\2\2\2\u01c8\u01cb"+
+		"\3\2\2\2\u01c9\u01c7\3\2\2\2\u01c9\u01ca\3\2\2\2\u01ca\u01d8\3\2\2\2\u01cb"+
+		"\u01c9\3\2\2\2\u01cc\u01cd\7\n\2\2\u01cd\u01d2\5T+\2\u01ce\u01cf\7\r\2"+
+		"\2\u01cf\u01d1\5T+\2\u01d0\u01ce\3\2\2\2\u01d1\u01d4\3\2\2\2\u01d2\u01d0"+
+		"\3\2\2\2\u01d2\u01d3\3\2\2\2\u01d3\u01d5\3\2\2\2\u01d4\u01d2\3\2\2\2\u01d5"+
+		"\u01d6\7\13\2\2\u01d6\u01d8\3\2\2\2\u01d7\u01c4\3\2\2\2\u01d7\u01cc\3"+
+		"\2\2\2\u01d8S\3\2\2\2\u01d9\u01de\5V,\2\u01da\u01de\5X-\2\u01db\u01de"+
+		"\5Z.\2\u01dc\u01de\5\\/\2\u01dd\u01d9\3\2\2\2\u01dd\u01da\3\2\2\2\u01dd"+
+		"\u01db\3\2\2\2\u01dd\u01dc\3\2\2\2\u01deU\3\2\2\2\u01df\u01e1\7\16\2\2"+
+		"\u01e0\u01df\3\2\2\2\u01e0\u01e1\3\2\2\2\u01e1\u01e2\3\2\2\2\u01e2\u01e3"+
+		"\78\2\2\u01e3W\3\2\2\2\u01e4\u01e6\7\16\2\2\u01e5\u01e4\3\2\2\2\u01e5"+
+		"\u01e6\3\2\2\2\u01e6\u01e7\3\2\2\2\u01e7\u01ea\78\2\2\u01e8\u01e9\7\17"+
+		"\2\2\u01e9\u01eb\78\2\2\u01ea\u01e8\3\2\2\2\u01ea\u01eb\3\2\2\2\u01eb"+
+		"Y\3\2\2\2\u01ec\u01ed\7:\2\2\u01ed[\3\2\2\2\u01ee\u01ef\7;\2\2\u01ef]"+
+		"\3\2\2\2,aeimx~\u008e\u00ba\u00db\u00e4\u0104\u010c\u0112\u0117\u012d"+
+		"\u0137\u0143\u0151\u0159\u0164\u0167\u016f\u0174\u017a\u017f\u0183\u0186"+
+		"\u0190\u0196\u019b\u01a1\u01ab\u01b2\u01bb\u01c0\u01c9\u01d2\u01d7\u01dd"+
+		"\u01e0\u01e5\u01ea";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

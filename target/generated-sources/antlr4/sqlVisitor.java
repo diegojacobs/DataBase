@@ -17,6 +17,12 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link sqlParser#asignacion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAsignacion(@NotNull sqlParser.AsignacionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#table_definition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

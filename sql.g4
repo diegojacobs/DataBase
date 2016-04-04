@@ -186,11 +186,13 @@ relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
 insert_value: INSERT INTO ID (columns)? VALUES list ';' ;
 
-update_value: UPDATE ID SET (columna '=' literal)+ WHERE condition ';' ;
+update_value: UPDATE ID SET asignacion (WHERE condition)? ';' ;
+
+asignacion : columna '=' literal (',' columna '=' literal)*;
 
 delete_value: DELETE FROM ID (WHERE condition)? ';' ;
 
-select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
+select_value: SELECT ('*' | ID (',' ID)* ) FROM ID (',' ID)* (WHERE condition)?  (ORDER BY ID (ASC | DESC)? (',' ID (ASC | DESC)?)* )? ';' ;
               
 condition: '(' condition ')' (logic condition)? #conditionCond
                  | comp (logic condition)? #conditionComp
