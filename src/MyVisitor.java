@@ -21,6 +21,7 @@ import java.util.Stack;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+
 /**
 @author Diego Jacobs (jewish boy)
 Date: Mar 19, 2016
@@ -36,6 +37,32 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private Table table_use = new Table();
 	private int inserted_rows = 0;
 	private int deleted_rows = 0;
+	private int updated_rows = 0;
+	
+	public int getInserted_rows() {
+		return inserted_rows;
+	}
+
+	public void setInserted_rows(int inserted_rows) {
+		this.inserted_rows = inserted_rows;
+	}
+
+	public int getDeleted_rows() {
+		return deleted_rows;
+	}
+
+	public void setDeleted_rows(int deleted_rows) {
+		this.deleted_rows = deleted_rows;
+	}
+
+	public int getUpdated_rows() {
+		return updated_rows;
+	}
+
+	public void setUpdated_rows(int updated_rows) {
+		this.updated_rows = updated_rows;
+	}
+
 	/**
 	 * @return the errores
 	 */
@@ -1559,7 +1586,44 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		return columnas;
 	}
+	
 
+	/*************************
+	 * UPDATE
+	 * reviso si tiene where o no
+	 * si no tiene actualizo las columnas a actualizar de todas las filas
+	 * si hay actualizo solo de las filas que devuelva condition
+	 */
+	@Override
+	public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
+		
+		String id = ctx.getChild(1).getText();
+		
+		if (this.actual.existTable(id))
+		{
+			
+		}
+		else
+		{
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		
+		// TODO Auto-generated method stub
+		return super.visitUpdate_value(ctx);
+	}
+	
+	
+	/**************************
+	 * Asignacion
+	 * 
+	 */
+	@Override
+	public Object visitAsignacion(sqlParser.AsignacionContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitAsignacion(ctx);
+	}
+	
 	
 	/**************************
 	 * DELETE 
