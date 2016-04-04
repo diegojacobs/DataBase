@@ -13,6 +13,8 @@ public class Table implements Serializable {
 	private ArrayList<Constraint> PrimaryKeys;
 	private ArrayList<Constraint> ForeignKey;
 	private ArrayList<Constraint> Checks;
+	private ArrayList<ArrayList<String>> data;
+	private ArrayList<String> othersIds;
 	
 	public Table()
 	{
@@ -21,6 +23,8 @@ public class Table implements Serializable {
 		this.PrimaryKeys = new ArrayList<Constraint>();
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
+		this.data = new ArrayList<ArrayList<String>>();
+		this.setOthersIds(new ArrayList<String>()); 
 	}
 
 	public Table(String name) {		
@@ -29,6 +33,8 @@ public class Table implements Serializable {
 		this.PrimaryKeys = new ArrayList<Constraint>();
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
+		this.data = new ArrayList<ArrayList<String>>();
+		this.setOthersIds(new ArrayList<String>());
 	}	
 
 	public Table(String name, ArrayList<Atributo> atributos, ArrayList<Constraint> primaryKeys, ArrayList<Constraint> foreignKey, ArrayList<Constraint> checks) {
@@ -37,6 +43,13 @@ public class Table implements Serializable {
 		PrimaryKeys = primaryKeys;
 		ForeignKey = foreignKey;
 		this.Checks = checks;
+		this.data = new ArrayList<ArrayList<String>>();
+		this.setOthersIds(new ArrayList<String>());
+		for (Atributo atr : this.atributos)
+		{
+			String col = name+"."+atr.getId();
+			this.getOthersIds().add(col);
+		}
 	}
 
 	/**
@@ -74,6 +87,9 @@ public class Table implements Serializable {
 		ArrayList<String> ret = new ArrayList<String>();
 		for (Atributo i: this.atributos)
 			ret.add(i.getId());
+		
+		for (String name : this.getOthersIds())
+			ret.add(name);
 		return ret;
 	}
 
@@ -137,6 +153,14 @@ public class Table implements Serializable {
 				break;
 			}
 		
+		if (!flag)
+			for (String name : this.getOthersIds())
+				if (id.equals(name))
+				{
+					flag=true;
+					break;
+				}
+		
 		return flag;
 	}
 	
@@ -149,6 +173,18 @@ public class Table implements Serializable {
 			if (i.getId().equals(id))
 			{
 				atr = i;
+			}
+		}
+		
+		if (atr.equals(null))
+		{
+			for (String name : this.getOthersIds())
+			{
+				if (name.equals(id))
+				{
+					int index = this.getOthersIds().indexOf(name);
+					atr = this.atributos.get(index);
+				}
 			}
 		}
 		
@@ -213,6 +249,11 @@ public class Table implements Serializable {
 	public void addAtributo(Atributo a)
 	{
 		this.atributos.add(a);
+		for (ArrayList<String> tupla: data){
+			if (tupla.size()==atributos.size()-1){
+				tupla.add("null");
+			}
+		}
 	}
 	
 	public void deleteAtributo(String id)
@@ -231,6 +272,11 @@ public class Table implements Serializable {
 		}
 		
 		if (index != -1)
+			for (ArrayList<String> tupla: data){
+				if (tupla.size()>index){
+					tupla.remove(index);
+				}
+			}
 			this.atributos.remove(index);
 	}
 	
@@ -366,6 +412,18 @@ public class Table implements Serializable {
 		return (cont > 0);
 	}
 	
+	public void addData(ArrayList<String> data){
+		this.data.add(data);
+	}
+	
+	public ArrayList<ArrayList<String>> getData() {
+		return data;
+	}
+
+	public void setData(ArrayList<ArrayList<String>> data) {
+		this.data = data;
+	}
+
 	public String toString()
 	{
 		String ret = "Table " + this.name + "\n";
@@ -413,6 +471,44 @@ public class Table implements Serializable {
 			cont++;
 		}
 		return ret;
+	}
+	
+	public boolean isAmbiguous(String id){
+		int contador = 0;
+		for (String st: getOthersIds()){
+			if (st.equals(id))
+				contador ++;
+		}
+		if (contador>0) return true;
+		
+		for (Atributo at: atributos){
+			if (at.getId().equals(id))
+				contador ++;
+		}
+		
+		if (contador > 0) return true;
+		
+		return false;
+		
+	}
+	
+	/**
+	 * agrega a othersIds los nombres de tal forma que sea:
+	 * nombreTabla.nombreAtributo al momento de hacer el select
+	 */
+	public void setNamesByTable(){
+		ArrayList<String> st = new ArrayList();
+		for (Atributo at: atributos)
+			st.add(getName()+"."+at.getId());
+		this.setOthersIds(st);
+	}
+
+	public ArrayList<String> getOthersIds() {
+		return othersIds;
+	}
+
+	public void setOthersIds(ArrayList<String> othersIds) {
+		this.othersIds = othersIds;
 	}
 
 }

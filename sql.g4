@@ -78,7 +78,7 @@ DESC: D E S C;
 
 fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' ' ..'~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
+fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' ;
 fragment TWO_DIGITS : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS : DIGIT THREE_DIGITS ;
@@ -184,26 +184,39 @@ logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO ID columns VALUES list ';' ;
+insert_value: INSERT INTO ID (columns)? VALUES list ';' ;
 
-update_value: UPDATE ID SET (columna '=' literal)+ WHERE condition ';' ;
+update_value: UPDATE ID SET asignacion (WHERE condition)? ';' ;
 
-delete_value: DELETE FROM ID WHERE condition ';' ;
+asignacion : columna '=' literal (',' columna '=' literal)*;
 
-select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
+delete_value: DELETE FROM ID (WHERE condition)? ';' ;
+
+select_value: SELECT ('*' | nlocalIDS ) FROM localIDS (WHERE condition)?  ( order )? ';' ;
+
+nID: ID
+	|ID '.' ID;
+	
+nlocalIDS: nID
+		  | nID ',' nlocalIDS;
+	
+order: ORDER BY nID ( ASC | DESC )?
+	| ORDER BY nID (ASC | DESC )? ',' order;
               
-condition: (logic_not)? comp (logic (logic_not)? (comp))*;         
+condition: '(' condition ')' (logic condition)? #conditionCond
+                 | comp (logic condition)? #conditionComp
+                 | logic_not condition #conditionNot;        
 
-comp : ID relational (ID | literal);    
+comp : ID relational (ID | literal) #compId
+	   | literal relational ID #compLitId
+	   | literal relational literal #compLit;    
 
-columns:((columna)+ | ('(' (columna)+ ')')) ;
+columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
 
 columna: ID;
-           
-list: list_values 
-	 | '(' list_values ')' ;       
-           
-list_values : (literal (',' (literal))* ) ;
+                      
+list : (literal (',' literal)* )
+			|  '(' (literal (',' literal)* ) ')';
 
 literal:  
         int_literal

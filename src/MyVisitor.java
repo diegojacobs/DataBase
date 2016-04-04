@@ -1,3 +1,4 @@
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,11 +10,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
+
 
 /**
 @author Diego Jacobs (jewish boy)
@@ -28,7 +35,34 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
 	private Table table_use = new Table();
+	private int inserted_rows = 0;
+	private int deleted_rows = 0;
+	private int updated_rows = 0;
 	
+	public int getInserted_rows() {
+		return inserted_rows;
+	}
+
+	public void setInserted_rows(int inserted_rows) {
+		this.inserted_rows = inserted_rows;
+	}
+
+	public int getDeleted_rows() {
+		return deleted_rows;
+	}
+
+	public void setDeleted_rows(int deleted_rows) {
+		this.deleted_rows = deleted_rows;
+	}
+
+	public int getUpdated_rows() {
+		return updated_rows;
+	}
+
+	public void setUpdated_rows(int updated_rows) {
+		this.updated_rows = updated_rows;
+	}
+
 	/**
 	 * @return the errores
 	 */
@@ -149,12 +183,12 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			if (i.getName().equals(ID))
 			{
 				find = true;
-				this.actual = i;
+				this.setActual(i);
 				break;
 			}
 		if (find == false)
 		{
-			this.actual = new DataBase();
+			this.setActual(new DataBase());
 			String rule_5 = "No se puede usar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
@@ -219,8 +253,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.dataBases.setDataBases(new_dataBases);
 				//guardarDBs();
 				// Verificar si la DataBase actual es la eliminada para quitar la referencia
-				if (this.actual.getName().equals(ID))
-					this.actual = new DataBase();
+				if (this.getActual().getName().equals(ID))
+					this.setActual(new DataBase());
 				// Borrar directorio
 				File[] currList;
 				Stack<File> stack = new Stack<File>();
@@ -288,8 +322,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				// Guardar el cambio
 				//guardarDBs();
 				// Verificar si hay que cambiar tambien el nombre de la DataBase actual
-				if (this.actual.getName().equals(ID))
-					this.actual.setName(NEW_ID);
+				if (this.getActual().getName().equals(ID))
+					this.getActual().setName(NEW_ID);
 				// Renombrar el directorio
 				directory.renameTo(new File(this.dataPath + NEW_ID));
 				System.out.println("DataBase \"" + ID + "\" renombrada a \"" + NEW_ID +"\" exitosamente");
@@ -317,7 +351,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		if (! ID.equals(NEW_ID))
 		{
 			// Verificar que se este utilizando una base de datos
-			if (this.actual.getName().isEmpty())
+			if (this.getActual().getName().isEmpty())
 			{
 				String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
 	        	this.errores.add(no_database_in_use);
@@ -325,26 +359,26 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			else
 			{
 				// Verificar que la tabla con ID exista
-				if (this.actual.existTable(ID))
+				if (this.getActual().existTable(ID))
 				{
 					// Verificar que no exista una tabla ya creada con ID == NEW_ID
-					if (! this.actual.existTable(NEW_ID))
+					if (! this.getActual().existTable(NEW_ID))
 					{						
 						//System.out.println("Before rename");
 						//System.out.println(this.actual);
 						// Renombrar referencias
-						if (this.actual.existRef(ID))
+						if (this.getActual().existRef(ID))
 						{
-							for (Table i: this.actual.getTables())
+							for (Table i: this.getActual().getTables())
 								i.renameRefIdFK(ID, NEW_ID);
 						}
-						this.actual.renameRef(ID, NEW_ID);
+						this.getActual().renameRef(ID, NEW_ID);
 						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
-						Table new_table = this.actual.getTable(ID);
+						Table new_table = this.getActual().getTable(ID);
 						new_table.setName(NEW_ID);
-						File directory = new File(this.dataPath + "\\" + this.actual.getName() + "\\" + ID + ".bin");
+						File directory = new File(this.dataPath + "\\" + this.getActual().getName() + "\\" + ID + ".bin");
 						// Renombrar el directorio
-						directory.renameTo(new File(this.dataPath + "\\" + this.actual.getName() + "\\" + NEW_ID + ".bin"));						
+						directory.renameTo(new File(this.dataPath + "\\" + this.getActual().getName() + "\\" + NEW_ID + ".bin"));						
 						// Guardar cambio en la DB
 						//guardarDBs();
 						//System.out.println("After rename");
@@ -352,13 +386,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 					else
 					{
-						String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+						String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 			        	this.errores.add(table_already_exist);
 					}
 				}
 				else
 				{
-					String table_not_found = "La Tabla \"" + ID + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+					String table_not_found = "La Tabla \"" + ID + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					this.errores.add(table_not_found);
 				}
 			}
@@ -381,7 +415,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<String> const_ids = new ArrayList<String>();
 		int errores = 0;
 		// Verificar que se este utilizando una base de datos
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -390,7 +424,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{		
 			// No se puede repetir nombre en las tablas
-			if (! this.actual.existTable(name))
+			if (! this.getActual().existTable(name))
 			{
 				for(int i = 4; i < ctx.getChildCount()-2; i++)
 				{			
@@ -505,15 +539,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								}
 							// Ref IDS
 							// Buscar que exista una tabla con el nombre al que se hace referencia
-							if (! this.actual.existTable(i.getId_ref()))
+							if (! this.getActual().existTable(i.getId_ref()))
 							{
-								String table_not_found = "La tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+								String table_not_found = "La tabla \"" + i.getId_ref() + "\" que hace referencia la Foreign Key \"" + i.getId() + "\" no esta declarada en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(table_not_found);
 					        	errores++;
 							}
 							else
 							{
-								Table table_ref = this.actual.getTable(i.getId_ref());
+								Table table_ref = this.getActual().getTable(i.getId_ref());
 								// Verificar que los RefIDS pertenezcan a la tabla
 								for (String j: i.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
@@ -548,14 +582,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							Table new_table = new Table(name, atrs, pks, fks, checks);
 							// Agregar referencias de las Foreign Key
 							for (Constraint i: fks)
-								this.actual.addRef(i.getId_ref());
+								this.getActual().addRef(i.getId_ref());
 							// Agregar tabla a la DB
-							this.actual.addTable(new_table);
-							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.actual.getName() + "\"");
+							this.getActual().addTable(new_table);
+							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.getActual().getName() + "\"");
 							System.out.println();
-							System.out.println(this.actual.toString());
+							System.out.println(this.getActual().toString());
 							// Guardar tabla en directorio
-							saveTable(this.actual.getName(), name, new_table);
+							saveTable(this.getActual().getName(), name, new_table);
 							// Guardar cambio en la DB
 							//guardarDBs();
 						}
@@ -564,7 +598,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{				
-				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_already_exist = "Ya existe una tabla con el mismo nombre en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 	        	this.errores.add(table_already_exist);
 			}
 		}
@@ -805,7 +839,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Column = (String) this.visit(ctx.idColumn());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -813,9 +847,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();
 				// Obtener tipo del atributo
 				Atributo atr = (Atributo) this.visit(ctx.tipo_literal());
@@ -857,15 +891,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						case "Foreign Key":
 							// Ref IDS
 							// Buscar que exista una tabla con el nombre al que se hace referencia
-							if (! this.actual.existTable(con.getId_ref()))
+							if (! this.getActual().existTable(con.getId_ref()))
 							{
-								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(table_not_found);
 					        	errores++;
 							}
 							else
 							{
-								Table table_ref = this.actual.getTable(con.getId_ref());
+								Table table_ref = this.getActual().getTable(con.getId_ref());
 								// Verificar que los RefIDS pertenezcan a la tabla
 								for (String j: con.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
@@ -902,7 +936,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						toAlter.addConstraint(con);					
 						// Agrega la referencia si es Foreign Key
 						if (con.getTipo().equals("Foreign Key"))
-							this.actual.addRef(con.getId_ref());
+							this.getActual().addRef(con.getId_ref());
 						System.out.println("Columna \"" + ID_Column + "\" y Constraint \"" + con.getId() + "\" agregadas exitosamente a la tabla \"" + toAlter.getName() + "\"");
 					}
 				}
@@ -923,7 +957,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -939,7 +973,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		String ID_Table = (String) this.visit(ctx.idTable());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -947,9 +981,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();				
 				// Obtener constraint
 				Constraint con = (Constraint) this.visit(ctx.constraint());
@@ -986,15 +1020,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						case "Foreign Key":
 							// Ref IDS
 							// Buscar que exista una tabla con el nombre al que se hace referencia
-							if (! this.actual.existTable(con.getId_ref()))
+							if (! this.getActual().existTable(con.getId_ref()))
 							{
-								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+								String table_not_found = "La tabla \"" + con.getId_ref() + "\" que hace referencia la Foreign Key \"" + con.getId() + "\" no esta declarada en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 					        	this.errores.add(table_not_found);
 					        	errores++;
 							}
 							else
 							{
-								Table table_ref = this.actual.getTable(con.getId_ref());
+								Table table_ref = this.getActual().getTable(con.getId_ref());
 								// Verificar que los RefIDS pertenezcan a la tabla
 								for (String j: con.getIDS_refs())
 									if (! table_ref.hasAtributo(j))
@@ -1029,7 +1063,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						toAlter.addConstraint(con);					
 						// Agrega la referencia si es Foreign Key
 						if (con.getTipo().equals("Foreign Key"))
-							this.actual.addRef(con.getId_ref());
+							this.getActual().addRef(con.getId_ref());
 						System.out.println("Constraint \"" + con.getId() + "\" agregada exitosamente a la tabla \"" + toAlter.getName() + "\"");
 					}
 				}
@@ -1045,7 +1079,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -1063,7 +1097,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Column = (String) this.visit(ctx.idColumn());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -1071,9 +1105,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();
 				// Verificar que la columna que se quiere borrar pertenezca a la tabla
 				if (attrs_names.contains(ID_Column))
@@ -1111,9 +1145,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						}
 					}
 					// En Ref_IDs de Fk de otras tablas en la misma DB
-					if (this.actual.existRef(ID_Table))
+					if (this.getActual().existRef(ID_Table))
 					{
-						for (Table i: this.actual.getTables())
+						for (Table i: this.getActual().getTables())
 							if (! i.getName().equals(ID_Table))
 								for(Constraint j: i.getForeignKey())
 								{
@@ -1141,7 +1175,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -1158,7 +1192,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Constraint = (String) this.visit(ctx.idConstraint());
 		// Verificar que haya un DB en uso
-		if (this.actual.getName().isEmpty())
+		if (this.getActual().getName().isEmpty())
 		{
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
@@ -1166,9 +1200,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			// Verificar que exista la tabla
-			if (this.actual.existTable(ID_Table))
+			if (this.getActual().existTable(ID_Table))
 			{
-				Table toAlter = this.actual.getTable(ID_Table);
+				Table toAlter = this.getActual().getTable(ID_Table);
 				// Verificar que exista la Constraint
 				if (toAlter.existeConstraint(ID_Constraint))
 				{
@@ -1177,7 +1211,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					if (to_drop.getTipo().equals("Foreign Key"))
 					{
 						int cont = 0;
-						for (Table i: this.actual.getTables())
+						for (Table i: this.getActual().getTables())
 							if (! i.getName().equals(ID_Table))
 							{
 								for (Constraint j: i.getForeignKey())
@@ -1188,7 +1222,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									}
 							}
 						if (cont == 0)
-							this.actual.deleteRef(to_drop.getId_ref());
+							this.getActual().deleteRef(to_drop.getId_ref());
 								
 					}
 					// Eliminar constraint
@@ -1203,7 +1237,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			else
 			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 				this.errores.add(table_not_found);
 			}
 		}
@@ -1249,7 +1283,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		String ID_Table = ctx.ID().getText();
 		// Verificar que haya un DB en uso
-				if (this.actual.getName().isEmpty())
+				if (this.getActual().getName().isEmpty())
 				{
 					String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
 		        	this.errores.add(no_database_in_use);
@@ -1257,13 +1291,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				else
 				{
 					// Verificar que exista la tabla
-					if (this.actual.existTable(ID_Table))
+					if (this.getActual().existTable(ID_Table))
 					{
-						Table toAlter = this.actual.getTable(ID_Table);
+						Table toAlter = this.getActual().getTable(ID_Table);
 						// Verificar si tiene referencias en fks
-						if (this.actual.existRef(ID_Table))
+						if (this.getActual().existRef(ID_Table))
 						{
-							for (Table i: this.actual.getTables())
+							for (Table i: this.getActual().getTables())
 								if (! i.getName().equals(ID_Table))
 								{
 									for (Constraint j: i.getForeignKey())
@@ -1279,13 +1313,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							// Eliminar tabla de la data persistente
 							try
 							{					    		
-					    		File file = new File(this.dataPath+this.actual.getName()+"\\"+ID_Table+".bin");					    		
+					    		File file = new File(this.dataPath+this.getActual().getName()+"\\"+ID_Table+".bin");					    		
 					    		
 					    		if(file.delete())
 					    		{
 					    			// Eliminar tabla del objeto					
-									this.actual.deleteTable(ID_Table);
-					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.actual.getName() + "\"");
+									this.getActual().deleteTable(ID_Table);
+					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
 					    		}
 					    		else
 					    			System.out.println("Error al eliminar la Tabla \"" + ID_Table + "\" de la data persistente" );					    	   
@@ -1298,7 +1332,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 					else
 					{
-						String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.actual.getName() + "\" @line: " + ctx.getStop().getLine();
+						String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
 						this.errores.add(table_not_found);
 					}
 				}
@@ -1316,28 +1350,69 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitInsert_value(sqlParser.Insert_valueContext ctx) 
 	{
-		int columnas = ctx.getChild(3).getChildCount();
-		int values = ctx.getChild(5).getChildCount();
 		String id = ctx.ID().getText();
-		
 		//debemos revisar si existe la tabla en la base de datos actual
-		table_use = this.actual.getTable(id);
+		table_use = this.getActual().getTable(id);
+		
+		ArrayList<String> fila = new ArrayList();
+		
+		//Si no fueron ingresadas columnas tomamos el total en la tabla
+		int columnas;
+		int values;
+		if (ctx.getChildCount()==7)
+		{
+			columnas = ctx.getChild(3).getChildCount();
+			values = ctx.getChild(5).getChildCount();
+			
+		}
+		else
+		{
+			columnas = table_use.getAtributos().size()-1;
+			values = ctx.getChild(4).getChildCount();
+			
+		}
+		
+		//Cantidad de errores antes de hacer el insert
+		int contErrores = this.errores.size();
+		
+		//llenamos la fila con NULL
+		int numCols = table_use.getAtributos().size();
+		for (int i=0;i<numCols;i++)
+		{
+			fila.add("NULL");
+		}
 		
 		if (table_use != null)
 		{
-			//comparamos numerod e columas y valores con y sin parentesis
-			if ( columnas == values || (columnas+2 == values && ctx.getChild(3).getText().contains("(")) || (columnas == values+2 && ctx.getChild(5).getText().contains("(")))
+			//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
+			if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
 			{
-				ArrayList<Atributo> cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));		
-				ArrayList<Value> vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+				
+				ArrayList<Atributo> cols;
+				ArrayList<Value> vals;
+				
+				//Si no fueron ingresadas columnas tomamos todas las de la tabla
+				if (ctx.getChildCount()==7)
+				{
+					cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
+					vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+					
+				}
+				else
+				{
+					cols = table_use.getAtributos();
+					vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+					
+				}
 				
 				//si los array no son del mismo tamaño hubo algun error en el camino
 				//debemos revisar que el tipo del atributo sea igual al tipo del valor
-				int cont = 0;
-				if (cols.size()==vals.size())
+				//int cont = 0;
+				//if (cols.size()==vals.size())
 				{
-					for (Atributo atr : cols)
+					for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
 					{
+						Atributo atr = cols.get(cont);
 						Value valor = vals.get(cont);
 						if (atr.getTipo().equals(valor.getTipo()))
 						{
@@ -1345,18 +1420,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							{
 								if (atr.getSize()>=valor.getSize())
 								{
-									//agrego el valor a la fila
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
 								}
 								else
 								{
 									//error tamaño del valor mayor
-									String rule_5 = "El tamaño del valor que se desea ingresar es mayor al tamaño reservado en la base de datos @line: " + ctx.getStop().getLine();
+									String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
 									this.errores.add(rule_5);
 								}
 							}
 							else
 							{
-								//agrego el valor a la fila
+								//agrego el valor a la fila en el index del atributo
+								int index = this.table_use.getAtributos().indexOf(atr);
+								fila.set(index, valor.getValue());
 							}
 						}
 						else
@@ -1370,7 +1449,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								valor.setValue(num);
 								valor.setTipo("int");
 								
-								//agrego valor a la fila
+								//agrego el valor a la fila en el index del atributo
+								int index2 = this.table_use.getAtributos().indexOf(atr);
+								fila.set(index2, valor.getValue());
 							}
 							else
 							{
@@ -1381,34 +1462,48 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									valor.setValue(num);
 									valor.setTipo("float");
 									
-									//agrego valor a la fila
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
 								}
+								else
+									if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
+									{
+										if (atr.getSize() >= valor.getValue().length())
+										{
+											//agrego el valor a la fila en el index del atributo
+											int index = this.table_use.getAtributos().indexOf(atr);
+											fila.set(index, valor.getValue());
+										}
+										else
+										{
+											//error tamaño del valor mayor
+											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
+									}
 							}
 						}
-						cont++;
+						//cont++;
 					}
 					
-					//debo revisar si se llenaron todas las columnas de la fila
-					//si no lleno las que esten vacias con null
+					//Agrego la fila solo si el numero de errores sigue siendo el mismo
+					if (contErrores == this.errores.size())
+					{
+						this.table_use.addData(fila);
+						this.inserted_rows++;
+					}
 				}
 			}
 			else
 			{	
-				if (columnas<values)
-				{
-					String rule_5 = "No se puede hacer INSERT con mayor numero de valores a insertar que columnas @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
-				else
-				{
-					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-				}
+				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
 			}
 		}
 		else
 		{
-			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.actual.getName() + " @line: " + ctx.getStop().getLine();
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
 		
@@ -1427,13 +1522,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		ArrayList<Value> values = new ArrayList();
 		
+		int cont = 0;
 		for (int i = 0; i < ctx.getChildCount(); i++)
-			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			if (!ctx.getChild(i).getText().equals("(") && !ctx.getChild(i).getText().equals(")") && !ctx.getChild(i).getText().equals(","))
 			{
 				Value valor = new Value();
-				String text = ctx.getChild(i).getText();
+				String text = ctx.literal(cont).getText();
 				String tipo = (String)this.visit(ctx.getChild(i));
-				
+				cont++;
 				if (tipo.equals("char"))
 				{
 					valor = new Value(text,tipo, text.length()-2);
@@ -1471,7 +1567,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<Atributo> columnas = new ArrayList();
 		
 		for (int i = 0; i < ctx.getChildCount(); i++)
-			if (!ctx.getChild(i).getText().equals("(") || !ctx.getChild(i).getText().equals(")"))
+			if (!ctx.getChild(i).getText().equals("(") && !ctx.getChild(i).getText().equals(")") && !ctx.getChild(i).getText().equals(","))
 			{
 				
 				String columna = ctx.getChild(i).getText(); 
@@ -1490,56 +1586,1610 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		return columnas;
 	}
+	
 
+	/*************************
+	 * UPDATE
+	 * reviso si tiene where o no
+	 * si no tiene actualizo las columnas a actualizar de todas las filas
+	 * si hay actualizo solo de las filas que devuelva condition
+	 */
+	@Override
+	public Object visitUpdate_value(sqlParser.Update_valueContext ctx) {
+		
+		String id = ctx.getChild(1).getText();
+		int contErrores = this.errores.size();
+		
+		if (this.actual.existTable(id))
+		{
+			this.table_use = this.actual.getTable(id);
+			int size = this.table_use.getData().size();
+			
+			if (ctx.getChildCount() == 5)
+			{
+				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+				
+				for (int i = 0; i<size && contErrores==this.errores.size();i++)
+				{
+					this.table_use.getData().set(i, newfila);
+				}
+			}
+			else
+			{
+				Object obj = (Object) visit(ctx.getChild(5));
+				if (obj == null){
+					String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+					return null;
+				}
+				
+				if (!(obj instanceof LinkedHashSet)){
+					String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+					return null;
+				}
+				
+				LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+				ArrayList<Integer> index= new ArrayList(indices);
+				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+				
+				if (contErrores == this.errores.size())
+					for (int i: index){
+						table_use.getData().set(i, newfila);
+					}
+			}
+		}
+		else
+		{
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		
+		// TODO Auto-generated method stub
+		return super.visitUpdate_value(ctx);
+	}
+	
+	
+	/**************************
+	 * Asignacion
+	 * 
+	 */
+	@Override
+	public Object visitAsignacion(sqlParser.AsignacionContext ctx) {
+		
+		ArrayList<String> newfila = new ArrayList<String>();
+		
+		int numCols = this.table_use.getAtributos().size();
+		for (int i=0;i<numCols;i++)
+			newfila.add("NULL");
+		
+		int index = 0;
+		for (int j=0;j<ctx.getChildCount();j++)
+		{
+			String text = ctx.getChild(j).getText();
+			if (!text.equals("=") && !text.equals("="))
+			{
+				if (j==0 || j%4==0)
+				{
+					if (this.table_use.hasAtributo(text))
+					{
+						Atributo atr = this.table_use.getID(text);
+						index = this.table_use.getAtributos().indexOf(atr);
+					}
+					else
+					{
+						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + text + " @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+					}
+				}
+				else
+				{
+					newfila.set(index, text);
+				}
+			}
+		}
+		
+		// TODO Auto-generated method stub
+		return newfila;
+	}
+	
+	
+	/**************************
+	 * DELETE 
+	 * debo revisar que si exista la tabla en la database actual
+	 * si no existe condicion borro toda la tabla
+	 * si existe reviso que filas cumplen con la condicion
+	 */
+	@Override
+	public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
+		String id = ctx.ID().getText();
+		
+		this.table_use = this.getActual().getTable(id);
+		
+		if (table_use == null){
+			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}
+		
+		if (ctx.getChildCount() <= 4){
+			table_use.setData(new ArrayList<ArrayList<String>>());
+			return table_use;
+		}
+		
+		Object obj = (Object) visit(ctx.getChild(4));
+		if (obj == null){
+			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}
+		
+		if (!(obj instanceof LinkedHashSet)){
+			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}
+		
+		LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+		ArrayList<Integer> index= new ArrayList(indices);
+		Collections.reverse(index);
+		for (int i: index){
+			table_use.getData().remove(i);
+		}
+		
+		
+		return (T) table_use;
+	}
+
+	
 	
 	/**************************
 	 * Condition
 	 * Revisamos cada comparacion
-	 * Si al final la expresion es true devolvemos true
-	 * si no false
+	 * Devolvemos un arrayList de arrraylis de string
+	 * que contiene todas las filas que debemos eliminar
 	 */
 	@Override 
-	public T visitCondition(@NotNull sqlParser.ConditionContext ctx) 
+	public T visitConditionNot(sqlParser.ConditionNotContext ctx) 
 	{ 
-		int cant = ctx.getChildCount();
-		
-		switch (cant)
-		{
-			case 1:
-				  return (T)ctx.comp();
-			case 2:
-				if (ctx.comp().toString().equals("true"))
-					return (T)"false";
-				else
-					return (T)"true";
-			default:
-				//debemos visitar cada comparación
-					return (T)"true";
+		Object obj = visit(ctx.getChild(1));
+		if (obj == null){
+			return null;
 		}
+		
+		if (!(obj instanceof LinkedHashSet)){
+			return null;
+		}
+		
+		LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>) obj;
+		
+		int size = table_use.getData().size();
+		
+		LinkedHashSet<Integer> nIndices = new LinkedHashSet();
+		
+		for (int i = 0; i < size; i++){
+			if (!indices.contains(i))
+				nIndices.add(i);
+		}
+		
+		return (T)nIndices;
 	}
-	
-	
+
+	public T visitConditionComp (sqlParser.ConditionCompContext ctx){
+		if (ctx.getChildCount() <= 1) return (T)visitChildren(ctx);
+		
+		Object objComp = visit(ctx.getChild(0));
+		if (objComp == null) return null;
+		
+		if (!(objComp instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> compIndex = (LinkedHashSet<Integer>) objComp;
+		
+		String logic = (String) visit(ctx.getChild(1));
+		
+		Object objCond = visit(ctx.getChild(0));
+		if (objCond == null) return null;
+		
+		if (!(objCond instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> condIndex = (LinkedHashSet<Integer>) objCond;
+		LinkedHashSet<Integer> result = null;
+		
+		switch (logic){
+			case "OR":
+				compIndex.addAll(condIndex);
+				result = new LinkedHashSet<Integer>();
+				result.addAll(compIndex);
+				break;
+			case "AND":
+				result = new LinkedHashSet<Integer>();
+				for (int i: compIndex){
+					if (condIndex.contains(i))
+						result.add(i);
+				}
+				break;
+		}
+		
+		
+		return (T)result;
+	}
+
+	public T visitConditionCond (sqlParser.ConditionCondContext ctx){
+		if (ctx.getChildCount() <= 3) return (T) visit(ctx.getChild(1));
+		
+		Object obj1 = visit(ctx.getChild(1));
+		if (obj1 == null) return null;
+		
+		if (!(obj1 instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> cond1Index = (LinkedHashSet<Integer>) obj1;
+		
+		Object obj2 = visit(ctx.getChild(4));
+		if (obj2 == null) return null;
+		
+		if (!(obj2 instanceof LinkedHashSet)) return null;
+		
+		LinkedHashSet<Integer> cond2Index = (LinkedHashSet<Integer>) obj2;
+		
+		String logic = (String)visit(ctx.getChild(3));
+		
+		LinkedHashSet<Integer> result = null;
+		
+		switch (logic){
+			case "OR":
+				cond1Index.addAll(cond2Index);
+				result = new LinkedHashSet<Integer>();
+				result.addAll(cond1Index);
+				break;
+			case "AND":
+				result = new LinkedHashSet<Integer>();
+				for (int i: cond1Index){
+					if (cond2Index.contains(i))
+						result.add(i);
+				}
+				break;
+		}
+		
+		
+		return (T)result;
+	}
 	/***************************
-	 * Comp
+	 * CompId
 	 * Revisamos comp que puede tener
 	 * ID relational ID | literal
 	 */
 	@Override 
-	public T visitComp(@NotNull sqlParser.CompContext ctx) 
+	public T visitCompId(@NotNull sqlParser.CompIdContext ctx) 
 	{
-		String ID1 = ctx.getChild(0).getText();
-		String comp = ctx.getChild(2).getText(); //si es literal, voy a recibir el tipo
+		LinkedHashSet<Integer> list = new LinkedHashSet();
+		String op = ctx.getChild(1).getText(); //agarro el relational
 		
 		
-		/* Debemos de alguna forma revisar que el ID1 pertenece 
-		 * a la tabla que estamos trabajando
-		 * si el hijo 2 es ID debemos verificar qeut ambien pertenezca
-		 * a la tabla
-		 * si no solo comparar tipos y luego hacer la comparación
-		*/
+		String id = ctx.getChild(0).getText(); //agarro el primer id
+		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
+		{
+			//tomo el atributo de la tabla y el indice de este
+			Atributo atr = this.table_use.getID(id);
+			Atributo id2 = new Atributo();
+			int index = this.table_use.getAtributos().indexOf(atr);
+			
+			//visito el ultimo hijo 
+			String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
+			String value = ctx.getChild(2).getText();
+			
+			//creo una bandera para ver si voy a poder castear los tipos
+			boolean flag = false;
+			
+			//Si es un literal
+			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			{
+				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
+				{
+					flag = true;
+				}
+				else
+				{
+					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+					{
+						flag = true;
+					}
+					else
+					{
+						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						{
+							flag = true;
+						}
+						else
+						{
+							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+							{
+								flag = true;
+							}
+							else
+							{
+								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+							}
+						}
+							
+					}
+				}	
+			}
+			else
+				if (tipo.equals("Error"))
+				{
+					// no acepto la fecha
+					String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
+				else
+				{
+					//Si es una columna de la tabla
+					String columna = ctx.getChild(2).getText(); 
+					if (this.table_use.hasAtributo(columna))
+					{
+						id2 = this.table_use.getID(columna);
+						value = "'";
+						
+						if (atr.getTipo().equals("int") && (id2.getTipo().equals("int") || id2.getTipo().equals("float")))
+						{
+							flag = true;
+						}
+						else
+						{
+							if (atr.getTipo().equals("float") && (id2.getTipo().equals("int") || id2.getTipo().equals("float")))
+							{
+								flag = true;
+							}
+							else
+							{
+								if (atr.getTipo().equals("char") && (id2.getTipo().equals("char") || id2.getTipo().equals("date")))
+								{
+									flag = true;
+								}
+								else
+								{
+									if (atr.getTipo().equals("date") && (id2.getTipo().equals("char") || id2.getTipo().equals("date")))
+									{
+										flag = true;
+									}
+									else
+									{
+										String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + id2.getTipo() + " @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
+								}
+									
+							}
+						}
+					}
+					else
+					{
+						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+					}
+				}
+			
+			if (flag)
+			{
+				/*
+				 * CompareTo devuelve 0 si son iguales
+				 * mas de 0 si el primero es mayor al segundo
+				 * y menos de 0 si el primero es menor al tercero
+				 */
+				switch (op)
+				{
+					//Igual
+					case "=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son date y es con literal
+								if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										
+										String comp = fila.get(index);
+										if (compareDate(comp, value).equals("igual"))
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									//Si ambos son date  y es con columna
+									if (value.equals("'") && atr.getTipo().equals("date") && id2.getTipo().equals("date"))
+									{
+										int index2 = this.table_use.getAtributos().indexOf(id2);
+										int cont = 0;
+										for (ArrayList<String> fila : this.table_use.getData())
+										{
+											
+											String comp = fila.get(index);
+											String valor = fila.get(index2);
+											if (compareDate(comp, valor).equals("igual"))
+												list.add(cont);
+											cont++;
+										}
+									}
+									else
+									{
+										//Si ambos son char o mezcla
+										if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+										{
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String comp = fila.get(index);
+												if (value.compareTo(comp)==0)
+													list.add(cont);
+												cont++;
+											}
+										}
+										else
+										{
+											int index2 = this.table_use.getAtributos().indexOf(id2);
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String valor = fila.get(index2);
+												String comp = fila.get(index);
+												if (valor.compareTo(comp)==0)
+													list.add(cont);
+												cont++;
+											}
+										}
+									}
+								}
+							}	
+						}
+						
+						break;
+					//Distinto
+					case "<>":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)!=0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)!=0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{	
+								//Si ambos son date y es con literal
+								if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										
+										String comp = fila.get(index);
+										if (!compareDate(comp, value).equals("igual"))
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									//Si ambos son date  y es con columna
+									if (value.equals("'") && atr.getTipo().equals("date") && id2.getTipo().equals("date"))
+									{
+										int index2 = this.table_use.getAtributos().indexOf(id2);
+										int cont = 0;
+										for (ArrayList<String> fila : this.table_use.getData())
+										{
+											
+											String comp = fila.get(index);
+											String valor = fila.get(index2);
+											if (!compareDate(comp, valor).equals("igual"))
+												list.add(cont);
+											cont++;
+										}
+									}
+									else
+									{
+										//Si ambos son char o mezcla
+										if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+										{
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String comp = fila.get(index);
+												if (value.compareTo(comp)!=0)
+													list.add(cont);
+												cont++;
+											}
+										}
+										else
+										{
+											int index2 = this.table_use.getAtributos().indexOf(id2);
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String valor = fila.get(index2);
+												String comp = fila.get(index);
+												if (valor.compareTo(comp)!=0)
+													list.add(cont);
+												cont++;
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					//Menor
+					case "<":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (comp.compareTo(valor)<0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)<0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son date y es con literal
+								if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										
+										String comp = fila.get(index);
+										if (compareDate(comp, value).equals("menor"))
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									//Si ambos son date  y es con columna
+									if (value.equals("'") && atr.getTipo().equals("date") && id2.getTipo().equals("date"))
+									{
+										int index2 = this.table_use.getAtributos().indexOf(id2);
+										int cont = 0;
+										for (ArrayList<String> fila : this.table_use.getData())
+										{
+											
+											String comp = fila.get(index);
+											String valor = fila.get(index2);
+											if (compareDate(comp, valor).equals("menor"))
+												list.add(cont);
+											cont++;
+										}
+									}
+									else
+									{
+										//Si ambos son char o mezcla
+										if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+										{
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String comp = fila.get(index);
+												if (comp.compareTo(value)<0)
+													list.add(cont);
+												cont++;
+											}
+										}
+										else
+										{
+											int index2 = this.table_use.getAtributos().indexOf(id2);
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String valor = fila.get(index2);
+												String comp = fila.get(index);
+												if (comp.compareTo(valor)<0)
+													list.add(cont);
+												cont++;
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					//Mayor
+					case ">":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (comp.compareTo(valor)>0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)>0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son date y es con literal
+								if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										
+										String comp = fila.get(index);
+										if (compareDate(comp, value).equals("mayor"))
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									//Si ambos son date  y es con columna
+									if (value.equals("'") && atr.getTipo().equals("date") && id2.getTipo().equals("date"))
+									{
+										int index2 = this.table_use.getAtributos().indexOf(id2);
+										int cont = 0;
+										for (ArrayList<String> fila : this.table_use.getData())
+										{
+											
+											String comp = fila.get(index);
+											String valor = fila.get(index2);
+											if (compareDate(comp, valor).equals("mayor"))
+												list.add(cont);
+											cont++;
+										}
+									}
+									else
+									{
+										//Si ambos son char o mezcla
+										if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+										{
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String comp = fila.get(index);
+												if (comp.compareTo(value)>0)
+													list.add(cont);
+												cont++;
+											}
+										}
+										else
+										{
+											int index2 = this.table_use.getAtributos().indexOf(id2);
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String valor = fila.get(index2);
+												String comp = fila.get(index);
+												if (comp.compareTo(valor)>0)
+													list.add(cont);
+												cont++;
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					//Menor Igual
+					case "<=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (comp.compareTo(valor)<0 || valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)<0 || valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son date y es con literal
+								if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										
+										String comp = fila.get(index);
+										if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("menor"))
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									//Si ambos son date  y es con columna
+									if (value.equals("'") && atr.getTipo().equals("date") && id2.getTipo().equals("date"))
+									{
+										int index2 = this.table_use.getAtributos().indexOf(id2);
+										int cont = 0;
+										for (ArrayList<String> fila : this.table_use.getData())
+										{
+											
+											String comp = fila.get(index);
+											String valor = fila.get(index2);
+											if (compareDate(comp, valor).equals("igual") || compareDate(comp, valor).equals("menor"))
+												list.add(cont);
+											cont++;
+										}
+									}
+									else
+									{
+										//Si ambos son char o mezcla
+										if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+										{
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String comp = fila.get(index);
+												if (comp.compareTo(value)<0 || comp.compareTo(value)==0)
+													list.add(cont);
+												cont++;
+											}
+										}
+										else
+										{
+											int index2 = this.table_use.getAtributos().indexOf(id2);
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String valor = fila.get(index2);
+												String comp = fila.get(index);
+												if (comp.compareTo(valor)<0 || comp.compareTo(valor)==0)
+													list.add(cont);
+												cont++;
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					//Mayor Igual	
+					case ">=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (comp.compareTo(valor)>0 || comp.compareTo(valor)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else //si es una columna de tipo int o float
+						{
+							if (value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+							{
+								int index2 = this.table_use.getAtributos().indexOf(id2);
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									Double valor = Double.parseDouble(fila.get(index2));
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)>0 || comp.compareTo(valor)==0)
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son date y es con literal
+								if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										
+										String comp = fila.get(index);
+										if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("mayor"))
+											list.add(cont);
+										cont++;
+									}
+								}
+								else
+								{
+									//Si ambos son date  y es con columna
+									if (value.equals("'") && atr.getTipo().equals("date") && id2.getTipo().equals("date"))
+									{
+										int index2 = this.table_use.getAtributos().indexOf(id2);
+										int cont = 0;
+										for (ArrayList<String> fila : this.table_use.getData())
+										{
+											
+											String comp = fila.get(index);
+											String valor = fila.get(index2);
+											if (compareDate(comp, valor).equals("igual") || compareDate(comp, valor).equals("mayor"))
+												list.add(cont);
+											cont++;
+										}
+									}
+									else
+									{
+										//Si ambos son char o mezcla
+										if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+										{
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String comp = fila.get(index);
+												if (comp.compareTo(value)>0 || comp.compareTo(value)==0)
+													list.add(cont);
+												cont++;
+											}
+										}
+										else
+										{
+											int index2 = this.table_use.getAtributos().indexOf(id2);
+											int cont = 0;
+											for (ArrayList<String> fila : this.table_use.getData())
+											{
+												String valor = fila.get(index2);
+												String comp = fila.get(index);
+												if (comp.compareTo(valor)>0 || comp.compareTo(valor)==0)
+													list.add(cont);
+												cont++;
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+				}
+			}
+			return (T)list;
+		}
+		else
+		{
+			String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
 		
-		return (T)"true"; 
+		return (T)null; 
 	}
+	
+	
+	/*********************************
+	 * CompLit
+	 * 
+	 * Revisamos si e suna comparacion
+	 * solo de literales
+	 */
+	@Override
+	public Object visitCompLit(sqlParser.CompLitContext ctx) {
+		LinkedHashSet<Integer> list = new LinkedHashSet();
+		String op = ctx.getChild(1).getText(); //agarro el relational
+		
+		//visito el primer hijo 
+		String tipo = (String)this.visit(ctx.getChild(0)); //voy a recibir el tipo
+		String value = ctx.getChild(0).getText();
+		
+		//visito el ultimo hijo 
+		String tipo2 = (String)this.visit(ctx.getChild(2)); //voy a recibir el tipo
+		String value2 = ctx.getChild(2).getText();
+		
+		boolean flag = false;
+		
+		
+		if (flag)
+		{
+			switch(op)
+			{
+				case "=":
+					if (tipo.equals("date") && tipo2.equals("date"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (compareDate(value,value2).equals("igual"))
+								list.add(cont);
+							cont++;
+						}
+					}
+					else
+					{
+						if ((tipo.equals("int") || tipo.equals("float")) && (tipo2.equals("int") || tipo2.equals("float")))
+						{
+							int cont = 0;
+							Double num = Double.parseDouble(value);
+							Double num2 = Double.parseDouble(value2);
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (num.compareTo(num2)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (value.compareTo(value2)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+					}
+					break;
+				case "<>":
+					if (tipo.equals("date") && tipo2.equals("date"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (!compareDate(value,value2).equals("igual"))
+								list.add(cont);
+							cont++;
+						}
+					}
+					else
+					{
+						if ((tipo.equals("int") || tipo.equals("float")) && (tipo2.equals("int") || tipo2.equals("float")))
+						{
+							int cont = 0;
+							Double num = Double.parseDouble(value);
+							Double num2 = Double.parseDouble(value2);
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (num.compareTo(num2)!=0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (value.compareTo(value2)!=0)
+									list.add(cont);
+								cont++;
+							}
+						}
+					}
+					break;
+				case "<":
+					if (tipo.equals("date") && tipo2.equals("date"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (compareDate(value,value2).equals("menor"))
+								list.add(cont);
+							cont++;
+						}
+					}
+					else
+					{
+						if ((tipo.equals("int") || tipo.equals("float")) && (tipo2.equals("int") || tipo2.equals("float")))
+						{
+							int cont = 0;
+							Double num = Double.parseDouble(value);
+							Double num2 = Double.parseDouble(value2);
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (num.compareTo(num2)<0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (value.compareTo(value2)<0)
+									list.add(cont);
+								cont++;
+							}
+						}
+					}
+					break;
+				case ">":
+					if (tipo.equals("date") && tipo2.equals("date"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (compareDate(value,value2).equals("mayor"))
+								list.add(cont);
+							cont++;
+						}
+					}
+					else
+					{
+						if ((tipo.equals("int") || tipo.equals("float")) && (tipo2.equals("int") || tipo2.equals("float")))
+						{
+							int cont = 0;
+							Double num = Double.parseDouble(value);
+							Double num2 = Double.parseDouble(value2);
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (num.compareTo(num2)>0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (value.compareTo(value2)>0)
+									list.add(cont);
+								cont++;
+							}
+						}
+					}
+					break;
+				case "<=":
+					if (tipo.equals("date") && tipo2.equals("date"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (compareDate(value,value2).equals("menor") || compareDate(value,value2).equals("igual"))
+								list.add(cont);
+							cont++;
+						}
+					}
+					else
+					{
+						if ((tipo.equals("int") || tipo.equals("float")) && (tipo2.equals("int") || tipo2.equals("float")))
+						{
+							int cont = 0;
+							Double num = Double.parseDouble(value);
+							Double num2 = Double.parseDouble(value2);
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (num.compareTo(num2)<0 || num.compareTo(num2)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (value.compareTo(value2)<0 || value.compareTo(value2)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+					}
+					break;
+				case ">=":
+					if (tipo.equals("date") && tipo2.equals("date"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (compareDate(value,value2).equals("mayor") || compareDate(value,value2).equals("igual"))
+								list.add(cont);
+							cont++;
+						}
+					}
+					else
+					{
+						if ((tipo.equals("int") || tipo.equals("float")) && (tipo2.equals("int") || tipo2.equals("float")))
+						{
+							int cont = 0;
+							Double num = Double.parseDouble(value);
+							Double num2 = Double.parseDouble(value2);
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (num.compareTo(num2)>0 || num.compareTo(num2)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								if (value.compareTo(value2)>0 || value.compareTo(value2)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+					}
+					break;
+			}
+			return list;
+		}
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	/*********************************
+	 * CompLitId
+	 * Revisamso si es una comparacion
+	 * de literal con id
+	 */
+	@Override
+	public Object visitCompLitId(sqlParser.CompLitIdContext ctx) {
+		
+		LinkedHashSet<Integer> list = new LinkedHashSet();
+		String op = ctx.getChild(1).getText(); //agarro el relational
+		
+		
+		String id = ctx.getChild(2).getText(); //agarro el primer id
+		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
+		{
+			//tomo el atributo de la tabla y el indice de este
+			Atributo atr = this.table_use.getID(id);
+			int index = this.table_use.getAtributos().indexOf(atr);
+			
+			//visito el ultimo hijo 
+			String tipo = (String)this.visit(ctx.getChild(0)); //si es literal, voy a recibir el tipo
+			String value = ctx.getChild(0).getText();
+			
+			//creo una bandera para ver si voy a poder castear los tipos
+			boolean flag = false;
+			
+			//Si es un literal
+			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			{
+				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
+				{
+					flag = true;
+				}
+				else
+				{
+					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+					{
+						flag = true;
+					}
+					else
+					{
+						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						{
+							flag = true;
+						}
+						else
+						{
+							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+							{
+								flag = true;
+							}
+							else
+							{
+								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+							}
+						}
+							
+					}
+				}	
+			}
+			else
+				if (tipo.equals("Error"))
+				{
+					// no acepto la fecha
+					String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
+				
+			
+			if (flag)
+			{
+				/*
+				 * CompareTo devuelve 0 si son iguales
+				 * mas de 0 si el primero es mayor al segundo
+				 * y menos de 0 si el primero es menor al tercero
+				 */
+				switch (op)
+				{
+					//Igual
+					case "=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							//Si ambos son date y es con literal
+							if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+							{
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									
+									String comp = fila.get(index);
+									if (compareDate(comp, value).equals("igual"))
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son char o mezcla
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}						
+							}
+						}
+						break;
+					//Distinto
+					case "<>":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)!=0)
+									list.add(cont);
+								cont++;
+							}
+						}					
+						else
+						{	
+							//Si ambos son date y es con literal
+							if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+							{
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									
+									String comp = fila.get(index);
+									if (!compareDate(comp, value).equals("igual"))
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son char o mezcla
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)!=0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Menor
+					case "<":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)<0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							//Si ambos son date y es con literal
+							if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+							{
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									
+									String comp = fila.get(index);
+									if (compareDate(value, comp).equals("menor"))
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son char o mezcla
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)<0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Mayor
+					case ">":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)>0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							//Si ambos son date y es con literal
+							if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+							{
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									
+									String comp = fila.get(index);
+									if (compareDate(value, comp).equals("mayor"))
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son char o mezcla
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)>0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Menor Igual
+					case "<=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)<0 || valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							//Si ambos son date y es con literal
+							if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+							{
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									
+									String comp = fila.get(index);
+									if (compareDate(value, comp).equals("igual") || compareDate(value, comp).equals("menor"))
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son char o mezcla
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)<0 || value.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+					//Mayor Igual	
+					case ">=":
+						//si es un literal y de tipo int o float
+						if (!value.equals("'") && (atr.getTipo().equals("int") || atr.getTipo().equals("float")))
+						{
+							Double valor = Double.parseDouble(value);
+							int cont = 0;
+							for (ArrayList<String> fila : this.table_use.getData())
+							{
+								Double comp = Double.parseDouble(fila.get(index));
+								if (valor.compareTo(comp)>0 || valor.compareTo(comp)==0)
+									list.add(cont);
+								cont++;
+							}
+						}
+						else
+						{
+							//Si ambos son date y es con literal
+							if (!value.equals("'") && atr.getTipo().equals("date") && tipo.equals("date"))
+							{
+								int cont = 0;
+								for (ArrayList<String> fila : this.table_use.getData())
+								{
+									
+									String comp = fila.get(index);
+									if (compareDate(value, comp).equals("igual") || compareDate(value, comp).equals("mayor"))
+										list.add(cont);
+									cont++;
+								}
+							}
+							else
+							{
+								//Si ambos son char o mezcla
+								if (!value.equals("'") && (atr.getTipo().equals("char") || atr.getTipo().equals("date")))
+								{
+									int cont = 0;
+									for (ArrayList<String> fila : this.table_use.getData())
+									{
+										String comp = fila.get(index);
+										if (value.compareTo(comp)>0 || value.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
+								}
+							}
+						}
+						break;
+				}
+			}
+			return (T)list;
+		}
+		else
+		{
+			String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+		}
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	/****************************
 	 * Recibimos un numero
@@ -1689,17 +3339,67 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return dia;
 	}
 	
+	public String compareDate(String date1, String date2)
+	{
+		String valor1[] = date1.split("-");
+		String valor2[] = date2.split("-");
+		
+		if (Integer.parseInt(valor1[0])<Integer.parseInt(valor2[0]))
+		{
+			return "menor";
+		}
+		else
+		{
+			if (Integer.parseInt(valor1[0])>Integer.parseInt(valor2[0]))
+			{
+				return "mayor";
+			}
+			else
+			{
+				if (Integer.parseInt(valor1[1])<Integer.parseInt(valor2[1]))
+				{
+					return "menor";
+				}
+				else
+				{
+					if (Integer.parseInt(valor1[1])>Integer.parseInt(valor2[1]))
+					{
+						return "mayor";
+					}
+					else
+					{
+						if (Integer.parseInt(valor1[2])<Integer.parseInt(valor2[2]))
+						{
+							return "menor";
+						}
+						else
+						{
+							if (Integer.parseInt(valor1[2])>Integer.parseInt(valor2[2]))
+							{
+								return "mayor";
+							}
+							else
+							{
+								return "igual";
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
 		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
-		String dbsPath = dataPath+"/dbs.bin";//path... /data/
-		if (actual.getName().isEmpty()){
+		
+		if (getActual().getName().isEmpty()){
 			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_in_use);
 		}else{
 			String ID = ctx.getChild(3).getText();
-			Table tb = actual.getTable(ID);
+			Table tb = getActual().getTable(ID);
 			if (tb == null){
-				String no_database_in_use = "No hay una Tabla " +ID+" en la Base de Datos " +actual.getName()+" @line: " + ctx.getStop().getLine();
+				String no_database_in_use = "No hay una Tabla " +ID+" en la Base de Datos " +getActual().getName()+" @line: " + ctx.getStop().getLine();
 	        	this.errores.add(no_database_in_use);
 	        	//System.out.println("error de tabla");
 			}else{
@@ -1718,7 +3418,83 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public T visitShow_table_statement(sqlParser.Show_table_statementContext ctx){
 		//SHOW TABLES (comprobar use database)
+		if (getActual().getName().isEmpty()){
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}else{
+			
+			ArrayList<Atributo> atr = new ArrayList();
+			atr.add(new Atributo("Tables"));
+			
+			ArrayList<ArrayList<String>> values = new ArrayList();
+			for (Table tb: getActual().getTables()){
+				ArrayList<String> val = new ArrayList();
+				val.add(tb.getName());
+				values.add(val);
+			}
+			Table tb1 = new Table(getActual().getName());
+			tb1.setAtributos(atr);
+			tb1.setData(values);
+			return (T) tb1;
+		}
 		return (T) new String();
+	}
+
+	public Object visitSelect_value (sqlParser.Select_valueContext ctx){
+		
+		return null;
+	}
+	
+	/**
+	 * requiere un paso base
+	 * a tb1 se debe llamar tb1.setNamesByTable() fuera del metodo
+	 * el metodo supone que tb1 es el crossJoin de otras tablas, 
+	 * por lo que solo se debe agregar tb2 al crossJoin 
+	 * 
+	 * @param tb1
+	 * @param tb2
+	 * @return
+	 */
+	public Table crossJoin(Table tb1, Table tb2){
+		//tb1.setNameByTable(); ya estan mezclados
+		tb2.setNamesByTable();
+		Table nTb = new Table();
+		
+		nTb.setName("Select");
+		
+		//agregamos todos los atributos
+		ArrayList<Atributo> at = new ArrayList();
+		at.addAll(tb1.getAtributos());
+		at.addAll(tb2.getAtributos());
+		nTb.setAtributos(at);
+		
+		//agregamos nuevos nombres tabla.atributo
+		ArrayList<String> otN = new ArrayList();
+		otN.addAll(tb1.getOthersIds());
+		otN.addAll(tb2.getOthersIds());
+		nTb.setOthersIds(otN);
+		
+		//vergueo con data
+		ArrayList<ArrayList<String>> data = new ArrayList();
+		for (ArrayList<String> tupla1: tb1.getData()){
+			for (ArrayList<String> tupla2: tb2.getData()){
+				ArrayList<String> tupla = new ArrayList();
+				tupla.addAll(tupla1);
+				tupla.addAll(tupla2);
+				data.add(tupla);
+			}
+		}
+		nTb.setData(data);
+		
+		return nTb;
+	}
+	
+	public DataBase getActual() {
+		return actual;
+	}
+
+	public void setActual(DataBase actual) {
+		this.actual = actual;
 	}
 	
 }

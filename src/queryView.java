@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.*;
 
 import views.*;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.EventQueue;
@@ -41,8 +42,11 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Utilities;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
@@ -65,17 +69,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class queryView extends JFrame implements ActionListener{
 
 	
 	//private JFrame frame;
 	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment, mntmPrueba;
-	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo;
+	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete;
 	//JTextArea textArea;
 	JTextPane textArea, dataOutputArea, dataReadArea;
-	JTextField status;
+	JTextField status, dataBaseUse;
 	JSplitPane splitPane1;
 	JTabbedPane tabbedPane;
 	
@@ -84,6 +92,8 @@ public class queryView extends JFrame implements ActionListener{
 	JFileChooser fc;
 	File file;
 	SimpleTree explorer;
+	
+	MyVisitor<Object> semantic_checker = new MyVisitor();
 	
 	String commentSeq = "//", textStr = "";
 	int caretLine = 1, caretColumn = 1;
@@ -212,7 +222,7 @@ public class queryView extends JFrame implements ActionListener{
 		mntmPrueba.addActionListener(this);
 		//KeyStroke keyStrokeToPrueba = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
 		//mntmPrueba.setAccelerator(keyStrokeToPrueba);
-		mnQuery.add(mntmPrueba);
+		//mnQuery.add(mntmPrueba);
 		
 		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -339,6 +349,17 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnRun);
 		
+		btnDelete = new JButton("Delete All");
+		btnDelete.addActionListener(this);
+		btnDelete.setToolTipText("Delete All");
+		toolBar.add(btnDelete);
+		
+		dataBaseUse = new JTextField();
+		dataBaseUse.setEditable(false);
+		dataBaseUse.setText("Database: ");
+		toolBar.add(dataBaseUse);
+		
+		
 		splitPane1 = new JSplitPane();
 		splitPane1.setResizeWeight(0.2);
 		splitPane1.setContinuousLayout(true);
@@ -430,72 +451,144 @@ public class queryView extends JFrame implements ActionListener{
 			FileInputStream fis = new FileInputStream(path);
 			BufferedReader br = new BufferedReader(new FileReader(path));
 			
-			JScrollPane scrollPane_1 = new JScrollPane();
-			tabbedPane.add(scrollPane_1);
+			//JScrollPane scrollPane_1 = new JScrollPane();
 			
+			//JTable table = null;
+			//JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			//tabbedPane.add(scrollPane_1);
 			
-			JTable table = new JTable();
 			if (br.readLine() != null)
 			{
 				ObjectInputStream in = new ObjectInputStream(fis);
-				try{
-					DataBases dataBases = (DataBases)in.readObject();
-					table = createNewTable(dataBases);
-					System.out.println(dataBases);
-				} catch (Exception e1){
-					System.out.println("No es dataBases");
-					try{
-						Table dataBaseTable = (Table)in.readObject();
-						table = createNewTable(dataBaseTable);
-						System.out.println(dataBaseTable);
-					} catch (Exception e2){
-						System.out.println("No es table");
+				Object obj = in.readObject();
+				if (obj instanceof Table){
+					Path currentRelativePath = Paths.get("");
+					String dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
+					FileInputStream fis1 = new FileInputStream(dataPath+"dbs.bin");
+					BufferedReader br1 = new BufferedReader(new FileReader(dataPath+"dbs.bin"));
+					DataBases dataBases = null;
+					if (br1.readLine() != null)
+					{
+						ObjectInputStream in1 = new ObjectInputStream(fis1);
+						dataBases = (DataBases)in1.readObject();
+						//fis.close();
+						in1.close();
 					}
+					fis1.close();
+					br1.close();
+					if (dataBases != null){
+						//name 
+						String dataBaseName = file.getParentFile().getName();
+						
+						DataBase dataBase = null;
+						
+						for (int i = 0; i < dataBases.getDataBases().size(); i++){
+							if (dataBases.getDataBases().get(i).getName().equals(dataBaseName)){
+								dataBase = dataBases.getDataBases().get(i);
+							}
+						}
+						
+						if (dataBase != null){
+							
+							Table dataBaseTable = dataBase.getTable(name.substring(0, name.length()-4));//quito .bin
+							//System.out.println(dataBaseTable);
+							if (dataBaseTable != null)
+								addNewTab(dataBaseTable);
+								//table = createNewTable(dataBaseTable);
+						}
+						
+						//System.out.println(dataBaseTable);
+						
+					}
+					
+				}else if (obj instanceof DataBases){
+					DataBases dataBases = (DataBases)obj;
+					addNewTab(dataBases);
+					//table = createNewTable(dataBases);
+					//System.out.println(dataBases);
 				}
+					
+				
 				in.close();
 				
 				
 			}
+			br.close();
+			fis.close();
 			
-			if (table != null) scrollPane_1.setViewportView(table);
+			/*if (table != null) scrollPane_1.setViewportView(table);
 			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 				tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
 			
 			//System.out.println(dataBases);
-			fis.close();
+			*/
 			
 			
 		} catch (Exception e){
+			//e.printStackTrace();
 			System.out.println(e.toString());
 		}
 	}
 	
 	public void addNewTab(DataBases dataBases){
 		String name = "dbs.bin";
-		JScrollPane scrollPane_1 = new JScrollPane();
-		tabbedPane.add(scrollPane_1);
+		JTable table = null;
+		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//JScrollPane scrollPane_1 = new JScrollPane();
 		
-		JTable table = createNewTable(dataBases);		
-		if (table != null) scrollPane_1.setViewportView(table);
-		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
-		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+		
+		table = createNewTable(dataBases);	
+		if (table != null){
+			LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPane_1,table);
+			scrollPane_1.setRowHeaderView(tableLineNumber);
+			scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			tabbedPane.add(scrollPane_1);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount()-2);
+		}
 	}
 	
 	public void addNewTab(Table tableObj){
 		String name = tableObj.getName();
-		JScrollPane scrollPane_1 = new JScrollPane();
-		tabbedPane.add(scrollPane_1);
+		JTable table = null;
+		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//JScrollPane scrollPane_1 = new JScrollPane();
 		
-		JTable table = createNewTable(tableObj);		
-		if (table != null) scrollPane_1.setViewportView(table);
-		//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
-		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+		
+		table = createNewTable(tableObj);
+		if (table != null){
+			LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPane_1,table);
+			//tableLineNumber.setBackground(Color.LIGHT_GRAY);
+			scrollPane_1.setRowHeaderView(tableLineNumber);
+			scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			tabbedPane.add(scrollPane_1);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount()-2);
+		}
 	}
 	
 	public JTable createNewTable(Table table){
-		//dataOutputArea.setText("Todavia no esta listo cerote, aguantala");
-		System.out.println("Todavia no esta listo cerote, aguantala");
-		return new JTable();
+		Object [] columnNames = table.getAtributosNames().toArray();
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+		for (ArrayList<String> tupla: table.getData()){
+			//System.out.println("tupla: "+tupla);
+			Object[] objs = (Object[]) tupla.toArray();
+			//if (objs.length > 0)
+				tableModel.addRow(objs);
+			
+		}
+		//System.out.println("Ya llego a crear la tabla");
+		//if (tableModel.getRowCount()>0){
+			JTable nTable = new JTable(tableModel);
+			nTable.setEnabled(false);
+			return nTable;
+		//}
+		//return null;
 	}
 	
 	public JTable createNewTable(DataBases dataBases){
@@ -503,12 +596,15 @@ public class queryView extends JFrame implements ActionListener{
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 		for (DataBase st: dataBases.getDataBases()){
 			Object[] objs = {st.getName(), st.getTables().size()};
-			tableModel.addRow(objs);
+			//if (objs.length > 0)
+				tableModel.addRow(objs);
 		}
-		JTable nTable = new JTable(tableModel);
-		nTable.setEnabled(false);
-		
-		return nTable;
+		//if (tableModel.getRowCount()>0){
+			JTable nTable = new JTable(tableModel);
+			nTable.setEnabled(false);
+			return nTable;
+		//}
+		//return null;
 	}
 	
 	public void addTreeSelection(JTree tree){
@@ -658,6 +754,8 @@ public class queryView extends JFrame implements ActionListener{
 			comment();
 		}else if (e.getSource() == mntmPrueba){
 			addNewTab(new File("C:/"));
+		}else if (e.getSource() == btnDelete){
+			textArea.setText("");
 		}
 		
 	}
@@ -670,7 +768,7 @@ public class queryView extends JFrame implements ActionListener{
         	mntmSave.setEnabled(true);
         	btnSave.setEnabled(true);
         	try{
-        		FileReader readFile = new FileReader(file.getAbsolutePath());
+        		/*FileReader readFile = new FileReader(file.getAbsolutePath());
         		BufferedReader br = new BufferedReader(readFile);
         		textArea.setText("");
         		String newTxt = "";
@@ -678,15 +776,27 @@ public class queryView extends JFrame implements ActionListener{
         		while ((currentLine = br.readLine()) != null){
         			//textArea.append(currentLine+"\n");
         			newTxt += currentLine+"\n";
+        		}*/
+        		Scanner scanner = new Scanner(file);
+        		String newTxt = "";
+        		while (scanner.hasNextLine()){
+        			newTxt += scanner.nextLine()+"\n";
         		}
-        		textArea.setText(newTxt);
-        		br.close();
+        		SqlDocument doc = new SqlDocument();
+        		textArea.setDocument(new DefaultStyledDocument());
+        		doc.insertString(0, newTxt, null);
+        		
+        		textArea.setDocument(doc);
+        		//System.out.println(newTxt);
+        		scanner.close();
+        		//br.close();
         	} catch (Exception e){
+        		//e.printStackTrace();
         		System.out.println("Error opening file");
         	}
         	
         
-        	System.out.println(file.getAbsolutePath());
+        	//System.out.println(file.getAbsolutePath());
         } else {
         	//JOptionPane.showMessageDialog(null,"\nNo se ha encontrado el archivo","ADVERTENCIA!!!",JOptionPane.WARNING_MESSAGE);
         }
@@ -795,66 +905,110 @@ public class queryView extends JFrame implements ActionListener{
 	
 	public void run(){
 		try{
+			
+			dataOutputArea.setText("...");
+			textStr = textArea.getSelectedText();
+			if (textStr == null)
 				textStr = textArea.getText();//
-				//System.out.println(textStr);
-				
-				// Create DataBase
-		    	ANTLRInputStream input = new ANTLRInputStream(textStr);
-		    	
-		    	/*
-		    	    create database antros;
-		    	    use database antros;
-					create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));
-					create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );
-					create table baronRojoXela (id int, constraint fk foreign key(id) references baronRojoCayala (nombre) );
-					alter table baronRojo add column fecha date constraint fk foreign key (nombre) references baronRojoXela (id);
-		    	 */
-		    	
-		    	// Create Table
-		    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
-		    	
-		    	// Create Table con Constraints
-		        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
-		   	
-		    	// Rename Table
-		    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
-		    	
-		        sqlLexer lexer = new sqlLexer(input);
-		        
-		        CommonTokenStream tokens = new CommonTokenStream(lexer);
-		
-		        sqlParser parser = new sqlParser(tokens);
-		        ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
-		        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
-		        
-		        MyVisitor<String> semantic_checker = new MyVisitor();
-		        
-		        Object obj = (Object)semantic_checker.visit(tree);
-		        semantic_checker.guardarDBs();
-		        try{
-		        	DataBases dbs = (DataBases) obj;
-		        	//System.out.println(dbs);
-		        	addNewTab(dbs);
-		        }catch (Exception e1){
-		        	//System.out.println("no es database");
-		        	try{
-		        		Table tb = (Table) obj;
-		        		
-		        		addNewTab(tb);
-		        		
-		        	}catch (Exception e2){
-		        		//System.out.println("no es table");
-		        	}
-		        }
-		        //System.out.println(semantic_checker.erroresToString());
-		        
-		        dataOutputArea.setText(semantic_checker.erroresToString());
-		        dataReadArea.setText(textStr);
-		        //splitPane1.setLeftComponent(new SimpleTree());
+			
+			// Create DataBase
+			long startTime = System.nanoTime();
+	    	ANTLRInputStream input = new ANTLRInputStream(textStr);
+	    	
+	    	/*
+    	    create database antros;
+    	    use database antros;
+			create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));
+			create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );
+			create table baronRojoXela (id int, constraint fk foreign key(id) references baronRojoCayala (nombre) );
+			alter table baronRojo add column fecha date constraint fk foreign key (nombre) references baronRojoXela (id);
+	    	 */
+    	
+	    	// Create Table
+	    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
+	    	
+	    	// Create Table con Constraints
+	        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
+	   	
+	    	// Rename Table
+	    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
+    	
+	        sqlLexer lexer = new sqlLexer(input);
+	        
+	        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	
+	        sqlParser parser = new sqlParser(tokens);
+	        
+	        //errores sintacticos
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
+	        
+	        ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
+	        
+	        if (!DescriptiveErrorListener.errors.isEmpty()){
+	        	dataOutputArea.setText(DescriptiveErrorListener.errors);
+	        	DescriptiveErrorListener.errors = "";
+	        	return ;
+	        }
+	        
+	        
+	        Object obj = (Object)semantic_checker.visit(tree);
+	        semantic_checker.guardarDBs();
+	        
+	        if (semantic_checker.getActual().getName().isEmpty()){
+	        	dataBaseUse.setText("Database: ");
+	        }else{
+	        	dataBaseUse.setText("Database: "+semantic_checker.getActual().getName());
+	        }
+
+	        long estimatedTime = System.nanoTime()-startTime;
+	        if (obj instanceof DataBases){
+	        	DataBases dbs = (DataBases) obj;
+	        	addNewTab(dbs);
+	        }else if (obj instanceof Table){
+	        	Table tb = (Table) obj;
+	        	addNewTab(tb);
+	        }	        
+	        
+	        if (!semantic_checker.erroresToString().isEmpty())
+	        	dataOutputArea.setText(semantic_checker.erroresToString()+"\n"+calculateTime(estimatedTime));
+	        else
+	        	dataOutputArea.setText("Terminado"+"\n"+calculateTime(estimatedTime));
+	        dataReadArea.setText(textStr);
+	        //splitPane1.setLeftComponent(new SimpleTree());
 		} catch (Exception e){
 			dataReadArea.setText("Unexpected error: " + e.getStackTrace().toString());
 		}
 		
+	}
+	
+	public String calculateTime(long nanoTime){
+		String str = "Estimated time: ";
+		long hr, min, sec, msec, nsec, time = 0;
+		if ((hr = TimeUnit.NANOSECONDS.toHours(nanoTime))>0){
+			str += ""+hr+"hr ";
+			time = time+hr*60;
+		}
+		if ((min = TimeUnit.NANOSECONDS.toMinutes(nanoTime))>0){
+			min = min-time;
+			str += ""+min+"min ";
+			time = (time + min)*60;
+		}
+		if ((sec = TimeUnit.NANOSECONDS.toSeconds(nanoTime))>0){
+			sec = sec-time;
+			str += ""+sec+"s ";
+			time = (time + sec)*1000;
+		}
+		if ((msec = TimeUnit.NANOSECONDS.toMillis(nanoTime))>0){
+			msec = msec-time;
+			str += ""+msec+"ms ";
+			time = (time + msec)*1000000;
+		}
+		if ((nsec = TimeUnit.NANOSECONDS.toNanos(nanoTime))>0)
+			nsec = nsec-time;
+			str += ""+nsec+"ns ";
+			
+		return str;
 	}
 	
 	public String getTextStr(){

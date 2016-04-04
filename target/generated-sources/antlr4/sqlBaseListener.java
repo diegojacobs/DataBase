@@ -28,6 +28,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAsignacion(@NotNull sqlParser.AsignacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAsignacion(@NotNull sqlParser.AsignacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTable_definition(@NotNull sqlParser.Table_definitionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -47,6 +59,42 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLocalIDS(@NotNull sqlParser.LocalIDSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNID(@NotNull sqlParser.NIDContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNID(@NotNull sqlParser.NIDContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNlocalIDS(@NotNull sqlParser.NlocalIDSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNlocalIDS(@NotNull sqlParser.NlocalIDSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConditionComp(@NotNull sqlParser.ConditionCompContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConditionComp(@NotNull sqlParser.ConditionCompContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -160,6 +208,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConditionCond(@NotNull sqlParser.ConditionCondContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConditionCond(@NotNull sqlParser.ConditionCondContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDelete_value(@NotNull sqlParser.Delete_valueContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -196,13 +256,13 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterComp(@NotNull sqlParser.CompContext ctx) { }
+	@Override public void enterOrder(@NotNull sqlParser.OrderContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitComp(@NotNull sqlParser.CompContext ctx) { }
+	@Override public void exitOrder(@NotNull sqlParser.OrderContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -244,6 +304,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCompLit(@NotNull sqlParser.CompLitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCompLit(@NotNull sqlParser.CompLitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterConstraintTypeCheck(@NotNull sqlParser.ConstraintTypeCheckContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -268,18 +340,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCondition(@NotNull sqlParser.ConditionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCondition(@NotNull sqlParser.ConditionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExp_logic(@NotNull sqlParser.Exp_logicContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -287,6 +347,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExp_logic(@NotNull sqlParser.Exp_logicContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCompId(@NotNull sqlParser.CompIdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCompId(@NotNull sqlParser.CompIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -472,18 +544,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterList_values(@NotNull sqlParser.List_valuesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitList_values(@NotNull sqlParser.List_valuesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExp_relational(@NotNull sqlParser.Exp_relationalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -515,6 +575,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDrop_schema_statement(@NotNull sqlParser.Drop_schema_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCompLitId(@NotNull sqlParser.CompLitIdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCompLitId(@NotNull sqlParser.CompLitIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -599,6 +671,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConditionNot(@NotNull sqlParser.ConditionNotContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConditionNot(@NotNull sqlParser.ConditionNotContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
