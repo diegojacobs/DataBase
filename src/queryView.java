@@ -573,7 +573,13 @@ public class queryView extends JFrame implements ActionListener{
 	}
 	
 	public JTable createNewTable(Table table){
-		Object [] columnNames = table.getAtributosNames().toArray();
+		ArrayList<String> nombres = new ArrayList();
+		ArrayList<Atributo> atributos = table.getAtributos();
+		for (Atributo at: atributos){
+			nombres.add(at.getId());
+		}
+		
+		Object [] columnNames = nombres.toArray();
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 		for (ArrayList<String> tupla: table.getData()){
 			//System.out.println("tupla: "+tupla);
@@ -975,6 +981,7 @@ public class queryView extends JFrame implements ActionListener{
 	        else
 	        	dataOutputArea.setText("Terminado"+"\n"+calculateTime(estimatedTime));
 	        dataReadArea.setText(textStr);
+	        semantic_checker.resetValues();
 	        //splitPane1.setLeftComponent(new SimpleTree());
 		} catch (Exception e){
 			dataReadArea.setText("Unexpected error: " + e.getStackTrace().toString());
