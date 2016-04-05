@@ -34,6 +34,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	private String dataPath;
 	private ArrayList<String> errores = new ArrayList<String>();
+	private ArrayList<String> messages = new ArrayList<String>();
+	private ArrayList<String> verbose = new ArrayList<String>();
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
 	private Table table_use = new Table();
@@ -71,6 +73,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 
 	public void setUpdated_rows(int updated_rows) {
 		this.updated_rows = updated_rows;
+	}
+
+	/**
+	 * @return the messages
+	 */
+	public ArrayList<String> getMessages() {
+		return messages;
+	}
+
+	/**
+	 * @param messages the messages to set
+	 */
+	public void setMessages(ArrayList<String> messages) {
+		this.messages = messages;
 	}
 
 	/**
@@ -113,6 +129,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		Path currentRelativePath = Paths.get("");
 		dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
 		cargarDBs();
+		this.verbose.add("Inicio");
 	}
 	
 	/*
@@ -184,6 +201,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 	}
 	
+	public String toStringMessages()
+	{
+		String ret = "";
+		for (String i: this.messages)
+			ret += i + "\n";
+		return ret;
+	}
+	
 	@Override 
 	public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) 
 	{ 
@@ -205,7 +230,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		else
 		{
 			System.out.println("DataBase \"" + ID + "\" actualmente en uso");
+			this.messages.add("DataBase \"" + ID + "\" actualmente en uso");
 		}
+		//this.verbose.add("USE DATABASE");
 		return (T)"";
 		//return visitChildren(ctx); 
 	}
@@ -226,6 +253,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
         else
         {
         	System.out.println("DataBase \"" + ID + "\" creada exitosamente");
+        	this.messages.add("DataBase \"" + ID + "\" creada exitosamente");
         	this.dataBases.addDataBase(new_DB);
     		//guardarDBs();
         }
@@ -295,6 +323,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					        stack.pop().delete();
 					}
 					System.out.println("DataBase \"" + ID + "\" eliminada exitosamente");
+					this.messages.add("DataBase \"" + ID + "\" eliminada exitosamente");
 		        }
 			}
 			else
@@ -344,6 +373,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				// Renombrar el directorio
 				directory.renameTo(new File(this.dataPath + NEW_ID));
 				System.out.println("DataBase \"" + ID + "\" renombrada a \"" + NEW_ID +"\" exitosamente");
+				this.messages.add("DataBase \"" + ID + "\" renombrada a \"" + NEW_ID +"\" exitosamente");
 			}
 			else
 			{
@@ -380,9 +410,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					// Verificar que no exista una tabla ya creada con ID == NEW_ID
 					if (! this.getActual().existTable(NEW_ID))
-					{						
-						//System.out.println("Before rename");
-						//System.out.println(this.actual);
+					{
 						// Renombrar referencias
 						if (this.getActual().existRef(ID))
 						{
@@ -391,6 +419,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						}
 						this.getActual().renameRef(ID, NEW_ID);
 						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
+						this.messages.add("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
 						Table new_table = this.getActual().getTable(ID);
 						new_table.setName(NEW_ID);
 						File directory = new File(this.dataPath + "\\" + this.getActual().getName() + "\\" + ID + ".bin");
@@ -398,8 +427,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						directory.renameTo(new File(this.dataPath + "\\" + this.getActual().getName() + "\\" + NEW_ID + ".bin"));						
 						// Guardar cambio en la DB
 						//guardarDBs();
-						//System.out.println("After rename");
-						//System.out.println(this.actual);
 					}
 					else
 					{
@@ -603,8 +630,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							// Agregar tabla a la DB
 							this.getActual().addTable(new_table);
 							System.out.println("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.getActual().getName() + "\"");
-							System.out.println();
-							System.out.println(this.getActual().toString());
+							this.messages.add("Tabla \"" + name + "\" agregada exitosamente a la Base de Datos \"" + this.getActual().getName() + "\"");
 							// Guardar tabla en directorio
 							saveTable(this.getActual().getName(), name, new_table);
 							// Guardar cambio en la DB
@@ -955,6 +981,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						if (con.getTipo().equals("Foreign Key"))
 							this.getActual().addRef(con.getId_ref());
 						System.out.println("Columna \"" + ID_Column + "\" y Constraint \"" + con.getId() + "\" agregadas exitosamente a la tabla \"" + toAlter.getName() + "\"");
+						this.messages.add("Columna \"" + ID_Column + "\" y Constraint \"" + con.getId() + "\" agregadas exitosamente a la tabla \"" + toAlter.getName() + "\"");
 					}
 				}
 				else
@@ -1082,6 +1109,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						if (con.getTipo().equals("Foreign Key"))
 							this.getActual().addRef(con.getId_ref());
 						System.out.println("Constraint \"" + con.getId() + "\" agregada exitosamente a la tabla \"" + toAlter.getName() + "\"");
+						this.messages.add("Constraint \"" + con.getId() + "\" agregada exitosamente a la tabla \"" + toAlter.getName() + "\"");
 					}
 				}
 				else
@@ -1181,7 +1209,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					if (errores == 0)
 					{
 						toAlter.deleteAtributo(ID_Column);
-						System.out.println("El atributo \"" + ID_Column + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");					
+						System.out.println("El atributo \"" + ID_Column + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");
+						this.messages.add("El atributo \"" + ID_Column + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");
 					}
 				}
 				else
@@ -1244,7 +1273,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 					// Eliminar constraint
 					toAlter.deleteConstraint(to_drop);
-					System.out.println("La Constraint \"" + ID_Constraint + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");					
+					System.out.println("La Constraint \"" + ID_Constraint + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");
+					this.messages.add("La Constraint \"" + ID_Constraint + "\" se ha eliminado exitosamente de la Tabla \"" + ID_Table + "\"");
 				}
 				else
 				{
@@ -1337,6 +1367,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					    			// Eliminar tabla del objeto					
 									this.getActual().deleteTable(ID_Table);
 					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
+					    			this.messages.add("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
 					    		}
 					    		else
 					    			System.out.println("Error al eliminar la Tabla \"" + ID_Table + "\" de la data persistente" );					    	   
