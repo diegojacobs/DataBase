@@ -78,7 +78,7 @@ DESC: D E S C;
 
 fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' ;
+fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' | '.';
 fragment TWO_DIGITS : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS : DIGIT THREE_DIGITS ;
