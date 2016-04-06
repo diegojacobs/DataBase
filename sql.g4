@@ -127,7 +127,7 @@ table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
-alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal constraint ';' #alterAddColumn
+alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal (constraint)? ';' #alterAddColumn
 					 | ALTER TABLE idTable ADD constraint ';' #alterAddConstraint
 					 | ALTER TABLE idTable DROP COLUMN idColumn ';' #alterDropColumn
 					 | ALTER TABLE idTable DROP CONSTRAINT idConstraint ';' #alterDropConstraint;

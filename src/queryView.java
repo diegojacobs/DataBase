@@ -979,7 +979,7 @@ public class queryView extends JFrame implements ActionListener{
 	        if (!semantic_checker.erroresToString().isEmpty())
 	        	dataOutputArea.setText(semantic_checker.erroresToString()+"\n"+calculateTime(estimatedTime));
 	        else
-	        	dataOutputArea.setText("Terminado"+"\n"+calculateTime(estimatedTime));
+	        	dataOutputArea.setText(semantic_checker.toStringMessages() + "\n" + "Terminado"+"\n"+calculateTime(estimatedTime));
 	        dataReadArea.setText(textStr);
 	        semantic_checker.resetValues();
 	        //splitPane1.setLeftComponent(new SimpleTree());
