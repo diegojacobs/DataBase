@@ -85,6 +85,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIdTable(@NotNull sqlParser.IdTableContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code orderMulti}
+	 * labeled alternative in {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrderMulti(@NotNull sqlParser.OrderMultiContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link sqlParser#alter_database_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -135,12 +142,6 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link sqlParser#order}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOrder(@NotNull sqlParser.OrderContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link sqlParser#sql_executable_statement}.
 	 * @param ctx the parse tree
@@ -290,6 +291,13 @@ public interface sqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code orderUni}
+	 * labeled alternative in {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrderUni(@NotNull sqlParser.OrderUniContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code exp_relational}
 	 * labeled alternative in {@link sqlParser#exp}.
