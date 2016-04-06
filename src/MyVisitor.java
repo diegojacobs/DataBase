@@ -1480,7 +1480,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									else
 										if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
 										{
-											if (atr.getSize() >= valor.getValue().length())
+											if (atr.getSize() >= valor.getValue().length()-2)
 											{
 												//agrego el valor a la fila en el index del atributo
 												int index = this.table_use.getAtributos().indexOf(atr);
@@ -1495,8 +1495,24 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 										}
 										else
 										{
-											String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
-											this.errores.add(rule_5);
+											if (atr.getTipo().equals("date") && valor.getTipo().equals("char"))
+											{
+												if (checkDate(valor.getValue()))
+												{
+													int index = this.table_use.getAtributos().indexOf(atr);
+													fila.set(index, valor.getValue());
+												}
+												else
+												{
+													String rule_5 = "El valor '" + valor.getValue() + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+												}
+											}
+											else
+											{
+												String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+											}
 										}
 								}
 							}
@@ -1506,8 +1522,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						//Agrego la fila solo si el numero de errores sigue siendo el mismo
 						if (contErrores == this.errores.size())
 						{
-							this.table_use.addData(fila);
-							this.inserted_rows++;
+							if (PrimaryKey(fila, -1))
+							{	
+								this.table_use.addData(fila);
+								this.inserted_rows++;
+							}
+							else
+							{
+								String rule_5 = "No se puede hacer INSERT. Primary Key @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+							}
 						}
 					}
 				}
@@ -1668,8 +1692,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							else
 								fin.set(index2, newfila.get(index2));
 						}
-						
-						this.table_use.getData().set(i, fin);
+						if (PrimaryKey(fin,i))
+							this.table_use.getData().set(i, fin);
 					}
 			}
 		}
@@ -1723,21 +1747,72 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					String tipo = (String)this.visit(ctx.getChild(j));
 					//buscamos si el tipo puede ser casteado
-					if (atr.isCheck())
+					if (atr.getTipo().equals(tipo))
 					{
-						if (atr.getTipo().equals(tipo))
+						if (tipo.equals("char"))
 						{
-							newfila.set(index, text);
+							if (text.length()-2 <= atr.getSize())
+							{
+								newfila.set(index, text);
+							}
+							else
+							{
+								String rule_5 = "El tamaño de '" + text + "' es mayor al tamaño reservado para '"+ atr.getId() +" @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+							}
 						}
 						else
-						{
-							String rule_5 = "El tipo de '" + text + "' es diferente la de '"+ atr.getId() +" que tiene check' @line: " + ctx.getStop().getLine();
-							this.errores.add(rule_5);
-						}
+							newfila.set(index, text);
 					}
 					else
 					{
-						
+						if (atr.getTipo().equals("int") && tipo.equals("float"))
+						{
+							int k = text.indexOf('.');
+							newfila.set(index, text.substring(0, k));
+						}
+						else
+						{
+							if (atr.getTipo().equals("float") && tipo.equals("int"))
+							{
+								newfila.set(index, text+".0");
+							}
+							else
+							{
+								if (atr.getTipo().equals("char") && tipo.equals("date"))
+								{
+									if (text.length()-2 == atr.getSize())
+									{
+										newfila.set(index, text);
+									}
+									else
+									{
+										String rule_5 = "El tamaño de '" + text + "' es mayor al tamaño reservado para '"+ atr.getId() +" @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
+								}
+								else
+								{
+									if (atr.getTipo().equals("date") && tipo.equals("char"))
+									{
+										if (this.visit(ctx.getChild(j)).equals("date"))
+										{
+											newfila.set(index, text);
+										}
+										else
+										{
+											String rule_5 = "El valor '" + text + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
+									}
+									else
+									{
+										String rule_5 = "El tipo: '" + tipo + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -3443,6 +3518,35 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 	}
 	
+	public boolean checkDate(String date)
+	{
+		if (!date.contains("-"))
+		{
+			return false;
+		}
+		else
+		{
+			String fecha[] = date.split("-");
+			
+			int size = fecha.length;
+			if (size!=3)
+				return false;
+			else
+			{
+				fecha[0].replaceAll("'", "");
+				fecha[2].replaceAll("'", "");
+				if(fecha[0].length() >4 && fecha[1].length() > 2 && fecha[2].length()>2)
+				{
+					return false;
+				}
+				else
+				{
+					//revisar que sean fechas validas
+					return true;
+				}
+			}	
+		}
+	}
 	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
 		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
 		
@@ -3551,7 +3655,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		this.actual = actual;
 	}
 	
-	public boolean PrimaryKey(ArrayList<String> fila, LinkedHashSet<Integer> indices)
+	public boolean PrimaryKey(ArrayList<String> fila, Integer indice)
 	{
 		ArrayList<Constraint> key = this.table_use.getPrimaryKeys();
 		
@@ -3579,9 +3683,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				if (cont == primary.size())
 				{
-					if (indices.size()>0)
+					if (indice!=-1)
 					{
-						if (!indices.contains(i))
+						if (indice!= i)
 						{
 							return false;
 						}
@@ -3596,11 +3700,24 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return true;
 	}
 	
-	//check
-	//foreignkey
-	public boolean ForeignKey(ArrayList<String> fila, LinkedHashSet<Integer> indices)
+	
+	//devuelve si la llave foreana existe en la/las otras tablas
+	public boolean ForeignKey(ArrayList<String> fila, Integer indice)
 	{
+		ArrayList<Constraint> key = this.table_use.getForeignKey();
 		
+		for (Constraint llave : key)
+		{
+			//tengo que ir a traer la tabla a la que hacen referencia
+			//recorrer la tabla y ver si el valor en la fila en el indice del id local existe en la tabla
+			//aumento un contador
+			//si el contador al final es igla al total de constraints devuelve true 
+			int index = 0;
+			for (String id : llave.getIDS_refs()) 
+			{
+				
+			}
+		}
 		return true;
 	}
 }
