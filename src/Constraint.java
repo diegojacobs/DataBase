@@ -29,7 +29,7 @@ public class Constraint implements Serializable {
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
 	}
-
+	
 	public Constraint(String id, String tipo) {
 		this.id = id;
 		this.tipo = tipo;
