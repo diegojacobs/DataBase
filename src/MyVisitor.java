@@ -1522,7 +1522,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						//Agrego la fila solo si el numero de errores sigue siendo el mismo
 						if (contErrores == this.errores.size())
 						{
-							if (PrimaryKey(fila, new LinkedHashSet<Integer>()))
+							if (PrimaryKey(fila, -1))
 							{	
 								this.table_use.addData(fila);
 								this.inserted_rows++;
@@ -1692,8 +1692,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							else
 								fin.set(index2, newfila.get(index2));
 						}
-						if (PrimaryKey(fin,indices))
-						this.table_use.getData().set(i, fin);
+						if (PrimaryKey(fin,i))
+							this.table_use.getData().set(i, fin);
 					}
 			}
 		}
@@ -3655,7 +3655,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		this.actual = actual;
 	}
 	
-	public boolean PrimaryKey(ArrayList<String> fila, LinkedHashSet<Integer> indices)
+	public boolean PrimaryKey(ArrayList<String> fila, Integer indice)
 	{
 		ArrayList<Constraint> key = this.table_use.getPrimaryKeys();
 		
@@ -3683,9 +3683,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				if (cont == primary.size())
 				{
-					if (indices.size()>0)
+					if (indice!=-1)
 					{
-						if (!indices.contains(i))
+						if (indice!= i)
 						{
 							return false;
 						}
@@ -3700,11 +3700,24 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return true;
 	}
 	
-	//check
-	//foreignkey
-	public boolean ForeignKey(ArrayList<String> fila, LinkedHashSet<Integer> indices)
+	
+	//devuelve si la llave foreana existe en la/las otras tablas
+	public boolean ForeignKey(ArrayList<String> fila, Integer indice)
 	{
+		ArrayList<Constraint> key = this.table_use.getForeignKey();
 		
+		for (Constraint llave : key)
+		{
+			//tengo que ir a traer la tabla a la que hacen referencia
+			//recorrer la tabla y ver si el valor en la fila en el indice del id local existe en la tabla
+			//aumento un contador
+			//si el contador al final es igla al total de constraints devuelve true 
+			int index = 0;
+			for (String id : llave.getIDS_refs()) 
+			{
+				
+			}
+		}
 		return true;
 	}
 }
