@@ -1425,109 +1425,79 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						{
 							Atributo atr = cols.get(cont);
 							Value valor = vals.get(cont);
-							//if (atr.isCheck())
+							if (atr.getTipo().equals(valor.getTipo()))
 							{
-								if (atr.getTipo().equals(valor.getTipo()))
+								if (atr.getTipo().equals("char"))
 								{
-									if (atr.getTipo().equals("char"))
-									{
-										if (atr.getSize()>=valor.getSize()-2)
-										{
-											//agrego el valor a la fila en el index del atributo
-											int index = this.table_use.getAtributos().indexOf(atr);
-											fila.set(index, valor.getValue());
-										}
-										else
-										{
-											//error tamaño del valor mayor
-											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
-											this.errores.add(rule_5);
-										}
-									}
-								}
-								else
-								{
-									//error tamaño del valor mayor
-									String rule_5 = "El tipo de '" + valor.getValue() + "' es diferente la de '"+ atr.getId() +" que tiene check' @line: " + ctx.getStop().getLine();
-									this.errores.add(rule_5);
-								}
-							}
-							//else
-							{
-								if (atr.getTipo().equals(valor.getTipo()))
-								{
-									if (atr.getTipo().equals("char"))
-									{
-										if (atr.getSize()>=valor.getSize()-2)
-										{
-											//agrego el valor a la fila en el index del atributo
-											int index = this.table_use.getAtributos().indexOf(atr);
-											fila.set(index, valor.getValue());
-										}
-										else
-										{
-											//error tamaño del valor mayor
-											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
-											this.errores.add(rule_5);
-										}
-									}
-									else
+									if (atr.getSize()>=valor.getSize()-2)
 									{
 										//agrego el valor a la fila en el index del atributo
 										int index = this.table_use.getAtributos().indexOf(atr);
 										fila.set(index, valor.getValue());
 									}
+									else
+									{
+										//error tamaño del valor mayor
+										String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
 								}
 								else
 								{
-									//debo revisar si pueden ser casteados
-									if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
+									//agrego el valor a la fila en el index del atributo
+									int index = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index, valor.getValue());
+								}
+							}
+							else
+							{
+								//debo revisar si pueden ser casteados
+								if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
+								{
+									String num = valor.getValue();
+									int index = num.indexOf('.');
+									num = num.substring(0, index);
+									valor.setValue(num);
+									valor.setTipo("int");
+									
+									//agrego el valor a la fila en el index del atributo
+									int index2 = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index2, valor.getValue());
+								}
+								else
+								{
+									if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
 									{
 										String num = valor.getValue();
-										int index = num.indexOf('.');
-										num = num.substring(0, index);
+										num += ".0";
 										valor.setValue(num);
-										valor.setTipo("int");
+										valor.setTipo("float");
 										
 										//agrego el valor a la fila en el index del atributo
-										int index2 = this.table_use.getAtributos().indexOf(atr);
-										fila.set(index2, valor.getValue());
+										int index = this.table_use.getAtributos().indexOf(atr);
+										fila.set(index, valor.getValue());
 									}
 									else
-									{
-										if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
+										if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
 										{
-											String num = valor.getValue();
-											num += ".0";
-											valor.setValue(num);
-											valor.setTipo("float");
-											
-											//agrego el valor a la fila en el index del atributo
-											int index = this.table_use.getAtributos().indexOf(atr);
-											fila.set(index, valor.getValue());
-										}
-										else
-											if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
+											if (atr.getSize() >= valor.getValue().length())
 											{
-												if (atr.getSize() >= valor.getValue().length())
-												{
-													//agrego el valor a la fila en el index del atributo
-													int index = this.table_use.getAtributos().indexOf(atr);
-													fila.set(index, valor.getValue());
-												}
-												else
-												{
-													//error tamaño del valor mayor
-													String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
-													this.errores.add(rule_5);
-												}
+												//agrego el valor a la fila en el index del atributo
+												int index = this.table_use.getAtributos().indexOf(atr);
+												fila.set(index, valor.getValue());
 											}
 											else
 											{
-												String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
+												//error tamaño del valor mayor
+												String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
 												this.errores.add(rule_5);
 											}
-									}
+										}
+										else
+										{
+											String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
 								}
 							}
 							//cont++;
@@ -3581,4 +3551,56 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		this.actual = actual;
 	}
 	
+	public boolean PrimaryKey(ArrayList<String> fila, LinkedHashSet<Integer> indices)
+	{
+		ArrayList<Constraint> key = this.table_use.getPrimaryKeys();
+		
+		ArrayList<Integer> primary = new ArrayList<Integer>();
+		
+		if (key.size() != 0)
+		{
+			Constraint llave = key.get(0);
+			for (String id : llave.getIDS_local())	
+			{
+				Atributo atr = this.table_use.getID(id);
+				primary.add(this.table_use.getAtributos().indexOf(atr));
+			}
+			
+			int i=0;
+			for (ArrayList<String> newfila:this.table_use.getData())
+			{
+				int cont=0;
+				for (int index : primary)
+				{
+					if (newfila.get(index).equals(fila.get(index)))
+					{
+						cont++;
+					}
+				}
+				if (cont == primary.size())
+				{
+					if (indices.size()>0)
+					{
+						if (!indices.contains(i))
+						{
+							return false;
+						}
+					}
+					else
+						return false;
+				}
+				i++;
+			}
+		}
+		
+		return true;
+	}
+	
+	//check
+	//foreignkey
+	public boolean ForeignKey(ArrayList<String> fila, LinkedHashSet<Integer> indices)
+	{
+		
+		return true;
+	}
 }
