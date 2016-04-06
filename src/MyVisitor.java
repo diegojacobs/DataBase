@@ -33,6 +33,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	// Atributos
 	
 	private String dataPath;
+	private String id_table_use = "";
 	private ArrayList<String> errores = new ArrayList<String>();
 	private ArrayList<String> messages = new ArrayList<String>();
 	private ArrayList<String> verbose = new ArrayList<String>();
@@ -452,6 +453,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitTable_definition(sqlParser.Table_definitionContext ctx) {
 		// TODO Auto-generated method stub
 		String name = ctx.ID().getText();
+		this.id_table_use = name;
 		ArrayList<Atributo> atrs = new ArrayList<Atributo>();
 		ArrayList<Constraint> pks = new ArrayList<Constraint>();
 		ArrayList<Constraint> fks = new ArrayList<Constraint>();
@@ -769,35 +771,31 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitConstraintTypeCheck(sqlParser.ConstraintTypeCheckContext ctx) {
 		// TODO Auto-generated method stub
 		Constraint const_check = new Constraint(ctx.getChild(0).getText(), "Check");
-		String id_1 = ctx.getChild(3).getText();
+		/*String id_1 = ctx.getChild(3).getText();
 		String id_2 = ctx.getChild(5).getText();
 		String exp = (String) this.visit(ctx.exp());
 		const_check.addLocalID(id_1);
 		const_check.addLocalID(id_2);
-		const_check.setExp(exp);
+		const_check.setExp(exp);*/
+		this.table_use = this.getActual().getTable(this.id_table_use);
+		Object obj = (Object) visit(ctx.condition());
+		if (obj == null){
+			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}		
+		if (!(obj instanceof LinkedHashSet)){
+			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+			this.errores.add(rule_5);
+			return null;
+		}
+		LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+		System.out.println("Nice");
 		return (T)const_check;
 		//return super.visitConstraintTypeCheck(ctx);
 	}
-
-	/* (non-Javadoc)
-	 * @see sqlBaseVisitor#visitExp_relational(sqlParser.Exp_relationalContext)
-	 */
-	@Override
-	public Object visitExp_relational(sqlParser.Exp_relationalContext ctx) {
-		// TODO Auto-generated method stub
-		return (T)ctx.getText();
-		//return super.visitExp_relational(ctx);
-	}
-
-	/* (non-Javadoc)
-	 * @see sqlBaseVisitor#visitExp_logic(sqlParser.Exp_logicContext)
-	 */
-	@Override
-	public Object visitExp_logic(sqlParser.Exp_logicContext ctx) {
-		// TODO Auto-generated method stub
-		return (T)this.visit(ctx.logic());
-		//return super.visitExp_logic(ctx);
-	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see sqlBaseVisitor#visitLogic_and(sqlParser.Logic_andContext)
@@ -881,6 +879,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		String ID_Table = (String) this.visit(ctx.idTable());
 		String ID_Column = (String) this.visit(ctx.idColumn());
+		this.id_table_use = ID_Table;
 		// Verificar que haya un DB en uso
 		if (this.getActual().getName().isEmpty())
 		{
@@ -1035,6 +1034,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitAlterAddConstraint(sqlParser.AlterAddConstraintContext ctx) {
 		// TODO Auto-generated method stub
 		String ID_Table = (String) this.visit(ctx.idTable());
+		this.id_table_use = ID_Table;
 		// Verificar que haya un DB en uso
 		if (this.getActual().getName().isEmpty())
 		{
@@ -2647,8 +2647,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String tipo2 = (String)this.visit(ctx.getChild(2)); //voy a recibir el tipo
 		String value2 = ctx.getChild(2).getText();
 		
-		boolean flag = false;
-		
+		boolean flag = true;
 		
 		if (flag)
 		{

@@ -176,7 +176,7 @@ public class Table implements Serializable {
 			}
 		}
 		
-		if (atr.equals(null))
+		if (atr == null)
 		{
 			for (String name : this.getOthersIds())
 			{

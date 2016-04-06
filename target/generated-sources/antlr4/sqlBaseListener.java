@@ -340,18 +340,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExp_logic(@NotNull sqlParser.Exp_logicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExp_logic(@NotNull sqlParser.Exp_logicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterCompId(@NotNull sqlParser.CompIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -544,18 +532,6 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExp_relational(@NotNull sqlParser.Exp_relationalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExp_relational(@NotNull sqlParser.Exp_relationalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterFloat_literal(@NotNull sqlParser.Float_literalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -659,18 +635,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

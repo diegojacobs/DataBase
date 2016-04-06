@@ -296,18 +296,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitTipo_lit_float(@NotNull sqlParser.Tipo_lit_floatContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code exp_logic}
-	 * labeled alternative in {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void enterExp_logic(@NotNull sqlParser.Exp_logicContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code exp_logic}
-	 * labeled alternative in {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void exitExp_logic(@NotNull sqlParser.Exp_logicContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code compId}
 	 * labeled alternative in {@link sqlParser#comp}.
 	 * @param ctx the parse tree
@@ -480,18 +468,6 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code exp_relational}
-	 * labeled alternative in {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void enterExp_relational(@NotNull sqlParser.Exp_relationalContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code exp_relational}
-	 * labeled alternative in {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void exitExp_relational(@NotNull sqlParser.Exp_relationalContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link sqlParser#float_literal}.
 	 * @param ctx the parse tree
 	 */
@@ -587,18 +563,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTipo_lit_char(@NotNull sqlParser.Tipo_lit_charContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code exp_logic_not}
-	 * labeled alternative in {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void enterExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code exp_logic_not}
-	 * labeled alternative in {@link sqlParser#exp}.
-	 * @param ctx the parse tree
-	 */
-	void exitExp_logic_not(@NotNull sqlParser.Exp_logic_notContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code conditionNot}
 	 * labeled alternative in {@link sqlParser#condition}.

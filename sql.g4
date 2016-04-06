@@ -157,7 +157,7 @@ constraint: CONSTRAINT constraintType ;
 constraintType:
             ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
         |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
-        |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
+        |   ID CHECK '(' condition ')' #constraintTypeCheck;
 
 idRef: ID;
 
@@ -167,9 +167,6 @@ localIDS: ID
 refIDS: ID
 		| ID ',' refIDS;
 
-exp: logic #exp_logic
-	 | logic_not #exp_logic_not
-	 | relational #exp_relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
