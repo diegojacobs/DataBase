@@ -2747,6 +2747,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		boolean flag = false;
 		
+		if (!tipo.equals("Error") && !tipo2.equals("Error"))
+			flag = true;
 		
 		if (flag)
 		{
