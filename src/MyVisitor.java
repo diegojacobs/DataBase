@@ -927,13 +927,17 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						int errores = 0;
 						
 						// Local IDS pertenecen a la tabla
-						ArrayList<String> ids = con.getIDS_local();								
+						ArrayList<String> ids = con.getIDS_local();						
 						for (String i: ids)
 							if (! attrs_names.contains(i))
 							{
-								String local_id_not_found = "El atributo \"" + i + "\" de la " + con.getTipo() +"\"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
-					        	this.errores.add(local_id_not_found);
-					        	errores++;
+								// Verificar que no sea el caso del Atributo recien declarado
+								if (! i.equals(ID_Column))
+								{
+									String local_id_not_found = "El atributo \"" + i + "\" de la " + con.getTipo() +" \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
+						        	this.errores.add(local_id_not_found);
+						        	errores++;
+								}
 							}
 						
 						switch (con.getTipo())
@@ -1441,222 +1445,231 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	{
 		String id = ctx.ID().getText();
 		
-		if (this.actual.existTable(id))
+		// Verificar que haya un DB en uso
+		if (this.getActual().getName().isEmpty())
 		{
-			//debemos revisar si existe la tabla en la base de datos actual
-			table_use = this.getActual().getTable(id);
-			
-			ArrayList<String> fila = new ArrayList();
-			
-			//Si no fueron ingresadas columnas tomamos el total en la tabla
-			int columnas;
-			int values;
-			if (ctx.getChildCount()==7)
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}
+		else
+		{
+		
+			if (this.actual.existTable(id))
 			{
-				columnas = ctx.getChild(3).getChildCount();
-				values = ctx.getChild(5).getChildCount();
+				//debemos revisar si existe la tabla en la base de datos actual
+				table_use = this.getActual().getTable(id);
 				
-			}
-			else
-			{
-				columnas = table_use.getAtributos().size()-1;
-				values = ctx.getChild(4).getChildCount();
+				ArrayList<String> fila = new ArrayList();
 				
-			}
-			
-			//Cantidad de errores antes de hacer el insert
-			int contErrores = this.errores.size();
-			
-			//llenamos la fila con NULL
-			int numCols = table_use.getAtributos().size();
-			for (int i=0;i<numCols;i++)
-			{
-				fila.add("NULL");
-			}
-			
-			if (table_use != null)
-			{
-				//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
-				if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
+				//Si no fueron ingresadas columnas tomamos el total en la tabla
+				int columnas;
+				int values;
+				if (ctx.getChildCount()==7)
 				{
+					columnas = ctx.getChild(3).getChildCount();
+					values = ctx.getChild(5).getChildCount();
 					
-					ArrayList<Atributo> cols;
-					ArrayList<Value> vals;
+				}
+				else
+				{
+					columnas = table_use.getAtributos().size()-1;
+					values = ctx.getChild(4).getChildCount();
 					
-					//Si no fueron ingresadas columnas tomamos todas las de la tabla
-					if (ctx.getChildCount()==7)
+				}
+				
+				//Cantidad de errores antes de hacer el insert
+				int contErrores = this.errores.size();
+				
+				//llenamos la fila con NULL
+				int numCols = table_use.getAtributos().size();
+				for (int i=0;i<numCols;i++)
+				{
+					fila.add("NULL");
+				}
+				
+				if (table_use != null)
+				{
+					//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
+					if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
 					{
-						cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
-						vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
 						
-					}
-					else
-					{
-						cols = table_use.getAtributos();
-						vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+						ArrayList<Atributo> cols;
+						ArrayList<Value> vals;
 						
-					}
-					
-					//si los array no son del mismo tamaño hubo algun error en el camino
-					//debemos revisar que el tipo del atributo sea igual al tipo del valor
-					//int cont = 0;
-					//if (cols.size()==vals.size())
-					{
-						for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
+						//Si no fueron ingresadas columnas tomamos todas las de la tabla
+						if (ctx.getChildCount()==7)
 						{
-							Atributo atr = cols.get(cont);
-							Value valor = vals.get(cont);
-							if (atr.getTipo().equals(valor.getTipo()) || valor.getValue().toUpperCase().equals("NULL"))
+							cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
+							vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+							
+						}
+						else
+						{
+							cols = table_use.getAtributos();
+							vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+							
+						}
+						
+						//si los array no son del mismo tamaño hubo algun error en el camino
+						//debemos revisar que el tipo del atributo sea igual al tipo del valor
+						//int cont = 0;
+						//if (cols.size()==vals.size())
+						{
+							for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
 							{
-								if (atr.getTipo().equals("char"))
+								Atributo atr = cols.get(cont);
+								Value valor = vals.get(cont);
+								if (atr.getTipo().equals(valor.getTipo()) || valor.getValue().toUpperCase().equals("NULL"))
 								{
-									if (atr.getSize()>=valor.getSize()-2)
+									if (atr.getTipo().equals("char"))
 									{
-										//agrego el valor a la fila en el index del atributo
-										int index = this.table_use.getAtributos().indexOf(atr);
-										
-										fila.set(index, valor.getValue());
-									}
-									else
-									{
-										//error tamaño del valor mayor
-										String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
-										this.errores.add(rule_5);
-									}
-								}
-								else
-								{
-									//agrego el valor a la fila en el index del atributo
-									int index = this.table_use.getAtributos().indexOf(atr);
-									fila.set(index, valor.getValue());
-								}
-							}
-							else
-							{
-								//debo revisar si pueden ser casteados
-								if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
-								{
-									String num = valor.getValue();
-									int index = num.indexOf('.');
-									num = num.substring(0, index);
-									valor.setValue(num);
-									valor.setTipo("int");
-									
-									//agrego el valor a la fila en el index del atributo
-									int index2 = this.table_use.getAtributos().indexOf(atr);
-									fila.set(index2, valor.getValue());
-								}
-								else
-								{
-									if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
-									{
-										String num = valor.getValue();
-										num += ".0";
-										valor.setValue(num);
-										valor.setTipo("float");
-										
-										//agrego el valor a la fila en el index del atributo
-										int index = this.table_use.getAtributos().indexOf(atr);
-										fila.set(index, valor.getValue());
-									}
-									else
-										if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
+										if (atr.getSize()>=valor.getSize()-2)
 										{
-											if (atr.getSize() >= valor.getValue().length()-2)
-											{
-												//agrego el valor a la fila en el index del atributo
-												int index = this.table_use.getAtributos().indexOf(atr);
-												fila.set(index, valor.getValue());
-											}
-											else
-											{
-												//error tamaño del valor mayor
-												String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
-												this.errores.add(rule_5);
-											}
+											//agrego el valor a la fila en el index del atributo
+											int index = this.table_use.getAtributos().indexOf(atr);
+											
+											fila.set(index, valor.getValue());
 										}
 										else
 										{
-											if (atr.getTipo().equals("date") && valor.getTipo().equals("char"))
+											//error tamaño del valor mayor
+											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
+									}
+									else
+									{
+										//agrego el valor a la fila en el index del atributo
+										int index = this.table_use.getAtributos().indexOf(atr);
+										fila.set(index, valor.getValue());
+									}
+								}
+								else
+								{
+									//debo revisar si pueden ser casteados
+									if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
+									{
+										String num = valor.getValue();
+										int index = num.indexOf('.');
+										num = num.substring(0, index);
+										valor.setValue(num);
+										valor.setTipo("int");
+										
+										//agrego el valor a la fila en el index del atributo
+										int index2 = this.table_use.getAtributos().indexOf(atr);
+										fila.set(index2, valor.getValue());
+									}
+									else
+									{
+										if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
+										{
+											String num = valor.getValue();
+											num += ".0";
+											valor.setValue(num);
+											valor.setTipo("float");
+											
+											//agrego el valor a la fila en el index del atributo
+											int index = this.table_use.getAtributos().indexOf(atr);
+											fila.set(index, valor.getValue());
+										}
+										else
+											if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
 											{
-												if (checkDate(valor.getValue()))
+												if (atr.getSize() >= valor.getValue().length()-2)
 												{
+													//agrego el valor a la fila en el index del atributo
 													int index = this.table_use.getAtributos().indexOf(atr);
 													fila.set(index, valor.getValue());
 												}
 												else
 												{
-													String rule_5 = "El valor '" + valor.getValue() + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+													//error tamaño del valor mayor
+													String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
 													this.errores.add(rule_5);
 												}
 											}
 											else
 											{
-												String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
-												this.errores.add(rule_5);
+												if (atr.getTipo().equals("date") && valor.getTipo().equals("char"))
+												{
+													if (checkDate(valor.getValue()))
+													{
+														int index = this.table_use.getAtributos().indexOf(atr);
+														fila.set(index, valor.getValue());
+													}
+													else
+													{
+														String rule_5 = "El valor '" + valor.getValue() + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+														this.errores.add(rule_5);
+													}
+												}
+												else
+												{
+													String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+												}
 											}
-										}
+									}
 								}
+								//cont++;
 							}
-							//cont++;
-						}
-						
-						//Revisamos que no venga un NULL en una PrimaryKey
-						{
-							if (this.table_use.getPrimaryKeys().size() > 0)
+							
+							//Revisamos que no venga un NULL en una PrimaryKey
 							{
-								Constraint key = this.table_use.getPrimaryKeys().get(0);
-								for (String idk : key.getIDS_local())
+								if (this.table_use.getPrimaryKeys().size() > 0)
 								{
-									Atributo atrk = this.table_use.getID(idk);
-									int indexk = this.table_use.getAtributos().indexOf(atrk);
-									if (fila.get(indexk).toUpperCase().equals("NULL"))
+									Constraint key = this.table_use.getPrimaryKeys().get(0);
+									for (String idk : key.getIDS_local())
 									{
-										String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
-										this.errores.add(rule_5);	
-										break;
+										Atributo atrk = this.table_use.getID(idk);
+										int indexk = this.table_use.getAtributos().indexOf(atrk);
+										if (fila.get(indexk).toUpperCase().equals("NULL"))
+										{
+											String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);	
+											break;
+										}
 									}
 								}
 							}
-						}
-						
-						//Agrego la fila solo si el numero de errores sigue siendo el mismo
-						if (contErrores == this.errores.size())
-						{
-							if (PrimaryKey(fila, -1))
+							
+							//Agrego la fila solo si el numero de errores sigue siendo el mismo
+							if (contErrores == this.errores.size())
 							{
-								if (ForeignKey(fila, -1))
+								if (PrimaryKey(fila, -1))
 								{
-									this.table_use.addData(fila);
-									this.inserted_rows++;
+									if (ForeignKey(fila, -1))
+									{
+										this.table_use.addData(fila);
+										this.inserted_rows++;
+									}
+									else
+									{
+										String rule_5 = "Se esta queriendo insertar un valor que aun no existe en la tabla de la llave foranea @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
 								}
 								else
 								{
-									String rule_5 = "Se esta queriendo insertar un valor que aun no existe en la tabla de la llave foranea @line: " + ctx.getStop().getLine();
+									String rule_5 = "Se esta duplicando una llave primaria @line: " + ctx.getStop().getLine();
 									this.errores.add(rule_5);
 								}
 							}
-							else
-							{
-								String rule_5 = "Se esta duplicando una llave primaria @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
-							}
 						}
 					}
-				}
-				else
-				{	
-					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
+					else
+					{	
+						String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+					}
 				}
 			}
-		}
-		else
-		{
-			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
-			this.errores.add(rule_5);
-		}
-		
+			else
+			{
+				String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+			}
+		}		
 		
 		// TODO Auto-generated method stub
 		return new String();
@@ -1750,117 +1763,127 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String id = ctx.getChild(1).getText();
 		int contErrores = this.errores.size();
 		
-		if (this.actual.existTable(id))
+		// Verificar que haya un DB en uso
+		if (this.getActual().getName().isEmpty())
 		{
-			this.table_use = this.actual.getTable(id);
-			int size = this.table_use.getData().size();
-			
-			if (ctx.getChildCount() == 5)
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+		}
+		else
+		{
+		
+			if (this.actual.existTable(id))
 			{
-				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+				this.table_use = this.actual.getTable(id);
+				int size = this.table_use.getData().size();
 				
-				for (int i = 0; i<size && contErrores==this.errores.size();i++)
+				if (ctx.getChildCount() == 5)
 				{
-					this.table_use.getData().set(i, newfila);
+					ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+					
+					for (int i = 0; i<size && contErrores==this.errores.size();i++)
+					{
+						this.table_use.getData().set(i, newfila);
+					}
 				}
-			}
-			else
-			{
-				Object obj = (Object) visit(ctx.getChild(5));
-				if (obj == null){
-					String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-					return null;
-				}
-				
-				if (!(obj instanceof LinkedHashSet)){
-					String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
-					this.errores.add(rule_5);
-					return null;
-				}
-				
-				LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
-				ArrayList<Integer> index= new ArrayList(indices);
-				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
-				ArrayList<String> fila = new ArrayList<String>();
-				ArrayList<String> fin = new ArrayList<String>();
-				
-				for (int j=0;j<newfila.size();j++)
-					fin.add("");
-				
-				boolean flag = true;
-				if (contErrores == this.errores.size())
+				else
 				{
-					for (int i: index){
-						fila = table_use.getData().get(i);
-						for (String col : newfila)
-						{
-							int index2 = newfila.indexOf(col);
-							if (col.equals("UPDATE"))
+					Object obj = (Object) visit(ctx.getChild(5));
+					if (obj == null){
+						String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+						return null;
+					}
+					
+					if (!(obj instanceof LinkedHashSet)){
+						String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+						this.errores.add(rule_5);
+						return null;
+					}
+					
+					LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+					ArrayList<Integer> index= new ArrayList(indices);
+					ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+					ArrayList<String> fila = new ArrayList<String>();
+					ArrayList<String> fin = new ArrayList<String>();
+					
+					for (int j=0;j<newfila.size();j++)
+						fin.add("");
+					
+					boolean flag = true;
+					if (contErrores == this.errores.size())
+					{
+						for (int i: index){
+							fila = table_use.getData().get(i);
+							for (String col : newfila)
 							{
-								fin.set(index2, fila.get(index2));
-							}
-							else
-								fin.set(index2, newfila.get(index2));
-						}
-						
-						//Revisamos que no venga un NULL en una PrimaryKey
-						{
-							if (this.table_use.getPrimaryKeys().size() > 0)
-							{
-								Constraint key = this.table_use.getPrimaryKeys().get(0);
-								for (String idk : key.getIDS_local())
+								int index2 = newfila.indexOf(col);
+								if (col.equals("UPDATE"))
 								{
-									Atributo atrk = this.table_use.getID(idk);
-									int indexk = this.table_use.getAtributos().indexOf(atrk);
-									if (fila.get(indexk).toUpperCase().equals("NULL"))
+									fin.set(index2, fila.get(index2));
+								}
+								else
+									fin.set(index2, newfila.get(index2));
+							}
+							
+							//Revisamos que no venga un NULL en una PrimaryKey
+							{
+								if (this.table_use.getPrimaryKeys().size() > 0)
+								{
+									Constraint key = this.table_use.getPrimaryKeys().get(0);
+									for (String idk : key.getIDS_local())
 									{
-										flag = false;
-										String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
-										this.errores.add(rule_5);	
-										break;
+										Atributo atrk = this.table_use.getID(idk);
+										int indexk = this.table_use.getAtributos().indexOf(atrk);
+										if (fila.get(indexk).toUpperCase().equals("NULL"))
+										{
+											flag = false;
+											String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);	
+											break;
+										}
 									}
 								}
 							}
-						}
-						
-						if (PrimaryKey(fin,i))
-						{
-							//En update solo lo podemos cambiar si el foreign key no existe
-							if (!ForeignKey(fin,i))
+							
+							if (PrimaryKey(fin,i))
 							{
-								
+								//En update solo lo podemos cambiar si el foreign key no existe
+								if (!ForeignKey(fin,i))
+								{
+									
+								}
+								else
+								{
+									flag=false;
+									String rule_5 = "Se quiere actualizar un valor que hace referencia a otra tabla  @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									break;
+								}
 							}
 							else
 							{
 								flag=false;
-								String rule_5 = "Se quiere actualizar un valor que hace referencia a otra tabla  @line: " + ctx.getStop().getLine();
+								String rule_5 = "Una llave primaria esta siendo duplicada  @line: " + ctx.getStop().getLine();
 								this.errores.add(rule_5);
 								break;
 							}
 						}
-						else
+						
+						//Si todos cumplieron con las validaciones los actualizamos
+						if (flag)
 						{
-							flag=false;
-							String rule_5 = "Una llave primaria esta siendo duplicada  @line: " + ctx.getStop().getLine();
-							this.errores.add(rule_5);
-							break;
+							for (int i: index)
+								this.table_use.getData().set(i, fin);
 						}
-					}
-					
-					//Si todos cumplieron con las validaciones los actualizamos
-					if (flag)
-					{
-						for (int i: index)
-							this.table_use.getData().set(i, fin);
 					}
 				}
 			}
-		}
-		else
-		{
-			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
-			this.errores.add(rule_5);
+			else
+			{
+				String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+			}
 		}
 		
 		// TODO Auto-generated method stub
@@ -1992,41 +2015,158 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitDelete_value(sqlParser.Delete_valueContext ctx) {
 		String id = ctx.ID().getText();
-		
-		this.table_use = this.getActual().getTable(id);
-		
-		if (table_use == null){
-			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
-			this.errores.add(rule_5);
-			return null;
+		// Verificar que haya un DB en uso
+		if (this.getActual().getName().isEmpty())
+		{
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
 		}
-		
-		if (ctx.getChildCount() <= 4){
-			table_use.setData(new ArrayList<ArrayList<String>>());
-			return table_use;
-		}
-		
-		Object obj = (Object) visit(ctx.getChild(4));
-		if (obj == null){
-			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
-			this.errores.add(rule_5);
-			return null;
-		}
-		
-		if (!(obj instanceof LinkedHashSet)){
-			String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
-			this.errores.add(rule_5);
-			return null;
-		}
-		
-		LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
-		ArrayList<Integer> index= new ArrayList(indices);
-		Collections.reverse(index);
-		for (int i: index){
-			table_use.getData().remove(i);
-		}
-		
-		
+		else
+		{		
+			this.table_use = this.getActual().getTable(id);
+			
+			if (table_use == null){
+				String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+				return null;
+			}
+			
+			int errores = 0;
+			
+			// Sin WHERE condition -> borra toda la data
+			if (ctx.getChildCount() <= 4)
+			{
+				// Revisar FKS
+				// Verificar que alguna fk haga referencia a esta tabla
+				if (this.actual.existRef(id))
+				{
+					for (Table i: this.actual.getTables())
+						for (Constraint f: i.getForeignKey())
+							if (f.getId_ref().equals(id))
+							{							
+								ArrayList<Integer> index_table_with_fk = new ArrayList<Integer>();
+								ArrayList<Integer> index_table_use = new ArrayList<Integer>();
+								for (String s: f.getIDS_local())
+									index_table_with_fk.add(i.getAtributosNames().indexOf(s));
+								for (String s: f.getIDS_refs())
+									index_table_use.add(this.table_use.getAtributosNames().indexOf(s));							
+								// Verificar que sean del mismo tamaño sino no se puede hacer la comapracion
+								if (index_table_with_fk.size() == index_table_use.size())
+								{
+									int cont = 0;
+									int index_fk = 0;
+									for (Integer index_i: index_table_use)
+									{
+										index_fk = index_table_with_fk.get(cont);
+										for (String use_data_i: this.table_use.dataColumnI(index_i))
+											for (String ref_data_i: i.dataColumnI(index_fk))
+											{
+												if (use_data_i.equals(ref_data_i))
+												{
+													String data_to_delete_in_ref = "No se puede eliminar el valor \"" + use_data_i + "\" porque esta incluido en la Tabla \"" + i.getName() + "\", esta vinculacion la hace la Foreign Key \"" + f.getId() + "\" @line: " + ctx.getStop().getLine();
+													this.errores.add(data_to_delete_in_ref);
+													errores++;
+												}
+											}
+										cont++;
+									}
+								}
+								else
+								{
+									String compare_failed = "No se puede eliminar porque existe un conflicto en la Foreign Key \"" + f.getId() + "\" @line: " + ctx.getStop().getLine();
+									this.errores.add(compare_failed);
+									errores++;
+								}
+							}
+				}
+				// Borrar toda la data si no hay errores
+				if (errores == 0)
+					table_use.setData(new ArrayList<ArrayList<String>>());
+				return table_use;				
+			}
+			
+			/*if (ctx.getChildCount() <= 4){
+				if (errores == 0)
+					table_use.setData(new ArrayList<ArrayList<String>>());
+				return table_use;
+			}*/			
+			
+			Object obj = (Object) visit(ctx.getChild(4));
+			if (obj == null){
+				String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+				return null;
+			}
+			
+			if (!(obj instanceof LinkedHashSet)){
+				String rule_5 = "Error en condiciones definidas @line: " + ctx.getStop().getLine();
+				this.errores.add(rule_5);
+				return null;
+			}
+			
+			LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
+			ArrayList<Integer> index = new ArrayList(indices);
+			ArrayList<Integer> indexesToDelete = new ArrayList<Integer>();
+			Collections.reverse(index);
+			
+			// Revisar FKS
+			// Verificar que alguna fk haga referencia a esta tabla
+			if (this.actual.existRef(id))
+			{
+				for (Table i: this.actual.getTables())
+					for (Constraint f: i.getForeignKey())
+						if (f.getId_ref().equals(id))
+						{							
+							ArrayList<Integer> index_table_with_fk = new ArrayList<Integer>();
+							ArrayList<Integer> index_table_use = new ArrayList<Integer>();
+							for (String s: f.getIDS_local())
+								index_table_with_fk.add(i.getAtributosNames().indexOf(s));
+							for (String s: f.getIDS_refs())
+								index_table_use.add(this.table_use.getAtributosNames().indexOf(s));							
+							// Verificar que sean del mismo tamaño sino no se puede hacer la comapracion
+							if (index_table_with_fk.size() == index_table_use.size())
+							{
+								int cont = 0;
+								int index_fk = 0;
+								for (Integer index_i: index_table_use)
+								{
+									index_fk = index_table_with_fk.get(cont);
+									int cont_2 = 0;
+									int pos = 0;
+									for (String use_data_i: this.table_use.dataColumnIWithIndexs(index_i, index))
+									{
+										int match = 0;
+										pos = index.get(cont_2);										
+										for (String ref_data_i: i.dataColumnI(index_fk))
+										{
+											if (use_data_i.equals(ref_data_i))
+											{
+												String data_to_delete_in_ref = "No se puede eliminar el valor \"" + use_data_i + "\" porque esta incluido en la Tabla \"" + i.getName() + "\", esta vinculacion la hace la Foreign Key \"" + f.getId() + "\" @line: " + ctx.getStop().getLine();
+												this.errores.add(data_to_delete_in_ref);
+												errores++;
+												match++;
+											}											
+										}
+										cont_2++;
+										if (match == 0)
+											indexesToDelete.add(pos);
+									}
+									cont++;
+								}
+							}
+							else
+							{
+								String compare_failed = "No se puede eliminar porque existe un conflicto en la Foreign Key \"" + f.getId() + "\" @line: " + ctx.getStop().getLine();
+								this.errores.add(compare_failed);
+								errores++;
+							}							
+						}
+			}
+			// Indices que cumplen con el WHERE CONDITION y no tengan restriccion de CONSTRAINT
+			for (int i: indexesToDelete){
+				table_use.getData().remove(i);
+			}
+		}		
 		return (T) table_use;
 	}
 

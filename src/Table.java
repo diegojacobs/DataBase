@@ -544,5 +544,33 @@ public class Table implements Serializable {
 					ret += j.toString() + "\n";
 		return ret;
 	}
+	
+	public ArrayList<String> dataColumnI(int pos)
+	{
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		if (! this.data.isEmpty())
+			if (pos < this.data.get(0).size())
+			{
+				for (int i = 0; i < this.data.size(); i++)
+					ret.add(this.data.get(i).get(pos));
+			}
+		
+		return ret;
+	}
+	
+	public ArrayList<String> dataColumnIWithIndexs(int pos, ArrayList<Integer> indexes)
+	{
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		if (! this.data.isEmpty())
+			if (pos < this.data.get(0).size())
+			{
+				for (Integer i: indexes)
+					ret.add(this.data.get(i).get(pos));
+			}
+		
+		return ret;
+	}
 
 }
