@@ -2018,7 +2018,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		for (int j=0;j<ctx.getChildCount();j++)
 		{
 			String text = ctx.getChild(j).getText();
-			if (!text.equals("=") && !text.equals("="))
+			if (!text.equals("=") && !text.equals(","))
 			{
 				if (j==0 || j%4==0)
 				{

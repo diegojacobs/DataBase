@@ -1030,6 +1030,7 @@ public class queryView extends JFrame implements ActionListener{
 	        
 	        // Generar verbose
 	        if (isVerbose){
+	        	this.verbose = new ArrayList<String>();
 	        	this.recursiveRoot(tree);
 	        	dataVerbose.setText(toStringVerbose());
 	        }
