@@ -785,7 +785,9 @@ public class queryView extends JFrame implements ActionListener{
 			save();
 		}else if (e.getSource() == mntmSaveAs){
 			saveAs();
-			explorer.reload();
+			explorer.revalidate();
+			explorer.repaint();
+			addTreeSelection(explorer.getTree());
 		}else if (e.getSource() == mntmUndo ||
 				e.getSource() == btnUndo){
 			undo();
@@ -795,7 +797,9 @@ public class queryView extends JFrame implements ActionListener{
 		}else if (e.getSource() == mntmRun ||
 				e.getSource() == btnRun){
 			run();
-			explorer.reload();
+			explorer.revalidate();
+			explorer.repaint();
+			addTreeSelection(explorer.getTree());
 		}else if (e.getSource() == mntmComment){
 			comment();
 		}else if (e.getSource() == mntmPrueba){
