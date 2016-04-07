@@ -328,7 +328,7 @@ public class Table implements Serializable {
 					cont++;
 				}
 				if (index != -1)
-					this.ForeignKey.remove(index);
+					this.Checks.remove(index);
 						
 				break;
 		}
@@ -521,6 +521,28 @@ public class Table implements Serializable {
 
 	public void setOthersIds(ArrayList<String> othersIds) {
 		this.othersIds = othersIds;
+	}
+	
+	public String IDtoString(String id)
+	{
+		String ret = this.getID(id).toString() + "\n"; // id y tipo
+		// Verificar si esta en alguna constraint
+		// PK
+		if (! this.PrimaryKeys.isEmpty())
+			for (String i: this.PrimaryKeys.get(0).getIDS_local())
+				if (i.equals(id))
+					ret += i.toString() + "\n";
+		// FK
+		for (Constraint i: this.ForeignKey)
+			for (String j: i.getIDS_local())
+				if (j.equals(id))
+					ret += j.toString() + "\n";
+		// CHK
+		for (Constraint i: this.Checks)
+			for (String j: i.getIDS_local())
+				if (j.equals(id))
+					ret += j.toString() + "\n";
+		return ret;
 	}
 
 }
