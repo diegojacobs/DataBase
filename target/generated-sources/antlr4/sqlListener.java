@@ -132,6 +132,18 @@ public interface sqlListener extends ParseTreeListener {
 	 */
 	void exitIdTable(@NotNull sqlParser.IdTableContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code orderMulti}
+	 * labeled alternative in {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrderMulti(@NotNull sqlParser.OrderMultiContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code orderMulti}
+	 * labeled alternative in {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrderMulti(@NotNull sqlParser.OrderMultiContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link sqlParser#alter_database_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -217,16 +229,6 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link sqlParser#order}.
-	 * @param ctx the parse tree
-	 */
-	void enterOrder(@NotNull sqlParser.OrderContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link sqlParser#order}.
-	 * @param ctx the parse tree
-	 */
-	void exitOrder(@NotNull sqlParser.OrderContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link sqlParser#sql_executable_statement}.
 	 * @param ctx the parse tree
@@ -479,6 +481,18 @@ public interface sqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code orderUni}
+	 * labeled alternative in {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrderUni(@NotNull sqlParser.OrderUniContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code orderUni}
+	 * labeled alternative in {@link sqlParser#order}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrderUni(@NotNull sqlParser.OrderUniContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code exp_relational}
 	 * labeled alternative in {@link sqlParser#exp}.
