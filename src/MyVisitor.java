@@ -8,6 +8,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.lang.ref.WeakReference;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -16,7 +21,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.Stack;
+import java.util.Comparator;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -1955,7 +1964,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		String logic = (String) visit(ctx.getChild(1));
 		
-		Object objCond = visit(ctx.getChild(0));
+		Object objCond = visit(ctx.getChild(2));
 		if (objCond == null) return null;
 		
 		if (!(objCond instanceof LinkedHashSet)) return null;
@@ -1965,9 +1974,11 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		switch (logic){
 			case "OR":
+				
 				compIndex.addAll(condIndex);
 				result = new LinkedHashSet<Integer>();
 				result.addAll(compIndex);
+				
 				break;
 			case "AND":
 				result = new LinkedHashSet<Integer>();
@@ -2029,17 +2040,28 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitCompId(@NotNull sqlParser.CompIdContext ctx) 
 	{
+		
 		LinkedHashSet<Integer> list = new LinkedHashSet();
 		String op = ctx.getChild(1).getText(); //agarro el relational
 		
 		
-		String id = ctx.getChild(0).getText(); //agarro el primer id
+		String id = (String) visit(ctx.getChild(0)); //agarro el primer id
+		
 		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
 		{
+			
+			if (table_use.isAmbiguous(id)){
+				String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+				errores.add(error_);
+				return null;
+			}
 			//tomo el atributo de la tabla y el indice de este
+			
 			Atributo atr = this.table_use.getID(id);
+			
 			Atributo id2 = new Atributo();
 			int index = this.table_use.getAtributos().indexOf(atr);
+			
 			
 			//visito el ultimo hijo 
 			String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
@@ -2093,10 +2115,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				else
 				{
 					//Si es una columna de la tabla
-					String columna = ctx.getChild(2).getText(); 
+					String columna = (String)visit(ctx.getChild(2)); 
 					if (this.table_use.hasAtributo(columna))
 					{
+						if (table_use.isAmbiguous(columna)){
+							String error_ = "La llamada <<"+columna+">> es ambigua @line: " + ctx.getStop().getLine();
+							errores.add(error_);
+							return null;
+						}
 						id2 = this.table_use.getID(columna);
+						
 						value = "'";
 						
 						if (atr.getTipo().equals("int") && (id2.getTipo().equals("int") || id2.getTipo().equals("float")))
@@ -2714,6 +2742,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						break;
 				}
 			}
+			//System.out.println("llego a list: "+list);
 			return (T)list;
 		}
 		else
@@ -2721,7 +2750,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
-		
+		System.out.println("llego a list null");
 		return (T)null; 
 	}
 	
@@ -2743,7 +2772,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		//visito el ultimo hijo 
 		String tipo2 = (String)this.visit(ctx.getChild(2)); //voy a recibir el tipo
-		String value2 = ctx.getChild(2).getText();
+		String value2 = (String)visit(ctx.getChild(2));
 		
 		boolean flag = false;
 		
@@ -2995,9 +3024,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String op = ctx.getChild(1).getText(); //agarro el relational
 		
 		
-		String id = ctx.getChild(2).getText(); //agarro el primer id
+		String id = (String)visit(ctx.getChild(2)); //agarro el primer id
 		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
 		{
+			if (table_use.isAmbiguous(id)){
+				String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+				errores.add(error_);
+				return null;
+			}
 			//tomo el atributo de la tabla y el indice de este
 			Atributo atr = this.table_use.getID(id);
 			int index = this.table_use.getAtributos().indexOf(atr);
@@ -3639,7 +3673,313 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 
 	public Object visitSelect_value (sqlParser.Select_valueContext ctx){
 		
+		if (actual.getName().isEmpty()){
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+        	return null;
+		}
+			
+		
+		ArrayList<String> tables = (ArrayList<String>)visit(ctx.localIDS());
+		for (String st: tables){
+			if (!actual.existTable(st)){
+				String no_database_in_use = "No hay una Tabla " +st+" en la Base de Datos " +getActual().getName()+" @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+	        	return null;
+			}
+		}
+		
+		String dupTable = (String)checkDuplicates(tables);
+		if (!dupTable.isEmpty()){
+			String error_ = "La tabla <<" +dupTable+">> ha sido llamada mas de una vez @line: " + ctx.getStop().getLine();
+        	this.errores.add(error_);
+        	return null;
+		}
+		
+		Table crossTable = new Table(actual.getTable(tables.get(0)));
+		crossTable.setNamesByTable();
+		
+		int i = 0;
+		for (String st: tables){
+			if (i != 0){
+				crossTable = crossJoin(crossTable,actual.getTable(st));
+			}else{
+				i++;
+			}
+		}
+		
+		if (ctx.getChildCount() <= 5){//<= 5 porque hay que tomar en cuenta ';'
+			
+			return getTableFromSelectedColumns(crossTable, ctx.getChild(1));
+		}
+		
+		
+		String word = ctx.getChild(4).getText();
+		
+		if (word.toUpperCase().equals("WHERE")){
+			
+			table_use = crossTable;
+			
+			Object result = (Object) visit(ctx.getChild(5));//visitamos condition
+			
+			if (result == null){
+				String error_ = "Error en la definicion de condiciones @line: " + ctx.getStop().getLine();
+	        	this.errores.add(error_);
+				return null;
+			}
+			
+			if (!(result instanceof LinkedHashSet)){
+				String error_ = "Error en la definicion de condiciones @line: " + ctx.getStop().getLine();
+	        	this.errores.add(error_);
+				return null;
+			}
+			
+			LinkedHashSet<Integer> index = (LinkedHashSet<Integer>)result;
+			
+			ArrayList<ArrayList<String>> data = new ArrayList();
+			for (int j: index){
+				data.add(table_use.getData().get(j));
+			}
+			
+			
+			table_use.setData(data);
+			if (ctx.getChildCount()<=7)
+				return getTableFromSelectedColumns(table_use,ctx.getChild(1));
+			
+			//tiene orden
+			Object obj = getCompare(table_use, (sqlParser.OrderContext) ctx.order());
+			if (obj == null) return null;
+			
+			table_use = (Table) obj;
+			return getTableFromSelectedColumns(table_use,ctx.getChild(1));
+			
+		}else if (word.toUpperCase().equals("ORDER")){
+			
+			table_use = crossTable;
+			
+			//tiene orden
+			Object obj = getCompare(table_use, (sqlParser.OrderContext) ctx.order());
+			if (obj == null) return null;
+			
+			table_use = (Table) obj;
+			return getTableFromSelectedColumns(table_use,ctx.getChild(1));
+		}
+		
 		return null;
+	}
+	
+	public Object getCompare(Table table, sqlParser.OrderContext ctx){
+		
+		try{
+			Collections.sort(table.getData(), new DtComparator(){
+				public int compare(ArrayList<String> tupla1, ArrayList<String> tupla2){
+					
+					Object obj = visitOrder(tupla1,tupla2,ctx);
+					
+					if (obj == null) return (Integer)null;
+					
+					if (obj instanceof Integer) return (Integer) obj;
+					return (Integer)null;
+				}
+			});
+			
+			return table;
+		}catch (Exception e){
+			//e.printStackTrace();
+		}
+		
+		return null;
+				
+	}
+	
+	public Object visitOrder(ArrayList<String> tupla1, ArrayList<String> tupla2, sqlParser.OrderContext ctx){
+		if (ctx instanceof sqlParser.OrderUniContext) return visitOrderUni(tupla1, tupla2, (sqlParser.OrderUniContext)ctx);
+		
+		if (ctx instanceof sqlParser.OrderMultiContext) return visitOrderMulti(tupla1, tupla2, (sqlParser.OrderMultiContext)ctx);
+		
+		return null;
+	}
+	
+	public Object visitOrderUni (ArrayList<String> tupla1, ArrayList<String> tupla2, sqlParser.OrderUniContext ctx){
+		String id = (String) visit(ctx.getChild(0));//obtenemos id
+		
+		Atributo at = table_use.getID(id);//obtenemos el atributo
+		if (at == null){
+			String rule_5 = "La tabla " + table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+			errores.add(rule_5);
+			return null;
+		}
+		
+		if (table_use.isAmbiguous(id)){
+			String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+			errores.add(error_);
+			return null;
+		}
+		
+		String op = "ASC";
+		if (ctx.getChildCount()>1) op = ctx.getChild(1).getText().toUpperCase();
+		
+		String st = "";
+		
+		
+		int index = table_use.getAtributos().indexOf(at);//obtenemos el indice en data
+		String tipo = at.getTipo().toLowerCase();
+		DtComparator dt = new DtComparator();
+		switch (op){
+			case "ASC":
+				if (tipo.equals("date")){
+					return dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+			case "DESC":
+				if (tipo.equals("date")){
+					return -dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return -dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return -tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+		}
+		return null;
+	}
+
+	public Object visitOrderMulti (ArrayList<String> tupla1, ArrayList<String> tupla2, sqlParser.OrderMultiContext ctx){
+		String id = (String) visit(ctx.getChild(0));//obtenemos id
+		
+		Atributo at = table_use.getID(id);//obtenemos el atributo
+		if (at == null){
+			String rule_5 = "La tabla " + table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+			errores.add(rule_5);
+			return null;
+		}
+		
+		if (table_use.isAmbiguous(id)){
+			String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+			errores.add(error_);
+			return null;
+		}
+		
+		String op = "ASC";
+		if (!ctx.getChild(1).getText().equals(","))
+			op = ctx.getChild(1).getText().toUpperCase();
+		
+		String st = "";
+		
+		int index = table_use.getAtributos().indexOf(at);//obtenemos el indice en data
+		String tipo = at.getTipo().toLowerCase();
+		
+		DtComparator dt = new DtComparator();
+		if (tipo.equals("date")){
+			if (dt.compareDate(tupla1.get(index),tupla2.get(index))==0){
+				return visitOrder(tupla1,tupla2,ctx.order());
+			}
+		}else if (tipo.equals("int") || tipo.equals("float")){
+			if (dt.compareNum(tupla1.get(index),tupla2.get(index))==0){
+				return visitOrder(tupla1,tupla2,ctx.order());
+			}
+		}else{
+			if (tupla1.get(index).compareTo(tupla2.get(index))==0){
+				return visitOrder(tupla1,tupla2,ctx.order());
+			}
+		}
+		
+		
+		switch (op){
+			case "ASC":
+				if (tipo.equals("date")){
+					return dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+			case "DESC":
+				if (tipo.equals("date")){
+					return -dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return -dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return -tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+		}
+		return null;
+	}
+	
+	public Object getTableFromSelectedColumns(Table table, ParseTree pr){
+		if (pr.getText().equals("*")) return table;//selecciona todas
+		
+		if (!(pr instanceof sqlParser.NlocalIDSContext)) return null;
+		sqlParser.NlocalIDSContext ctx = (sqlParser.NlocalIDSContext) pr;
+		
+		ArrayList<String> columns = (ArrayList<String>) visit(ctx);
+		Table ntable = new Table();
+		ntable.setName(table.getName());
+		
+		ArrayList<ArrayList<String>> data = new ArrayList();
+		for (int i = 0; i < table.getData().size(); i++){
+			data.add(new ArrayList());
+		}
+		ntable.setData(data);
+		
+		for (String id : columns){
+			Atributo at = table.getID(id);
+			if (at == null){
+				String rule_5 = "La relacion " + table.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+				errores.add(rule_5);
+				return null;
+			}
+			
+			if (table.isAmbiguous(id)){
+				String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+				errores.add(error_);
+				return null;
+			}
+			
+			int index = table.getAtributos().indexOf(at);
+			ntable.getAtributos().add(table.getAtributos().get(index));
+			ntable.getOthersIds().add(table.getOthersIds().get(index));
+			
+			int i = 0;
+			for (ArrayList<String> tupla: ntable.getData()){
+				tupla.add(table.getData().get(i).get(index));
+				i++;
+			}
+			
+		}		
+		
+		return ntable;
+	}
+	
+	public Object checkDuplicates (ArrayList<String> tables){
+		LinkedHashSet<String> ntables = new LinkedHashSet(tables);
+		LinkedHashSet<String> dup = new LinkedHashSet();
+		for (String st: ntables){
+			if (dup.contains(st)){
+				return st;
+			}
+			dup.add(st);
+		}
+		return "";
+	}
+	
+	public Object visitNlocalIDS (sqlParser.NlocalIDSContext ctx){
+		if (ctx.getChildCount() <= 1){
+			ArrayList<String> ar = new ArrayList();
+			ar.add((String)visitChildren(ctx));
+			return ar;
+		}
+		
+		ArrayList<String> ar = new ArrayList();
+		ar.add((String) visit(ctx.getChild(0)));
+		ar.addAll((ArrayList<String>)visit(ctx.getChild(2)));
+		return ar;		
 	}
 	
 	/**
@@ -3682,8 +4022,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 		}
 		nTb.setData(data);
-		
+		//System.out.println(data);
 		return nTb;
+	}
+	
+	public Object visitNID( sqlParser.NIDContext ctx){
+		if (ctx.getChildCount() <= 1) return ctx.getChild(0).getText();
+	
+		return ctx.getChild(0).getText()+"."+ctx.getChild(2).getText();
 	}
 	
 	public DataBase getActual() {

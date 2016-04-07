@@ -160,6 +160,18 @@ public class sqlBaseListener implements sqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterOrderMulti(@NotNull sqlParser.OrderMultiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOrderMulti(@NotNull sqlParser.OrderMultiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAlter_database_statement(@NotNull sqlParser.Alter_database_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -251,18 +263,6 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitChar_literal(@NotNull sqlParser.Char_literalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterOrder(@NotNull sqlParser.OrderContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitOrder(@NotNull sqlParser.OrderContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -539,6 +539,18 @@ public class sqlBaseListener implements sqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTipo_lit_date(@NotNull sqlParser.Tipo_lit_dateContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOrderUni(@NotNull sqlParser.OrderUniContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOrderUni(@NotNull sqlParser.OrderUniContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -580,6 +580,9 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		
 		Object [] columnNames = nombres.toArray();
+		
+		
+		
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 		for (ArrayList<String> tupla: table.getData()){
 			//System.out.println("tupla: "+tupla);
