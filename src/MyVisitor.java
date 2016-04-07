@@ -1732,8 +1732,29 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								fin.set(index2, newfila.get(index2));
 						}
 						
+						//Revisamos que no venga un NULL en una PrimaryKey
+						{
+							if (this.table_use.getPrimaryKeys().size() > 0)
+							{
+								Constraint key = this.table_use.getPrimaryKeys().get(0);
+								for (String idk : key.getIDS_local())
+								{
+									Atributo atrk = this.table_use.getID(idk);
+									int indexk = this.table_use.getAtributos().indexOf(atrk);
+									if (fila.get(indexk).toUpperCase().equals("NULL"))
+									{
+										flag = false;
+										String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);	
+										break;
+									}
+								}
+							}
+						}
+						
 						if (PrimaryKey(fin,i))
 						{
+							//En update solo lo podemos cambiar si el foreign key no existe
 							if (!ForeignKey(fin,i))
 							{
 								
@@ -2092,37 +2113,42 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			//Si es un literal
 			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
 			{
-				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
-				{
-					flag = true;
-				}
+				if (value.toUpperCase().equals("NULL"))
+					flag=true;
 				else
-				{
-					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+				{	
+					if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
 					{
 						flag = true;
 					}
 					else
 					{
-						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
 						{
 							flag = true;
 						}
 						else
 						{
-							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+							if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
 							{
 								flag = true;
 							}
 							else
 							{
-								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
+								if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+								{
+									flag = true;
+								}
+								else
+								{
+									String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
 							}
+								
 						}
-							
 					}
-				}	
+				}
 			}
 			else
 				if (tipo.equals("Error"))
@@ -3067,37 +3093,42 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			//Si es un literal
 			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
 			{
-				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
-				{
-					flag = true;
-				}
+				if (value.toUpperCase().equals("NULL"))
+					flag=true;
 				else
 				{
-					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+					if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
 					{
 						flag = true;
 					}
 					else
 					{
-						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
 						{
 							flag = true;
 						}
 						else
 						{
-							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+							if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
 							{
 								flag = true;
 							}
 							else
 							{
-								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
+								if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+								{
+									flag = true;
+								}
+								else
+								{
+									String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
 							}
+								
 						}
-							
 					}
-				}	
+				}
 			}
 			else
 				if (tipo.equals("Error"))
