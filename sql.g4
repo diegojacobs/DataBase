@@ -75,6 +75,7 @@ ORDER : O R D E R;
 BY : B Y;
 ASC: A S C;
 DESC: D E S C;
+NULL: N U L L;
 
 fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
@@ -222,7 +223,8 @@ literal:
         int_literal
     |   float_literal
     |   date_literal
-    |   char_literal ;
+    |   char_literal
+    |   NULL ;
 
 int_literal: ('-')? INT;
 float_literal: ('-')? INT ('.' INT )?;
