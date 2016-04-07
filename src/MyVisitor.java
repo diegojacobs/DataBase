@@ -29,6 +29,8 @@ import java.net.URLClassLoader;
 
 import javax.swing.JOptionPane;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -515,6 +517,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					}
 				}
 				// Validaciones
+				
 				if (errores == 0)
 				{
 					// Ningun atributo se puede llamar igual
@@ -609,16 +612,40 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							}
 						}
 						// Check
+						
+						//se crea tableuse para visitar el check
+						table_use = new Table();
+						table_use.setAtributos(atrs);
+						
 						for (Constraint i: checks)
 						{
 							// Local IDS
-							for (String j: i.getIDS_local())
+							//sqlParser.ConditionContext parse = new sqlParser.ConditionContext("string");
+							ANTLRInputStream input = new ANTLRInputStream(i.getCondition());
+							sqlLexer lexer = new sqlLexer(input);
+					        
+					        CommonTokenStream tokens = new CommonTokenStream(lexer);
+					
+					        sqlParser parser = new sqlParser(tokens);
+					        
+					        ParseTree tree = parser.constraint();					        
+					        
+							Object obj = (Object) visit(tree);
+							
+							if (obj == null){
+								String check_ = "Check: " + i.getId() + "mal definido @line: " + ctx.getStop().getLine();
+					        	this.errores.add(check_);
+					        	errores++;
+							}
+							
+							/*for (String j: i.getIDS_local())
 								if (! attrs_names.contains(j))										
 								{
 									String local_id_not_found = "El atributo \"" + j + "\" del Check \"" + i.getId() + "\" no esta declarado en la tabla \"" + name + "\" @line: " + ctx.getStop().getLine();
 						        	this.errores.add(local_id_not_found);
 						        	errores++;
 								}
+							*/
 							/*String id1 = i.getIDS_local().get(0);
 							String id2 = i.getIDS_local().get(1);
 							if (! attrs_names.contains(id1) )
@@ -783,14 +810,51 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitConstraintTypeCheck(sqlParser.ConstraintTypeCheckContext ctx) {
 		// TODO Auto-generated method stub
 		Constraint const_check = new Constraint(ctx.getChild(0).getText(), "Check");
-		/*String id_1 = ctx.getChild(3).getText();
-		String id_2 = ctx.getChild(5).getText();
-		String exp = (String) this.visit(ctx.exp());
-		const_check.addLocalID(id_1);
-		const_check.addLocalID(id_2);
-		const_check.setExp(exp);*/
+		const_check.setCondition(ctx.condition().getText());//asignamos condition al check
+		ArrayList<String> ids = (ArrayList<String>)visitConditionCheck(ctx.condition());
+		LinkedHashSet<String> ids_noRepetidos = new LinkedHashSet(ids);
+		ids = new ArrayList(ids_noRepetidos);
+		const_check.setIDS_local(ids);
+		
 		return (T)const_check;
 		//return super.visitConstraintTypeCheck(ctx);
+	}
+	
+	public Object visitConditionCheck(sqlParser.ConditionContext ctx){
+        
+		if (ctx instanceof sqlParser.ConditionCondContext){
+			ArrayList<String> ids = new ArrayList();
+			ids.addAll((ArrayList<String>)visitConditionCheck((sqlParser.ConditionContext)ctx.getChild(1)));
+			if (ctx.getChildCount() > 3){
+				ids.addAll((ArrayList<String>)visitConditionCheck((sqlParser.ConditionContext)ctx.getChild(4)));
+			}
+			return ids;
+		}else if (ctx instanceof sqlParser.ConditionCompContext){
+			ArrayList<String> ids = new ArrayList();
+			ids.addAll((ArrayList<String>)visitCompCheck((sqlParser.CompContext)ctx.getChild(0)));
+			if (ctx.getChildCount() > 1){
+				ids.addAll((ArrayList<String>)visitCompCheck((sqlParser.CompContext)ctx.getChild(2)));
+			}
+			return ids;
+		}
+		
+		return visitConditionCheck((sqlParser.ConditionContext)ctx.getChild(1));// es not_logic condition
+	}
+	
+	public Object visitCompCheck(sqlParser.CompContext ctx){
+		if (ctx instanceof sqlParser.CompIdContext){//tiene los dos ids
+			ArrayList<String> ids = new ArrayList();
+			ids.add((String)visit(ctx.getChild(0)));
+			if (ctx.getChild(2) instanceof sqlParser.NIDContext){
+				ids.add((String)visit(ctx.getChild(2)));
+			}
+			return ids;
+		}else if (ctx instanceof sqlParser.CompLitIdContext){
+			ArrayList<String> ids = new ArrayList();
+			ids.add((String)visit(ctx.getChild(2)));
+			return ids;
+		}
+		return new ArrayList<String>();
 	}
 
 	/* (non-Javadoc)
@@ -969,22 +1033,25 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 										}
 								}
 								break;
-							/*case "Check":
-								String id1 = con.getIDS_local().get(0);
-								String id2 = con.getIDS_local().get(1);
-								if (! attrs_names.contains(id1) )
-								{
-									String local_id_not_found = "El atributo \"" + id1 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
-						        	this.errores.add(local_id_not_found);
+							case "Check":
+								table_use = new Table(toAlter);//seteo table_use como la de eval check
+								table_use.getAtributos().add(atr);
+								table_use.setData(new ArrayList<ArrayList<String>>());//la vacio para que sea rapido
+								
+								ANTLRInputStream input = new ANTLRInputStream(con.getCondition());
+								sqlLexer lexer = new sqlLexer(input);
+								CommonTokenStream tokens = new CommonTokenStream(lexer);
+								sqlParser parser = new sqlParser(tokens);
+								ParseTree tree = parser.condition();
+								
+								Object obj = (Object) visit(tree);
+								if (obj == null){
+									String check_ = "Check: " + con.getId() + "mal definido @line: " + ctx.getStop().getLine();
+						        	this.errores.add(check_);
 						        	errores++;
 								}
-								if (! attrs_names.contains(id2) )
-								{
-									String local_id_not_found = "El atributo \"" + id2 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
-						        	this.errores.add(local_id_not_found);
-						        	errores++;
-								}
-								break;*/
+								
+								break;
 						}
 						
 						if (errores == 0)
@@ -1115,22 +1182,24 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									}
 							}
 							break;
-						/*case "Check":
-							String id1 = con.getIDS_local().get(0);
-							String id2 = con.getIDS_local().get(1);
-							if (! attrs_names.contains(id1) )
-							{
-								String local_id_not_found = "El atributo \"" + id1 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
-					        	this.errores.add(local_id_not_found);
+						case "Check":
+							table_use = new Table(toAlter);//seteo table_use como la de eval check
+							table_use.setData(new ArrayList<ArrayList<String>>());//la vacio para que sea rapido
+							
+							ANTLRInputStream input = new ANTLRInputStream(con.getCondition());
+							sqlLexer lexer = new sqlLexer(input);
+							CommonTokenStream tokens = new CommonTokenStream(lexer);
+							sqlParser parser = new sqlParser(tokens);
+							ParseTree tree = parser.condition();
+							
+							Object obj = (Object) visit(tree);
+							System.out.println(obj);
+							if (obj == null){
+								String check_ = "Check: " + con.getId() + "mal definido @line: " + ctx.getStop().getLine();
+					        	this.errores.add(check_);
 					        	errores++;
 							}
-							if (! attrs_names.contains(id2) )
-							{
-								String local_id_not_found = "El atributo \"" + id2 + "\" del Check \"" + con.getId() + "\" no esta declarado en la tabla \"" + toAlter.getName() + "\" @line: " + ctx.getStop().getLine();
-					        	this.errores.add(local_id_not_found);
-					        	errores++;
-							}
-							break;*/
+							break;
 					}
 					
 					if (errores == 0)
