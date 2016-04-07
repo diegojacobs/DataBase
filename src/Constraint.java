@@ -188,7 +188,8 @@ public class Constraint implements Serializable {
 				ret += ")";
 				break;
 			case "Check":
-				ret += this.IDS_local.get(0) + " " + this.exp + " " + this.IDS_local.get(1) + ")";
+				//ret += this.IDS_local.get(0) + " " + this.exp + " " + this.IDS_local.get(1) + ")";
+				ret += ")";
 				break;
 		}
 		return ret;
