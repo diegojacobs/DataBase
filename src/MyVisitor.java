@@ -53,6 +53,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public void resetValues(){
 		errores = new ArrayList<String>();
+		messages = new ArrayList<String>();
 		table_use = new Table();
 		inserted_rows = 0;
 		deleted_rows = 0;
