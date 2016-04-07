@@ -2776,6 +2776,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		boolean flag = false;
 		
+		if (!tipo.equals("Error") && !tipo2.equals("Error"))
+			flag = true;
 		
 		if (flag)
 		{
@@ -3543,6 +3545,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public String compareDate(String date1, String date2)
 	{
+		date1.replaceAll("'", "");
+		date2.replaceAll("'", "");
+		
 		String valor1[] = date1.split("-");
 		String valor2[] = date2.split("-");
 		
