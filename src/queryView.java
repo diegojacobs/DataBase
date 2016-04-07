@@ -984,7 +984,7 @@ public class queryView extends JFrame implements ActionListener{
 	        
 	        // Generar verbose
 	        this.recursiveRoot(tree);
-	        System.out.println(this.toStringVerbose());
+	        //System.out.println(this.toStringVerbose());
 	        
 	        if (!semantic_checker.erroresToString().isEmpty())
 	        	dataOutputArea.setText(semantic_checker.erroresToString()+"\n"+calculateTime(estimatedTime));
