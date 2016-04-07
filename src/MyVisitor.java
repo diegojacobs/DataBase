@@ -2081,7 +2081,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				// Borrar toda la data si no hay errores
 				if (errores == 0)
+				{
+					this.messages.add("Se eliminaron " + this.table_use.getData().size() + " filas de la Tabla \"" + this.table_use.getName() + "\"");
 					table_use.setData(new ArrayList<ArrayList<String>>());
+				}
 				return table_use;				
 			}
 			
@@ -2166,9 +2169,12 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			for (int i: indexesToDelete){
 				table_use.getData().remove(i);
 			}
-		}		
+			if (! indexesToDelete.isEmpty())
+				this.messages.add("Se eliminaron " + indexesToDelete.size() + " filas de la Tabla \"" + this.table_use.getName() + "\"");
+		}
 		return (T) table_use;
 	}
+
 
 	
 	
