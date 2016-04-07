@@ -78,7 +78,8 @@ public class SimpleTree extends JPanel {
 	}*/
   	
   	public void reload(){
-  		fileTree.repaint();
+  		//fileTree.relo
+  		
   	}
   	
   	public JTree getTree(){
