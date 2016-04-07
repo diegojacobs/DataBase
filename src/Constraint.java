@@ -6,16 +6,15 @@ public class Constraint implements Serializable {
 	
 	private String id;
 	private String tipo;
-	private String exp;
 	private String id_ref;
 	private ArrayList<String> IDS_local;
 	private ArrayList<String> IDS_refs;
+	private String condition ;
 	
 	public Constraint()
 	{
 		this.id = "";
 		this.tipo = "";
-		this.exp = "";
 		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
@@ -24,7 +23,6 @@ public class Constraint implements Serializable {
 	public Constraint(String id) {
 		this.id = id;
 		this.tipo = "";
-		this.exp = "";
 		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
@@ -33,7 +31,6 @@ public class Constraint implements Serializable {
 	public Constraint(String id, String tipo) {
 		this.id = id;
 		this.tipo = tipo;
-		this.exp = "";
 		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
@@ -42,7 +39,7 @@ public class Constraint implements Serializable {
 	public Constraint(String id, String tipo, String exp) {
 		this.id = id;
 		this.tipo = tipo;
-		this.exp = exp;
+		this.setCondition(exp);
 		this.id_ref = "";
 		this.IDS_local = new ArrayList<String>();
 		this.IDS_refs = new ArrayList<String>();
@@ -77,13 +74,6 @@ public class Constraint implements Serializable {
 	}
 
 	/**
-	 * @return the exp
-	 */
-	public String getExp() {
-		return exp;
-	}
-
-	/**
 	 * @return the id_ref
 	 */
 	public String getId_ref() {
@@ -95,13 +85,6 @@ public class Constraint implements Serializable {
 	 */
 	public void setId_ref(String id_ref) {
 		this.id_ref = id_ref;
-	}
-
-	/**
-	 * @param exp the exp to set
-	 */
-	public void setExp(String exp) {
-		this.exp = exp;
 	}
 
 	/**
@@ -188,11 +171,19 @@ public class Constraint implements Serializable {
 				ret += ")";
 				break;
 			case "Check":
-				//ret += this.IDS_local.get(0) + " " + this.exp + " " + this.IDS_local.get(1) + ")";
+				ret += getCondition();
 				ret += ")";
 				break;
 		}
 		return ret;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 
 }
