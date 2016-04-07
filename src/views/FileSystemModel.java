@@ -93,7 +93,7 @@ public class FileSystemModel implements TreeModel {
 	    }
 	 
 	    public String toString() {
-	      return getName();
+	      return getName().replace(".bin","");
 	    }
 	  }
 	}

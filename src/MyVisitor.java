@@ -628,7 +628,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					
 					        sqlParser parser = new sqlParser(tokens);
 					        
-					        ParseTree tree = parser.constraint();					        
+					        ParseTree tree = parser.condition();					        
 					        
 							Object obj = (Object) visit(tree);
 							
