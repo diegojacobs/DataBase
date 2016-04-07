@@ -4010,8 +4010,19 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		String st = "";
 		
-		
 		int index = table_use.getAtributos().indexOf(at);//obtenemos el indice en data
+		
+		if (tupla1.get(index).toUpperCase().equals("NULL")){//primero es null
+			if (!tupla2.get(index).toUpperCase().equals("NULL")){//segundo no es null
+				return 1;//tupla 1 es mayor porque es null
+			}
+			return 0;//si el primero es null y el segundo tambien, son iguales
+		}else{
+			if (tupla2.get(index).toUpperCase().equals("NULL")){
+				return -1;//tupla 2 es mayor porque es null
+			}
+		}//no son null, que sigan
+		
 		String tipo = at.getTipo().toLowerCase();
 		DtComparator dt = new DtComparator();
 		switch (op){
@@ -4060,10 +4071,23 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String st = "";
 		
 		int index = table_use.getAtributos().indexOf(at);//obtenemos el indice en data
+		
+		if (tupla1.get(index).toUpperCase().equals("NULL")){//primero es null
+			if (!tupla2.get(index).toUpperCase().equals("NULL")){//segundo no es null
+				return 1;//tupla 1 es mayor porque es null
+			}
+			return visitOrder(tupla1,tupla2,ctx.order());//si el primero es null y el segundo tambien, son iguales
+		}else{
+			if (tupla2.get(index).toUpperCase().equals("NULL")){
+				return -1;//tupla 2 es mayor porque es null
+			}
+		}//si no son null, que retorne lo normal
+		
 		String tipo = at.getTipo().toLowerCase();
 		
 		DtComparator dt = new DtComparator();
 		if (tipo.equals("date")){
+			
 			if (dt.compareDate(tupla1.get(index),tupla2.get(index))==0){
 				return visitOrder(tupla1,tupla2,ctx.order());
 			}
