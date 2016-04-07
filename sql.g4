@@ -75,10 +75,11 @@ ORDER : O R D E R;
 BY : B Y;
 ASC: A S C;
 DESC: D E S C;
+NULL: N U L L;
 
 fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' ' ..'~') | '\\' | '\'' | '\"' | '\t' | '\n' ;
+fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' | '.';
 fragment TWO_DIGITS : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS : DIGIT THREE_DIGITS ;
@@ -88,9 +89,8 @@ fragment DAY : DIGIT | TWO_DIGITS ;
 
 INT: DIGIT ( DIGIT )*;
 ID : LETTER ( LETTER | DIGIT )* ;
-NUM : ('-')? DIGIT ( DIGIT )*;
+DATE: '\'' YEAR'-'MONTH'-'DAY  '\'';
 CHAR : '\'' ASCII(ASCII)* '\'' ;
-DATE: '\''YEAR '-' MONTH '-' DAY'\'' ;
 
 WHITESPACE : [\t\r\n\f ]+ -> skip ;
 
@@ -117,7 +117,10 @@ sql_schema_manipulation_statement :
         |   show_table_statement
         |   show_column_statement ;
         
-sql_data_statement : select_value ;
+sql_data_statement : select_value 
+					| insert_value
+					| delete_value
+					| update_value;
 
 schema_definition: CREATE DATABASE ID ';' ;
 
@@ -125,7 +128,14 @@ table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
-alter_table_statement: ALTER TABLE ID accion ';' ;
+alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal (constraint)? ';' #alterAddColumn
+					 | ALTER TABLE idTable ADD constraint ';' #alterAddConstraint
+					 | ALTER TABLE idTable DROP COLUMN idColumn ';' #alterDropColumn
+					 | ALTER TABLE idTable DROP CONSTRAINT idConstraint ';' #alterDropConstraint;
+					 
+idTable: ID;
+idColumn: ID;
+idConstraint: ID;
 
 drop_table_statement: DROP TABLE ID ';' ;
 
@@ -148,7 +158,7 @@ constraint: CONSTRAINT constraintType ;
 constraintType:
             ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
         |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
-        |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
+        |   ID CHECK '('condition ')' #constraintTypeCheck;
 
 idRef: ID;
 
@@ -164,12 +174,6 @@ exp: logic #exp_logic
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
-accion:
-          ADD COLUMN ID tipo_literal (constraint)
-        | ADD constraint
-        | DROP COLUMN ID 
-        | DROP CONSTRAINT ID ;
-
 show_table_statement: SHOW TABLES ';' ;
 
 show_column_statement: SHOW COLUMNS FROM ID ';' ;         
@@ -181,37 +185,48 @@ logic_not: RES_NOT;
 
 relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
 
-insert_value: INSERT INTO ID columns VALUES list ';' ;
+insert_value: INSERT INTO ID (columns)? VALUES list ';' ;
 
-update_value: UPDATE ID SET (columna '=' value)+ WHERE condition ';' ;
+update_value: UPDATE ID SET asignacion (WHERE condition)? ';' ;
 
-delete_value: DELETE FROM ID WHERE condition ';' ;
+asignacion : columna '=' literal (',' columna '=' literal)*;
 
-select_value: SELECT ('*' | ID (',' ID)* ) FROM ID WHERE condition  (ORDER BY (ASC | DESC))? ';' ;
+delete_value: DELETE FROM ID (WHERE condition)? ';' ;
+
+select_value: SELECT ('*' | nlocalIDS ) FROM localIDS (WHERE condition)?  ( ORDER BY order )? ';' ;
+
+nID: ID
+	|ID '.' ID;
+	
+nlocalIDS: nID
+		  | nID ',' nlocalIDS;
+	
+order: nID ( ASC | DESC )? #orderUni
+	| nID (ASC | DESC )? ',' order #orderMulti;
               
-condition: (logic_not)? comp (logic (logic_not)? (comp))*;         
+condition: '(' condition ')' (logic condition)? #conditionCond
+                 | comp (logic condition)? #conditionComp
+                 | logic_not condition #conditionNot;        
 
-comp : ID relational (ID | literal);    
+comp : nID relational (nID | literal) #compId
+	   | literal relational nID #compLitId
+	   | literal relational literal #compLit;    
 
-columns:((columna)+ | ('(' (columna)+ ')')) ;
+columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
 
 columna: ID;
-           
-list: (list_values | ('(' list_values ')')) ;       
-           
-list_values : (value (',' (value))* ) ;
-         
-value: tipo;
-              
-tipo: literal;
+                      
+list : (literal (',' literal)* )
+			|  '(' (literal (',' literal)* ) ')';
 
 literal:  
         int_literal
     |   float_literal
     |   date_literal
-    |   char_literal ;
+    |   char_literal
+    |   NULL ;
 
-int_literal: NUM;
-float_literal: NUM ('.' INT )?;
-date_literal: DATE;
+int_literal: ('-')? INT;
+float_literal: ('-')? INT ('.' INT )?;
+date_literal: DATE ;
 char_literal: CHAR;

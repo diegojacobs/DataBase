@@ -2,10 +2,17 @@
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
 import views.*;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 
 import javax.imageio.ImageIO;
@@ -13,12 +20,15 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
 import java.awt.BorderLayout;
@@ -27,11 +37,20 @@ import javax.swing.JButton;
 import javax.swing.border.Border;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Utilities;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -47,25 +66,41 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class queryView extends JFrame implements ActionListener{
 
+	
 	//private JFrame frame;
-	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment;
-	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo;
+	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment, mntmPrueba;
+	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete, btnVerbose;
 	//JTextArea textArea;
-	JTextPane textArea, dataOutputArea, dataReadArea;
-	JTextField status;
+	JTextPane textArea, dataOutputArea, dataReadArea, dataVerbose;
+	JTextField status, dataBaseUse;
+	JSplitPane splitPane1;
+	JTabbedPane tabbedPane;
+	
 	TextLineNumber tln;
 	UndoManager manager;
 	JFileChooser fc;
 	File file;
+	SimpleTree explorer;
+	
+	MyVisitor<Object> semantic_checker = new MyVisitor();
 	
 	String commentSeq = "//", textStr = "";
+	boolean isVerbose = false;
+	ArrayList<String> verbose = new ArrayList<String>();
 	int caretLine = 1, caretColumn = 1;
 	
 	
@@ -99,8 +134,12 @@ public class queryView extends JFrame implements ActionListener{
 	 */
 	private void initialize() {
 		//frame = new JFrame();
-		this.setBounds(100, 100, 450, 300);
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
+		int height = gd.getDisplayMode().getHeight();
+		this.setBounds(100, 100, (width/2), (height/2));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		
 		fc = new JFileChooser();
 		
@@ -183,6 +222,12 @@ public class queryView extends JFrame implements ActionListener{
 		KeyStroke keyStrokeToComment = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
 		mntmComment.setAccelerator(keyStrokeToComment);
 		mnQuery.add(mntmComment);
+		
+		mntmPrueba = new JMenuItem("Prueba");
+		mntmPrueba.addActionListener(this);
+		//KeyStroke keyStrokeToPrueba = KeyStroke.getKeyStroke(KeyEvent.VK_1, KeyEvent.CTRL_DOWN_MASK);
+		//mntmPrueba.setAccelerator(keyStrokeToPrueba);
+		//mnQuery.add(mntmPrueba);
 		
 		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -309,7 +354,23 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		toolBar.add(btnRun);
 		
-		JSplitPane splitPane1 = new JSplitPane();
+		btnDelete = new JButton("Delete All");
+		btnDelete.addActionListener(this);
+		btnDelete.setToolTipText("Delete all text from editor");
+		toolBar.add(btnDelete);
+		
+		btnVerbose = new JButton("Verbose");
+		btnVerbose.addActionListener(this);
+		btnVerbose.setToolTipText("Press to enable verbose");
+		toolBar.add(btnVerbose);
+		
+		dataBaseUse = new JTextField();
+		dataBaseUse.setEditable(false);
+		dataBaseUse.setText("Database: ");
+		toolBar.add(dataBaseUse);
+		
+		
+		splitPane1 = new JSplitPane();
 		splitPane1.setResizeWeight(0.2);
 		splitPane1.setContinuousLayout(true);
 		splitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
@@ -321,21 +382,23 @@ public class queryView extends JFrame implements ActionListener{
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		
 		splitPane1.setRightComponent(splitPane);
-		splitPane1.setLeftComponent(new SimpleTree());
+		explorer = new SimpleTree();
+		addTreeSelection(explorer.getTree());
+		splitPane1.setLeftComponent(explorer);
 		//this.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		splitPane.setLeftComponent(tabbedPane);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("SQL Editor", null, scrollPane_1, null);
 		
-		Font font1 = new Font("Consolas", Font.PLAIN, 12);
+		
 		
 		//textArea = new JTextArea();
 		textArea = new JTextPane();
 		//textArea.setTabSize(4);
-		textArea.setFont(font1);
+		
 		textArea.setDocument(new SqlDocument());
 		textArea.getDocument().addUndoableEditListener(manager);
 		
@@ -355,7 +418,7 @@ public class queryView extends JFrame implements ActionListener{
 		//textArea = new JTextArea();
 		dataOutputArea = new JTextPane();
 		//textArea.setTabSize(4);
-		dataOutputArea.setFont(font1);
+		
 		dataOutputArea.setEditable(false);
 		//textArea.setDocument(new SqlDocument());
 		//textArea.getDocument().addUndoableEditListener(manager);
@@ -368,19 +431,274 @@ public class queryView extends JFrame implements ActionListener{
 		JScrollPane scrollPane_2 = new JScrollPane();
 		tabbedPane_1.addTab("Data Read", null, scrollPane_2, null);
 		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		tabbedPane_1.addTab("Verbose", null, scrollPane_3, null);
+		
 		//textArea = new JTextArea();
 		dataReadArea = new JTextPane();
 		//textArea.setTabSize(4);
-		dataReadArea.setFont(font1);
+		
 		dataReadArea.setEditable(false);
 		dataReadArea.setDocument(new SqlDocument());
+		
+		dataVerbose = new JTextPane();
+		dataVerbose.setEditable(false);
 		//textArea.getDocument().addUndoableEditListener(manager);
 		
 		//tln = new TextLineNumber(textArea);
 		
 		scrollPane_2.setViewportView(dataReadArea);
+		scrollPane_3.setViewportView(dataVerbose);
 		//scrollPane_1.setRowHeaderView(tln);
 		
+		Font font0 = new Font("Arial", Font.BOLD, height/60);
+		changeFont(this,font0);
+		
+		Font font1 = new Font("Consolas", Font.PLAIN, height/60);
+		dataOutputArea.setFont(font1);
+		dataReadArea.setFont(font1);
+		textArea.setFont(font1);
+		dataVerbose.setFont(font1);
+		
+	}
+	
+	public void addNewTab(File file){
+		try{
+			String path = file.getAbsolutePath();
+			String name = file.getName();
+			FileInputStream fis = new FileInputStream(path);
+			BufferedReader br = new BufferedReader(new FileReader(path));
+			
+			//JScrollPane scrollPane_1 = new JScrollPane();
+			
+			//JTable table = null;
+			//JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			//tabbedPane.add(scrollPane_1);
+			
+			if (br.readLine() != null)
+			{
+				ObjectInputStream in = new ObjectInputStream(fis);
+				Object obj = in.readObject();
+				if (obj instanceof Table){
+					Path currentRelativePath = Paths.get("");
+					String dataPath = currentRelativePath.toAbsolutePath().toString() + "\\data\\";
+					FileInputStream fis1 = new FileInputStream(dataPath+"dbs.bin");
+					BufferedReader br1 = new BufferedReader(new FileReader(dataPath+"dbs.bin"));
+					DataBases dataBases = null;
+					if (br1.readLine() != null)
+					{
+						ObjectInputStream in1 = new ObjectInputStream(fis1);
+						dataBases = (DataBases)in1.readObject();
+						//fis.close();
+						in1.close();
+					}
+					fis1.close();
+					br1.close();
+					if (dataBases != null){
+						//name 
+						String dataBaseName = file.getParentFile().getName();
+						
+						DataBase dataBase = null;
+						
+						for (int i = 0; i < dataBases.getDataBases().size(); i++){
+							if (dataBases.getDataBases().get(i).getName().equals(dataBaseName)){
+								dataBase = dataBases.getDataBases().get(i);
+							}
+						}
+						
+						if (dataBase != null){
+							
+							Table dataBaseTable = dataBase.getTable(name.substring(0, name.length()-4));//quito .bin
+							//System.out.println(dataBaseTable);
+							if (dataBaseTable != null)
+								addNewTab(dataBaseTable);
+								//table = createNewTable(dataBaseTable);
+						}
+						
+						//System.out.println(dataBaseTable);
+						
+					}
+					
+				}else if (obj instanceof DataBases){
+					DataBases dataBases = (DataBases)obj;
+					addNewTab(dataBases);
+					//table = createNewTable(dataBases);
+					//System.out.println(dataBases);
+				}
+					
+				
+				in.close();
+				
+				
+			}
+			br.close();
+			fis.close();
+			
+			/*if (table != null) scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+				tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			
+			//System.out.println(dataBases);
+			*/
+			
+			
+		} catch (Exception e){
+			//e.printStackTrace();
+			System.out.println(e.toString());
+		}
+	}
+	
+	public void addNewTab(DataBases dataBases){
+		String name = "dbs.bin";
+		JTable table = null;
+		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//JScrollPane scrollPane_1 = new JScrollPane();
+		
+		
+		table = createNewTable(dataBases);	
+		if (table != null){
+			LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPane_1,table);
+			scrollPane_1.setRowHeaderView(tableLineNumber);
+			scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			tabbedPane.add(scrollPane_1);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount()-2);
+		}
+	}
+	
+	public void addNewTab(Table tableObj){
+		String name = tableObj.getName();
+		JTable table = null;
+		JScrollPane scrollPane_1 = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//JScrollPane scrollPane_1 = new JScrollPane();
+		
+		
+		table = createNewTable(tableObj);
+		if (table != null){
+			LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPane_1,table);
+			//tableLineNumber.setBackground(Color.LIGHT_GRAY);
+			scrollPane_1.setRowHeaderView(tableLineNumber);
+			scrollPane_1.setViewportView(table);
+			//if (tabbedPane.indexOfComponent(scrollPane_1) == -1)
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			tabbedPane.add(scrollPane_1);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane_1), getTitlePanel(tabbedPane,(Component)scrollPane_1,name));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount()-2);
+		}
+	}
+	
+	public JTable createNewTable(Table table){
+		ArrayList<String> nombres = new ArrayList();
+		ArrayList<String> tooltip = new ArrayList();
+		ArrayList<Atributo> atributos = table.getAtributos();
+		for (Atributo at: atributos){
+			nombres.add(at.getId());
+			tooltip.add(table.IDtoString(at.getId()).replace("and"," and ").replace("or"," or ").replace("not"," not ").replace("<", " &lt ").replace(">", " &gt ").replace("\n", "<br/>"));
+			
+		}
+		
+		Object [] columnNames = nombres.toArray();
+		Object [] columnTooltip = tooltip.toArray();
+		
+		
+		
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+		for (ArrayList<String> tupla: table.getData()){
+			//System.out.println("tupla: "+tupla);
+			Object[] objs = (Object[]) tupla.toArray();
+			//if (objs.length > 0)
+				tableModel.addRow(objs);
+			
+		}
+		//System.out.println("Ya llego a crear la tabla");
+		//if (tableModel.getRowCount()>0){
+			JTable nTable = new JTable(tableModel){
+				protected JTableHeader createDefaultTableHeader(){
+					return new JTableHeader(columnModel){
+						public String getToolTipText(MouseEvent e){
+							java.awt.Point p = e.getPoint();try{
+							int index = columnModel.getColumnIndexAtX(p.x);
+							int realIndex = columnModel.getColumn(index).getModelIndex();
+							//System.out.println((String)columnTooltip[realIndex]);
+							return "<html>"+(String)columnTooltip[realIndex]+"</html>";
+							} catch (Exception ex){
+								return null;
+							}
+						}
+					};
+				}
+			};
+			nTable.setEnabled(false);
+			return nTable;
+		//}
+		//return null;
+	}
+	
+	public JTable createNewTable(DataBases dataBases){
+		String [] columnNames = {"Database","Table Number"};
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+		for (DataBase st: dataBases.getDataBases()){
+			Object[] objs = {st.getName(), st.getTables().size()};
+			//if (objs.length > 0)
+				tableModel.addRow(objs);
+		}
+		//if (tableModel.getRowCount()>0){
+			JTable nTable = new JTable(tableModel);
+			nTable.setEnabled(false);
+			return nTable;
+		//}
+		//return null;
+	}
+	
+	public void addTreeSelection(JTree tree){
+		tree.addTreeSelectionListener(new TreeSelectionListener(){
+			public void valueChanged(TreeSelectionEvent event){
+				File file = (File) tree.getLastSelectedPathComponent();
+				addNewTab(file);
+			}
+		});
+	}
+	
+	
+	public JPanel getTitlePanel(final JTabbedPane tabbedPane, final Component panel, String title){
+		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		titlePanel.setOpaque(false);
+		JLabel titleLbl = new JLabel(title);
+		titleLbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		titlePanel.add(titleLbl);
+		JButton closeButton = new JButton("x");
+	 
+		Border emptyBorder = BorderFactory.createEmptyBorder();
+		closeButton.setBorder(emptyBorder);
+		//closeButton.setOpaque(true);
+
+		closeButton.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e){
+				tabbedPane.remove(panel);
+			}
+		});
+		titlePanel.add(closeButton);
+
+		return titlePanel;
+	}
+	
+	
+	public void changeFont ( Component component, Font font )
+	{
+		
+	    component.setFont ( font );
+	    //System.out.println(component.getName());
+	    if ( component instanceof Container )
+	    {
+	        for ( Component child : ( ( Container ) component ).getComponents () )
+	        {
+	            changeFont ( child, font );
+	        }
+	    }
 	}
 	
 	private void setCaretListener(JTextPane editor){
@@ -437,6 +755,7 @@ public class queryView extends JFrame implements ActionListener{
             }
         } catch (BadLocationException e) {
             e.printStackTrace();
+            
         }
         return rn;
 	}
@@ -447,7 +766,7 @@ public class queryView extends JFrame implements ActionListener{
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-        return -1;
+        return 1;
     }
 	
 	private void updateStatus(int linenumber,int columnnumber){
@@ -466,6 +785,7 @@ public class queryView extends JFrame implements ActionListener{
 			save();
 		}else if (e.getSource() == mntmSaveAs){
 			saveAs();
+			explorer.reload();
 		}else if (e.getSource() == mntmUndo ||
 				e.getSource() == btnUndo){
 			undo();
@@ -475,8 +795,25 @@ public class queryView extends JFrame implements ActionListener{
 		}else if (e.getSource() == mntmRun ||
 				e.getSource() == btnRun){
 			run();
+			explorer.reload();
 		}else if (e.getSource() == mntmComment){
 			comment();
+		}else if (e.getSource() == mntmPrueba){
+			addNewTab(new File("C:/"));
+		}else if (e.getSource() == btnDelete){
+			textArea.setText("");
+		}else if (e.getSource() == btnVerbose){
+			if (!isVerbose){//no esta activo
+				btnVerbose.setBackground(Color.ORANGE);
+				btnVerbose.setToolTipText("Press to disable verbose");
+				isVerbose = true;
+			}else{
+				btnVerbose.setBackground(null);
+				btnVerbose.setToolTipText("Press to enable verbose");
+				isVerbose = false;
+				dataVerbose.setText("");
+			}
+			
 		}
 		
 	}
@@ -489,7 +826,7 @@ public class queryView extends JFrame implements ActionListener{
         	mntmSave.setEnabled(true);
         	btnSave.setEnabled(true);
         	try{
-        		FileReader readFile = new FileReader(file.getAbsolutePath());
+        		/*FileReader readFile = new FileReader(file.getAbsolutePath());
         		BufferedReader br = new BufferedReader(readFile);
         		textArea.setText("");
         		String newTxt = "";
@@ -497,15 +834,27 @@ public class queryView extends JFrame implements ActionListener{
         		while ((currentLine = br.readLine()) != null){
         			//textArea.append(currentLine+"\n");
         			newTxt += currentLine+"\n";
+        		}*/
+        		Scanner scanner = new Scanner(file);
+        		String newTxt = "";
+        		while (scanner.hasNextLine()){
+        			newTxt += scanner.nextLine()+"\n";
         		}
-        		textArea.setText(newTxt);
-        		br.close();
+        		SqlDocument doc = new SqlDocument();
+        		textArea.setDocument(new DefaultStyledDocument());
+        		doc.insertString(0, newTxt, null);
+        		
+        		textArea.setDocument(doc);
+        		//System.out.println(newTxt);
+        		scanner.close();
+        		//br.close();
         	} catch (Exception e){
+        		//e.printStackTrace();
         		System.out.println("Error opening file");
         	}
         	
         
-        	System.out.println(file.getAbsolutePath());
+        	//System.out.println(file.getAbsolutePath());
         } else {
         	//JOptionPane.showMessageDialog(null,"\nNo se ha encontrado el archivo","ADVERTENCIA!!!",JOptionPane.WARNING_MESSAGE);
         }
@@ -613,41 +962,151 @@ public class queryView extends JFrame implements ActionListener{
 	}
 	
 	public void run(){
-		textStr = textArea.getText();
-		//System.out.println(textStr);
-		
-		// Create DataBase
-    	ANTLRInputStream input = new ANTLRInputStream(textStr);
+		try{
+			
+			dataOutputArea.setText("...");
+			textStr = textArea.getSelectedText();
+			if (textStr == null)
+				textStr = textArea.getText();//
+			
+			// Create DataBase
+			long startTime = System.nanoTime();
+	    	ANTLRInputStream input = new ANTLRInputStream(textStr);
+	    	
+	    	/*
+    	    create database antros;
+    	    use database antros;
+			create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));
+			create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );
+			create table baronRojoXela (id int, constraint fk foreign key(id) references baronRojoCayala (nombre) );
+			alter table baronRojo add column fecha date constraint fk foreign key (nombre) references baronRojoXela (id);
+	    	 */
     	
-    	// Create Table
-    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
+	    	// Create Table
+	    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojo (nombre int, dpi char(10), edad char(4), constraint pk primary KEY (nombre, dpi));");
+	    	
+	    	// Create Table con Constraints
+	        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
+	   	
+	    	// Rename Table
+	    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
     	
-    	// Create Table con Constraints
-        //ANTLRInputStream input = new ANTLRInputStream("use database prueba; create table baronRojoCayala (nombre int, dpi char(10), CONSTRAINT pk PRIMARY KEY(nombre, dpi), CONSTRAINT fk FOREIGN KEY(nombre) REFERENCES baronRojo (nombre, dpi), CONSTRAINT fk2 FOREIGN KEY(dpi) REFERENCES baronRojo (edad), CONSTRAINT ch CHECK(nombre > dpi) );");  	
-   	
-    	// Rename Table
-    	//ANTLRInputStream input = new ANTLRInputStream("use database prueba; alter table baronRojo rename to baronAzul;");
-    	
-        sqlLexer lexer = new sqlLexer(input);
-        
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	        sqlLexer lexer = new sqlLexer(input);
+	        
+	        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	
+	        sqlParser parser = new sqlParser(tokens);
+	        
+	        //errores sintacticos
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
+	        
+	        ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
+	        
+	        if (!DescriptiveErrorListener.errors.isEmpty()){
+	        	dataOutputArea.setText(DescriptiveErrorListener.errors);
+	        	DescriptiveErrorListener.errors = "";
+	        	return ;
+	        }
+	        
+	        
+	        Object obj = (Object)semantic_checker.visit(tree);
+	        semantic_checker.guardarDBs();
+	        
+	        if (semantic_checker.getActual().getName().isEmpty()){
+	        	dataBaseUse.setText("Database: ");
+	        }else{
+	        	dataBaseUse.setText("Database: "+semantic_checker.getActual().getName());
+	        }
 
-        sqlParser parser = new sqlParser(tokens);
-        ParseTree tree = parser.sql2003Parser(); // begin parsing at rule 'sql2003Parser'
-        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
-        
-        MyVisitor<String> semantic_checker = new MyVisitor();
-        
-        semantic_checker.visit(tree);
-        //System.out.println(semantic_checker.erroresToString());
-        
-        dataOutputArea.setText(semantic_checker.erroresToString());
-        dataReadArea.setText(textStr);
+	        long estimatedTime = System.nanoTime()-startTime;
+	        if (obj instanceof DataBases){
+	        	DataBases dbs = (DataBases) obj;
+	        	addNewTab(dbs);
+	        }else if (obj instanceof Table){
+	        	Table tb = (Table) obj;
+	        	addNewTab(tb);
+	        }
+	        
+	        // Generar verbose
+	        if (isVerbose){
+	        	this.recursiveRoot(tree);
+	        	dataVerbose.setText(toStringVerbose());
+	        }
+	        //System.out.println(this.toStringVerbose());
+	        
+	        if (!semantic_checker.erroresToString().isEmpty())
+	        	dataOutputArea.setText(semantic_checker.erroresToString()+"\n"+calculateTime(estimatedTime));
+	        else
+	        	dataOutputArea.setText(semantic_checker.toStringMessages() + "\n" + "Terminado"+"\n"+calculateTime(estimatedTime));
+	        dataReadArea.setText(textStr);
+	        semantic_checker.resetValues();
+	        //splitPane1.setLeftComponent(new SimpleTree());
+		} catch (Exception e){
+			dataReadArea.setText("Unexpected error: " + e.getStackTrace().toString());
+		}
 		
+	}
+	
+	public String calculateTime(long nanoTime){
+		String str = "Estimated time: ";
+		long hr, min, sec, msec, nsec, time = 0;
+		if ((hr = TimeUnit.NANOSECONDS.toHours(nanoTime))>0){
+			str += ""+hr+"hr ";
+			time = time+hr*60;
+		}
+		if ((min = TimeUnit.NANOSECONDS.toMinutes(nanoTime))>0){
+			min = min-time;
+			str += ""+min+"min ";
+			time = (time + min)*60;
+		}
+		if ((sec = TimeUnit.NANOSECONDS.toSeconds(nanoTime))>0){
+			sec = sec-time;
+			str += ""+sec+"s ";
+			time = (time + sec)*1000;
+		}
+		if ((msec = TimeUnit.NANOSECONDS.toMillis(nanoTime))>0){
+			msec = msec-time;
+			str += ""+msec+"ms ";
+			time = (time + msec)*1000000;
+		}
+		if ((nsec = TimeUnit.NANOSECONDS.toNanos(nanoTime))>0)
+			nsec = nsec-time;
+			str += ""+nsec+"ns ";
+			
+		return str;
 	}
 	
 	public String getTextStr(){
 		return textStr;
+	}
+	
+	public void recursiveRoot(ParseTree tree)
+    {
+    	// Listado inicial de elementos
+    	List<ParseTree> childs = new ArrayList<>();    	
+    	for (int i=0; i < tree.getChildCount(); i++)
+    		childs.add(tree.getChild(i));
+    	
+    	// Recorrer listado inicial
+    	for (ParseTree i: childs)
+    	{    	
+	    	if (i.getChildCount() != 0)
+	    	{    		
+	    		String ruleName = i.getClass().getSimpleName().replace("Context", "");
+	            ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
+	            this.verbose.add(ruleName);
+				recursiveRoot(i);
+	    	}
+    	}
+    }
+	
+	public String toStringVerbose()
+	{
+		String ret = "";
+		for (String i: this.verbose)
+			ret += i + "\n";
+		return ret;
 	}
 
 }
