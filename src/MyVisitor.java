@@ -2113,37 +2113,42 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			//Si es un literal
 			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
 			{
-				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
-				{
-					flag = true;
-				}
+				if (value.toUpperCase().equals("NULL"))
+					flag=true;
 				else
-				{
-					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+				{	
+					if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
 					{
 						flag = true;
 					}
 					else
 					{
-						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
 						{
 							flag = true;
 						}
 						else
 						{
-							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+							if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
 							{
 								flag = true;
 							}
 							else
 							{
-								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
+								if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+								{
+									flag = true;
+								}
+								else
+								{
+									String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
 							}
+								
 						}
-							
 					}
-				}	
+				}
 			}
 			else
 				if (tipo.equals("Error"))
@@ -3088,37 +3093,42 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			//Si es un literal
 			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
 			{
-				if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
-				{
-					flag = true;
-				}
+				if (value.toUpperCase().equals("NULL"))
+					flag=true;
 				else
 				{
-					if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
+					if (atr.getTipo().equals("int") && (tipo.equals("int") || tipo.equals("float")))
 					{
 						flag = true;
 					}
 					else
 					{
-						if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
+						if (atr.getTipo().equals("float") && (tipo.equals("int") || tipo.equals("float")))
 						{
 							flag = true;
 						}
 						else
 						{
-							if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+							if (atr.getTipo().equals("char") && (tipo.equals("char") || tipo.equals("date")))
 							{
 								flag = true;
 							}
 							else
 							{
-								String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
-								this.errores.add(rule_5);
+								if (atr.getTipo().equals("date") && (tipo.equals("char") || tipo.equals("date")))
+								{
+									flag = true;
+								}
+								else
+								{
+									String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
 							}
+								
 						}
-							
 					}
-				}	
+				}
 			}
 			else
 				if (tipo.equals("Error"))
