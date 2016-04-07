@@ -824,7 +824,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitConditionCheck(sqlParser.ConditionContext ctx){
         
 		if (ctx instanceof sqlParser.ConditionCondContext){
-			System.out.println("Es conditionCond");
+			//System.out.println("Es conditionCond");
 			ArrayList<String> ids = new ArrayList();
 			ids.addAll((ArrayList<String>)visitConditionCheck((sqlParser.ConditionContext)ctx.getChild(1)));
 			if (ctx.getChildCount() > 3){
@@ -832,7 +832,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			return ids;
 		}else if (ctx instanceof sqlParser.ConditionCompContext){
-			System.out.println("Es conditioncomp");
+			//System.out.println("Es conditioncomp");
 			ArrayList<String> ids = new ArrayList();
 			ids.addAll((ArrayList<String>)visitCompCheck((sqlParser.CompContext)ctx.getChild(0)));
 			if (ctx.getChildCount() > 1){
@@ -1140,7 +1140,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				
 				// Obtener constraint
 				Constraint con = (Constraint) this.visit(ctx.constraint());
-				System.out.println("esto aqui 0");
+				//System.out.println("esto aqui 0");
 				boolean insertConst = toAlter.canAddConstraint(con);
 				
 				// Verificar que se puedan agregar la constraint
@@ -1193,7 +1193,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							}
 							break;
 						case "Check":
-							System.out.println("esto aqui1");
+							//System.out.println("esto aqui1");
 							table_use = new Table(toAlter);//seteo table_use como la de eval check
 							table_use.setData(new ArrayList<ArrayList<String>>());//la vacio para que sea rapido
 							
@@ -1203,7 +1203,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							sqlParser parser = new sqlParser(tokens);
 							ParseTree tree = parser.condition();
 							
-							System.out.println(tree.getText());
+							//System.out.println(tree.getText());
 							
 							Object obj = (Object) visit(tree);
 							//System.out.println(obj);
