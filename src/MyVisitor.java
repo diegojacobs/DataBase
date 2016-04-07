@@ -1434,7 +1434,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						{
 							Atributo atr = cols.get(cont);
 							Value valor = vals.get(cont);
-							if (atr.getTipo().equals(valor.getTipo()))
+							if (atr.getTipo().equals(valor.getTipo()) || valor.getValue().toUpperCase().equals("NULL"))
 							{
 								if (atr.getTipo().equals("char"))
 								{
@@ -1835,7 +1835,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					String tipo = (String)this.visit(ctx.getChild(j));
 					//buscamos si el tipo puede ser casteado
-					if (atr.getTipo().equals(tipo))
+					if (atr.getTipo().equals(tipo) || text.toUpperCase().equals("NULL"))
 					{
 						if (tipo.equals("char"))
 						{
@@ -2111,7 +2111,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			boolean flag = false;
 			
 			//Si es un literal
-			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char"))
+			if (tipo.equals("int") || tipo.equals("float") || tipo.equals("date") || tipo.equals("char") || tipo.equals("NULL"))
 			{
 				if (value.toUpperCase().equals("NULL"))
 					flag=true;
@@ -2218,6 +2218,31 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				 * mas de 0 si el primero es mayor al segundo
 				 * y menos de 0 si el primero es menor al tercero
 				 */
+				if (value.toUpperCase().equals("NULL"))
+				{
+					if (op.equals("=") || op.equals(">=") || op.equals("<="))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (value.toUpperCase().equals(fila.get(index).toUpperCase()))
+								list.add(cont);
+							cont++;
+						}
+					}
+					if (op.equals("<>"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (!value.toUpperCase().equals(fila.get(index).toUpperCase()))
+								list.add(cont);
+							cont++;
+						}
+					}
+							
+				}
+				else
 				switch (op)
 				{
 					//Igual
@@ -3146,6 +3171,31 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				 * mas de 0 si el primero es mayor al segundo
 				 * y menos de 0 si el primero es menor al tercero
 				 */
+				if (value.toUpperCase().equals("NULL"))
+				{
+					if (op.equals("=") || op.equals(">=") || op.equals("<="))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (value.toUpperCase().equals(fila.get(index).toUpperCase()))
+								list.add(cont);
+							cont++;
+						}
+					}
+					if (op.equals("<>"))
+					{
+						int cont = 0;
+						for (ArrayList<String> fila : this.table_use.getData())
+						{
+							if (!value.toUpperCase().equals(fila.get(index).toUpperCase()))
+								list.add(cont);
+							cont++;
+						}
+					}
+							
+				}
+				else
 				switch (op)
 				{
 					//Igual
