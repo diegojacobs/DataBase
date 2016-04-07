@@ -633,7 +633,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							Object obj = (Object) visit(tree);
 							
 							if (obj == null){
-								String check_ = "Check: " + i.getId() + "mal definido @line: " + ctx.getStop().getLine();
+								String check_ = "Check: " + i.getId() + " mal definido @line: " + ctx.getStop().getLine();
 					        	this.errores.add(check_);
 					        	errores++;
 							}
@@ -1046,7 +1046,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								
 								Object obj = (Object) visit(tree);
 								if (obj == null){
-									String check_ = "Check: " + con.getId() + "mal definido @line: " + ctx.getStop().getLine();
+									String check_ = "Check: " + con.getId() + " mal definido @line: " + ctx.getStop().getLine();
 						        	this.errores.add(check_);
 						        	errores++;
 								}
@@ -1193,7 +1193,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							ParseTree tree = parser.condition();
 							
 							Object obj = (Object) visit(tree);
-							System.out.println(obj);
+							//System.out.println(obj);
 							if (obj == null){
 								String check_ = "Check: " + con.getId() + "mal definido @line: " + ctx.getStop().getLine();
 					        	this.errores.add(check_);
@@ -1696,8 +1696,46 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							{
 								if (ForeignKey(fila, -1))
 								{
-									this.table_use.addData(fila);
-									this.inserted_rows++;
+									//revisar check
+									ArrayList<Constraint> check = table_use.getChecks();//obtenemos checks
+									Table temp = table_use;//guardo la tabla temporal
+									table_use = new Table();
+									table_use.setAtributos(temp.getAtributos());//seteamos atributos
+									table_use.addData(fila);//agregamos fila para evaluar check
+									boolean set = true;
+									for (Constraint ct: check){
+										ANTLRInputStream input = new ANTLRInputStream(ct.getCondition());
+										sqlLexer lexer = new sqlLexer(input);
+										CommonTokenStream tokens = new CommonTokenStream(lexer);
+										sqlParser parser = new sqlParser(tokens);
+										ParseTree tree = parser.condition();
+										
+										Object obj = (Object)visit(tree);
+										if (obj == null){
+											String rule_5 = "Error inesperado en evaluacion de check "+ct.getId()+" @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											set = false;
+										}else{
+											LinkedHashSet<Integer> lhk = (LinkedHashSet<Integer>) obj;
+											if (lhk.size() == 0){
+												String rule_5 = "Valores ingresados no cumplen evaluacion de check "+ct.getId()+" @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												set = false;
+											}
+										}
+										
+									}
+									
+									if (set){
+										table_use = temp;
+
+										this.table_use.addData(fila);
+										this.inserted_rows++;
+										
+									}
+									
+									
+									
 								}
 								else
 								{
@@ -1725,6 +1763,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			String rule_5 = "La tabla " + id + " no existe en la base de datos " + this.getActual().getName() + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
+		
+		
 		
 		
 		// TODO Auto-generated method stub
@@ -2284,6 +2324,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + tipo + " @line: " + ctx.getStop().getLine();
 									this.errores.add(rule_5);
+									return null;
 								}
 							}
 								
@@ -2297,6 +2338,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					// no acepto la fecha
 					String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
 					this.errores.add(rule_5);
+					return null;
 				}
 				else
 				{
@@ -2339,6 +2381,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										String rule_5 = "El tipo de " + atr.getId() + " no se puede comparar con un " + id2.getTipo() + " @line: " + ctx.getStop().getLine();
 										this.errores.add(rule_5);
+										return null;
 									}
 								}
 									
@@ -2349,6 +2392,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					{
 						String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + columna + " @line: " + ctx.getStop().getLine();
 						this.errores.add(rule_5);
+						return null;
 					}
 				}
 			
@@ -2960,9 +3004,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{
 			String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
+			return null;
 		}
-		System.out.println("llego a list null");
-		return (T)null; 
 	}
 	
 	
@@ -3302,6 +3345,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 					// no acepto la fecha
 					String rule_5 = "La fecha " + value + " no es valida @line: " + ctx.getStop().getLine();
 					this.errores.add(rule_5);
+					return null;
 				}
 				
 			
@@ -3629,10 +3673,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{
 			String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
+			return null;
 		}
 		
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	
