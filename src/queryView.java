@@ -48,6 +48,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Utilities;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoManager;
 import javax.swing.JSplitPane;
@@ -72,6 +73,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -96,6 +98,7 @@ public class queryView extends JFrame implements ActionListener{
 	MyVisitor<Object> semantic_checker = new MyVisitor();
 	
 	String commentSeq = "//", textStr = "";
+	ArrayList<String> verbose = new ArrayList<String>();
 	int caretLine = 1, caretColumn = 1;
 	
 	
@@ -977,7 +980,11 @@ public class queryView extends JFrame implements ActionListener{
 	        }else if (obj instanceof Table){
 	        	Table tb = (Table) obj;
 	        	addNewTab(tb);
-	        }	        
+	        }
+	        
+	        // Generar verbose
+	        this.recursiveRoot(tree);
+	        System.out.println(this.toStringVerbose());
 	        
 	        if (!semantic_checker.erroresToString().isEmpty())
 	        	dataOutputArea.setText(semantic_checker.erroresToString()+"\n"+calculateTime(estimatedTime));
@@ -1023,6 +1030,34 @@ public class queryView extends JFrame implements ActionListener{
 	
 	public String getTextStr(){
 		return textStr;
+	}
+	
+	public void recursiveRoot(ParseTree tree)
+    {
+    	// Listado inicial de elementos
+    	List<ParseTree> childs = new ArrayList<>();    	
+    	for (int i=0; i < tree.getChildCount(); i++)
+    		childs.add(tree.getChild(i));
+    	
+    	// Recorrer listado inicial
+    	for (ParseTree i: childs)
+    	{    	
+	    	if (i.getChildCount() != 0)
+	    	{    		
+	    		String ruleName = i.getClass().getSimpleName().replace("Context", "");
+	            ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
+	            this.verbose.add(ruleName);
+				recursiveRoot(i);
+	    	}
+    	}
+    }
+	
+	public String toStringVerbose()
+	{
+		String ret = "";
+		for (String i: this.verbose)
+			ret += i + "\n";
+		return ret;
 	}
 
 }

@@ -44,7 +44,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	private String dataPath;
 	private ArrayList<String> errores = new ArrayList<String>();
 	private ArrayList<String> messages = new ArrayList<String>();
-	private ArrayList<String> verbose = new ArrayList<String>();
 	private DataBases dataBases = new DataBases();
 	private DataBase actual = new DataBase();
 	private Table table_use = new Table();
@@ -55,7 +54,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public void resetValues(){
 		errores = new ArrayList<String>();
 		messages = new ArrayList<String>();
-		verbose = new ArrayList<String>();
 		table_use = new Table();
 		inserted_rows = 0;
 		deleted_rows = 0;
@@ -219,14 +217,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return ret;
 	}
 	
-	public String toStringVerbose()
-	{
-		String ret = "";
-		for (String i: this.verbose)
-			ret += i + "\n";
-		return ret;
-	}
-	
 	@Override 
 	public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) 
 	{ 
@@ -250,9 +240,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			System.out.println("DataBase \"" + ID + "\" actualmente en uso");
 			this.messages.add("DataBase \"" + ID + "\" actualmente en uso");
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return visitChildren(ctx); 
 	}
@@ -277,9 +264,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
         	this.dataBases.addDataBase(new_DB);
     		//guardarDBs();
         }
-        String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return visitChildren(ctx); 
 	}	
@@ -360,9 +344,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			String no_database_exist = "No se puede eliminar la Base de Datos \"" + ID + "\" porque no ha sido creada @line: " + ctx.getStop().getLine();
         	this.errores.add(no_database_exist);
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitDrop_schema_statement(ctx);
 	}
@@ -407,9 +388,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 				
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitAlter_database_statement(ctx);
 	}
@@ -469,9 +447,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitRename_table_statement(ctx);
 	}
@@ -684,9 +659,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	        	this.errores.add(table_already_exist);
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitTable_definition(ctx);
 	}
@@ -701,9 +673,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		Atributo atr = (Atributo) this.visit(ctx.tipo_literal());
 		// Establecer ID del atributo
 		atr.setId(ctx.ID().getText());
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) atr;
 		//return super.visitColumn_literal(ctx);
 	}
@@ -715,9 +684,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitColumn_constraint(sqlParser.Column_constraintContext ctx) {
 		// TODO Auto-generated method stub
 		Constraint con = (Constraint) this.visit(ctx.constraint());
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)con;
 		//return super.visitColumn_constraint(ctx);
 	}
@@ -729,9 +695,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitConstraint(sqlParser.ConstraintContext ctx) {
 		// TODO Auto-generated method stub
 		Constraint con = (Constraint) this.visit(ctx.constraintType());
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)con;
 		//return super.visitConstraint(ctx);
 	}
@@ -748,9 +711,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{
 			ids.addAll((ArrayList<String>) this.visit(ctx.localIDS()));
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ids;
 		//return super.visitLocalIDS(ctx);
 	}
@@ -767,9 +727,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{
 			ids.addAll((ArrayList<String>) this.visit(ctx.refIDS()));
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ids;
 		//return super.visitRefIDS(ctx);
 	}
@@ -780,9 +737,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitIdRef(sqlParser.IdRefContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ctx.ID().getText();
 		//return super.visitIdRef(ctx);
 	}
@@ -797,9 +751,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		const_pk.setIDS_local((ArrayList<String>)this.visit(ctx.localIDS()));
 		const_pk.setIDS_refs((ArrayList<String>)this.visit(ctx.refIDS()));
 		const_pk.setId_ref((String)this.visit(ctx.idRef()));
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)const_pk;
 		//return super.visitConstraintTypeForeignKey(ctx);
 	}
@@ -821,9 +772,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				const_pk.addLocalID(child_text);
 			}
 		}*/
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)const_pk;
 		//return super.visitConstraintTypePrimaryKey(ctx);
 	}
@@ -841,9 +789,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		const_check.addLocalID(id_1);
 		const_check.addLocalID(id_2);
 		const_check.setExp(exp);*/
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)const_check;
 		//return super.visitConstraintTypeCheck(ctx);
 	}
@@ -854,9 +799,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitExp_relational(sqlParser.Exp_relationalContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ctx.getText();
 		//return super.visitExp_relational(ctx);
 	}
@@ -867,9 +809,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitExp_logic(sqlParser.Exp_logicContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)this.visit(ctx.logic());
 		//return super.visitExp_logic(ctx);
 	}
@@ -880,9 +819,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitLogic_and(sqlParser.Logic_andContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"AND";
 		//return super.visitLogic_and(ctx);
 	}
@@ -893,9 +829,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitLogic_not(sqlParser.Logic_notContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"NOT";
 		//return super.visitLogic_not(ctx);
 	}
@@ -906,9 +839,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitLogic_or(sqlParser.Logic_orContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"OR";
 		//return super.visitLogic_or(ctx);
 	}
@@ -920,9 +850,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitTipo_lit_date(sqlParser.Tipo_lit_dateContext ctx) {
 		// TODO Auto-generated method stub
 		Atributo date_atr = new Atributo("", "date");
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) date_atr;
 		//return super.visitTipo_lit_date(ctx);
 	}
@@ -934,9 +861,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitTipo_lit_char(sqlParser.Tipo_lit_charContext ctx) {
 		// TODO Auto-generated method stub		
 		Atributo char_atr = new Atributo("", "char", Integer.valueOf(ctx.INT().getText()));
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) char_atr;
 		//return super.visitTipo_lit_char(ctx);
 	}
@@ -948,9 +872,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitTipo_lit_float(sqlParser.Tipo_lit_floatContext ctx) {
 		// TODO Auto-generated method stub
 		Atributo float_atr = new Atributo("", "float");
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) float_atr;
 		//return super.visitTipo_lit_float(ctx);
 	}
@@ -962,9 +883,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitTipo_lit_int(sqlParser.Tipo_lit_intContext ctx) {
 		// TODO Auto-generated method stub
 		Atributo int_atr = new Atributo("", "int");
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) int_atr;
 		//return super.visitTipo_lit_int(ctx);
 	}	
@@ -1124,9 +1042,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.errores.add(table_not_found);
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitAlterAddColumn(ctx);
 	}
@@ -1249,9 +1164,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.errores.add(table_not_found);
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 
 		//return super.visitAlterAddConstraint(ctx);
@@ -1358,9 +1270,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.errores.add(table_not_found);
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitAlterDropColumn(ctx);
 	}
@@ -1424,9 +1333,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				this.errores.add(table_not_found);
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitAlterDropConstraint(ctx);
 	}
@@ -1437,9 +1343,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitIdTable(sqlParser.IdTableContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ctx.ID().getText();
 		//return super.visitIdTable(ctx);
 	}
@@ -1450,9 +1353,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitIdColumn(sqlParser.IdColumnContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ctx.ID().getText();
 		//return super.visitIdColumn(ctx);
 	}
@@ -1463,9 +1363,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override
 	public Object visitIdConstraint(sqlParser.IdConstraintContext ctx) {
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)ctx.ID().getText();
 		//return super.visitIdConstraint(ctx);
 	}
@@ -1478,63 +1375,60 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		String ID_Table = ctx.ID().getText();
 		// Verificar que haya un DB en uso
-		if (this.getActual().getName().isEmpty())
-		{
-			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
-        	this.errores.add(no_database_in_use);
-		}
-		else
-		{
-			// Verificar que exista la tabla
-			if (this.getActual().existTable(ID_Table))
-			{
-				Table toAlter = this.getActual().getTable(ID_Table);
-				// Verificar si tiene referencias en fks
-				if (this.getActual().existRef(ID_Table))
+				if (this.getActual().getName().isEmpty())
 				{
-					for (Table i: this.getActual().getTables())
-						if (! i.getName().equals(ID_Table))
-						{
-							for (Constraint j: i.getForeignKey())
-								if (j.getId_ref().equals(ID_Table))
-								{
-									String delete_fk_first = "La Foreign Key \"" + j.getId() + "\" de la Tabla \"" + i.getName() + "\" hace referenca a la Tabla \"" + ID_Table + "\" que se quiere eliminar, por lo tanto se debe realizar primero el DROP CONSTRAINT correspondiente @ line: " + ctx.getStop().getLine();
-									this.errores.add(delete_fk_first);
-								}
-						}
+					String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+		        	this.errores.add(no_database_in_use);
 				}
 				else
-				{							
-					// Eliminar tabla de la data persistente
-					try
-					{					    		
-			    		File file = new File(this.dataPath+this.getActual().getName()+"\\"+ID_Table+".bin");					    		
-			    		
-			    		if(file.delete())
-			    		{
-			    			// Eliminar tabla del objeto					
-							this.getActual().deleteTable(ID_Table);
-			    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
-			    			this.messages.add("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
-			    		}
-			    		else
-			    			System.out.println("Error al eliminar la Tabla \"" + ID_Table + "\" de la data persistente" );					    	   
-			    	}
-					catch(Exception e)
-					{					    		
-			    		e.printStackTrace();					    		
-			    	}							
+				{
+					// Verificar que exista la tabla
+					if (this.getActual().existTable(ID_Table))
+					{
+						Table toAlter = this.getActual().getTable(ID_Table);
+						// Verificar si tiene referencias en fks
+						if (this.getActual().existRef(ID_Table))
+						{
+							for (Table i: this.getActual().getTables())
+								if (! i.getName().equals(ID_Table))
+								{
+									for (Constraint j: i.getForeignKey())
+										if (j.getId_ref().equals(ID_Table))
+										{
+											String delete_fk_first = "La Foreign Key \"" + j.getId() + "\" de la Tabla \"" + i.getName() + "\" hace referenca a la Tabla \"" + ID_Table + "\" que se quiere eliminar, por lo tanto se debe realizar primero el DROP CONSTRAINT correspondiente @ line: " + ctx.getStop().getLine();
+											this.errores.add(delete_fk_first);
+										}
+								}
+						}
+						else
+						{							
+							// Eliminar tabla de la data persistente
+							try
+							{					    		
+					    		File file = new File(this.dataPath+this.getActual().getName()+"\\"+ID_Table+".bin");					    		
+					    		
+					    		if(file.delete())
+					    		{
+					    			// Eliminar tabla del objeto					
+									this.getActual().deleteTable(ID_Table);
+					    			System.out.println("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
+					    			this.messages.add("La Tabla \"" + ID_Table + "\" se ha eliminado exitosamente de la Base de Datos \"" + this.getActual().getName() + "\"");
+					    		}
+					    		else
+					    			System.out.println("Error al eliminar la Tabla \"" + ID_Table + "\" de la data persistente" );					    	   
+					    	}
+							catch(Exception e)
+							{					    		
+					    		e.printStackTrace();					    		
+					    	}							
+						}
+					}
+					else
+					{
+						String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
+						this.errores.add(table_not_found);
+					}
 				}
-			}
-			else
-			{
-				String table_not_found = "La Tabla \"" + ID_Table + "\" no existe en la Base de Datos \"" + this.getActual().getName() + "\" @line: " + ctx.getStop().getLine();
-				this.errores.add(table_not_found);
-			}
-		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-		ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-		this.verbose.add(ruleName);
 		return (T)"";
 		//return super.visitDrop_table_statement(ctx);
 	}
@@ -1778,9 +1672,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}		
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return new String();
 	}
 	
@@ -1823,9 +1714,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return values;
 	}
 
@@ -1859,9 +1747,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return columnas;
 	}
 	
@@ -2002,9 +1887,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return super.visitUpdate_value(ctx);
 	}
 	
@@ -2120,9 +2002,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return newfila;
 	}
 	
@@ -2293,11 +2172,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			if (! indexesToDelete.isEmpty())
 				this.messages.add("Se eliminaron " + indexesToDelete.size() + " filas de la Tabla \"" + this.table_use.getName() + "\"");
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) table_use;
 	}
+
 
 	
 	
@@ -2330,9 +2207,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				nIndices.add(i);
 		}
 		
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)nIndices;
 	}
 
@@ -2373,9 +2247,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				break;
 		}
 		
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)result;
 	}
 
@@ -2415,9 +2287,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				break;
 		}
 		
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)result;
 	}
 	/***************************
@@ -3169,9 +3039,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			this.errores.add(rule_5);
 		}
 		System.out.println("llego a list null");
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T)null; 
 	}
 	
@@ -3431,9 +3298,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return null;
 	}
 
@@ -3845,9 +3709,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		
 		// TODO Auto-generated method stub
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return null;
 	}
 	
@@ -3879,9 +3740,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			int index = num.indexOf('.');
 			num = num.substring(0, index);
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)"int"; 
 	}
 	
@@ -3900,9 +3759,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		{
 			num += ".0";
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)"float"; 
 	}
 	
@@ -3964,9 +3821,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)tipo; 
 	}
 	
@@ -3983,9 +3838,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		text = text.substring(1, text.length() - 1);
 		
 		int length = text.length();
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)"char";
 	}
 	
@@ -4119,18 +3972,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				return (T) tb;
 			}
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return (T)new String();
 	}
 	
 	public T visitShow_schema_statement(sqlParser.Show_schema_statementContext ctx){
 		//SHOW DATABASES
 		//System.out.println("llego aqui");
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) dataBases;
 	}
 	
@@ -4155,9 +4003,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			tb1.setData(values);
 			return (T) tb1;
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return (T) new String();
 	}
 
@@ -4254,9 +4099,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			table_use = (Table) obj;
 			return getTableFromSelectedColumns(table_use,ctx.getChild(1));
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return null;
 	}
 	
@@ -4279,9 +4122,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}catch (Exception e){
 			//e.printStackTrace();
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return null;
 				
 	}
@@ -4290,9 +4131,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		if (ctx instanceof sqlParser.OrderUniContext) return visitOrderUni(tupla1, tupla2, (sqlParser.OrderUniContext)ctx);
 		
 		if (ctx instanceof sqlParser.OrderMultiContext) return visitOrderMulti(tupla1, tupla2, (sqlParser.OrderMultiContext)ctx);
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
+		
 		return null;
 	}
 	
@@ -4341,9 +4180,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				//break;
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return null;
 	}
 
@@ -4408,9 +4244,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				//break;
 		}
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return null;
 	}
 	
@@ -4456,9 +4289,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			
 		}		
 		
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return ntable;
 	}
 	
@@ -4484,9 +4314,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		ArrayList<String> ar = new ArrayList();
 		ar.add((String) visit(ctx.getChild(0)));
 		ar.addAll((ArrayList<String>)visit(ctx.getChild(2)));
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return ar;		
 	}
 	
@@ -4537,9 +4364,6 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitNID( sqlParser.NIDContext ctx){
 		if (ctx.getChildCount() <= 1) return ctx.getChild(0).getText();
 	
-		String ruleName = ctx.getClass().getSimpleName().replace("Context", "");
-        ruleName = Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);
-        this.verbose.add(ruleName);
 		return ctx.getChild(0).getText()+"."+ctx.getChild(2).getText();
 	}
 	
