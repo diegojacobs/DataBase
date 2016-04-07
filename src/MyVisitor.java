@@ -1529,6 +1529,25 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							//cont++;
 						}
 						
+						//Revisamos que no venga un NULL en una PrimaryKey
+						{
+							if (this.table_use.getPrimaryKeys().size() > 0)
+							{
+								Constraint key = this.table_use.getPrimaryKeys().get(0);
+								for (String idk : key.getIDS_local())
+								{
+									Atributo atrk = this.table_use.getID(idk);
+									int indexk = this.table_use.getAtributos().indexOf(atrk);
+									if (fila.get(indexk).toUpperCase().equals("NULL"))
+									{
+										String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);	
+										break;
+									}
+								}
+							}
+						}
+						
 						//Agrego la fila solo si el numero de errores sigue siendo el mismo
 						if (contErrores == this.errores.size())
 						{
@@ -3393,8 +3412,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	
+	
+	
+	
+	@Override
+	public Object visitLiteral(sqlParser.LiteralContext ctx) {
+		
+		if (ctx.getChild(0).getText().toUpperCase().equals("NULL"))
+			return "NULL";
+		else
+			return this.visit(ctx.getChild(0));
+		
+	}
+
 	/****************************
 	 * Recibimos un numero
 	 * Si este contiene un punto
