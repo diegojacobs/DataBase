@@ -811,6 +811,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		Constraint const_check = new Constraint(ctx.getChild(0).getText(), "Check");
 		const_check.setCondition(ctx.condition().getText());//asignamos condition al check
+		//System.out.println(ctx.condition().getText());
 		ArrayList<String> ids = (ArrayList<String>)visitConditionCheck(ctx.condition());
 		LinkedHashSet<String> ids_noRepetidos = new LinkedHashSet(ids);
 		ids = new ArrayList(ids_noRepetidos);
@@ -823,6 +824,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitConditionCheck(sqlParser.ConditionContext ctx){
         
 		if (ctx instanceof sqlParser.ConditionCondContext){
+			System.out.println("Es conditionCond");
 			ArrayList<String> ids = new ArrayList();
 			ids.addAll((ArrayList<String>)visitConditionCheck((sqlParser.ConditionContext)ctx.getChild(1)));
 			if (ctx.getChildCount() > 3){
@@ -830,10 +832,11 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 			return ids;
 		}else if (ctx instanceof sqlParser.ConditionCompContext){
+			System.out.println("Es conditioncomp");
 			ArrayList<String> ids = new ArrayList();
 			ids.addAll((ArrayList<String>)visitCompCheck((sqlParser.CompContext)ctx.getChild(0)));
 			if (ctx.getChildCount() > 1){
-				ids.addAll((ArrayList<String>)visitCompCheck((sqlParser.CompContext)ctx.getChild(2)));
+				ids.addAll((ArrayList<String>)visitConditionCheck((sqlParser.ConditionContext)ctx.getChild(2)));
 			}
 			return ids;
 		}
@@ -1127,14 +1130,17 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 		else
 		{
+			
 			// Verificar que exista la tabla
 			if (this.getActual().existTable(ID_Table))
 			{
 				Table toAlter = this.getActual().getTable(ID_Table);
 				ArrayList<String> attrs_names = toAlter.getAtributosNames();				
+				
+				
 				// Obtener constraint
 				Constraint con = (Constraint) this.visit(ctx.constraint());
-				
+				System.out.println("esto aqui 0");
 				boolean insertConst = toAlter.canAddConstraint(con);
 				
 				// Verificar que se puedan agregar la constraint
@@ -1187,6 +1193,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							}
 							break;
 						case "Check":
+							System.out.println("esto aqui1");
 							table_use = new Table(toAlter);//seteo table_use como la de eval check
 							table_use.setData(new ArrayList<ArrayList<String>>());//la vacio para que sea rapido
 							
@@ -1195,6 +1202,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							CommonTokenStream tokens = new CommonTokenStream(lexer);
 							sqlParser parser = new sqlParser(tokens);
 							ParseTree tree = parser.condition();
+							
+							System.out.println(tree.getText());
 							
 							Object obj = (Object) visit(tree);
 							//System.out.println(obj);
@@ -1729,7 +1738,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 										}else{
 											LinkedHashSet<Integer> lhk = (LinkedHashSet<Integer>) obj;
 											if (lhk.size() == 0){
-												String rule_5 = "Valores ingresados no cumplen evaluacion de check "+ct.getId()+" @line: " + ctx.getStop().getLine();
+												String rule_5 = "Valores ingresados no cumplen evaluacion de check "+ct.getId()+" "+ct.getCondition()+" @line: " + ctx.getStop().getLine();
 												this.errores.add(rule_5);
 												set = false;
 											}

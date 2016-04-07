@@ -40,6 +40,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
@@ -82,9 +83,9 @@ public class queryView extends JFrame implements ActionListener{
 	
 	//private JFrame frame;
 	JMenuItem mntmOpen, mntmSave, mntmSaveAs, mntmUndo, mntmRedo, mntmRun, mntmComment, mntmPrueba;
-	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete;
+	JButton btnOpenFile, btnSave, btnRun, btnUndo, btnRedo, btnDelete, btnVerbose;
 	//JTextArea textArea;
-	JTextPane textArea, dataOutputArea, dataReadArea;
+	JTextPane textArea, dataOutputArea, dataReadArea, dataVerbose;
 	JTextField status, dataBaseUse;
 	JSplitPane splitPane1;
 	JTabbedPane tabbedPane;
@@ -98,6 +99,7 @@ public class queryView extends JFrame implements ActionListener{
 	MyVisitor<Object> semantic_checker = new MyVisitor();
 	
 	String commentSeq = "//", textStr = "";
+	boolean isVerbose = false;
 	ArrayList<String> verbose = new ArrayList<String>();
 	int caretLine = 1, caretColumn = 1;
 	
@@ -354,8 +356,13 @@ public class queryView extends JFrame implements ActionListener{
 		
 		btnDelete = new JButton("Delete All");
 		btnDelete.addActionListener(this);
-		btnDelete.setToolTipText("Delete All");
+		btnDelete.setToolTipText("Delete all text from editor");
 		toolBar.add(btnDelete);
+		
+		btnVerbose = new JButton("Verbose");
+		btnVerbose.addActionListener(this);
+		btnVerbose.setToolTipText("Press to enable verbose");
+		toolBar.add(btnVerbose);
 		
 		dataBaseUse = new JTextField();
 		dataBaseUse.setEditable(false);
@@ -424,17 +431,24 @@ public class queryView extends JFrame implements ActionListener{
 		JScrollPane scrollPane_2 = new JScrollPane();
 		tabbedPane_1.addTab("Data Read", null, scrollPane_2, null);
 		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		tabbedPane_1.addTab("Verbose", null, scrollPane_3, null);
+		
 		//textArea = new JTextArea();
 		dataReadArea = new JTextPane();
 		//textArea.setTabSize(4);
 		
 		dataReadArea.setEditable(false);
 		dataReadArea.setDocument(new SqlDocument());
+		
+		dataVerbose = new JTextPane();
+		dataVerbose.setEditable(false);
 		//textArea.getDocument().addUndoableEditListener(manager);
 		
 		//tln = new TextLineNumber(textArea);
 		
 		scrollPane_2.setViewportView(dataReadArea);
+		scrollPane_3.setViewportView(dataVerbose);
 		//scrollPane_1.setRowHeaderView(tln);
 		
 		Font font0 = new Font("Arial", Font.BOLD, height/60);
@@ -444,6 +458,7 @@ public class queryView extends JFrame implements ActionListener{
 		dataOutputArea.setFont(font1);
 		dataReadArea.setFont(font1);
 		textArea.setFont(font1);
+		dataVerbose.setFont(font1);
 		
 	}
 	
@@ -577,12 +592,16 @@ public class queryView extends JFrame implements ActionListener{
 	
 	public JTable createNewTable(Table table){
 		ArrayList<String> nombres = new ArrayList();
+		ArrayList<String> tooltip = new ArrayList();
 		ArrayList<Atributo> atributos = table.getAtributos();
 		for (Atributo at: atributos){
 			nombres.add(at.getId());
+			tooltip.add(table.IDtoString(at.getId()).replace("and"," and ").replace("or"," or ").replace("not"," not ").replace("<", " &lt ").replace(">", " &gt ").replace("\n", "<br/>"));
+			
 		}
 		
 		Object [] columnNames = nombres.toArray();
+		Object [] columnTooltip = tooltip.toArray();
 		
 		
 		
@@ -596,7 +615,22 @@ public class queryView extends JFrame implements ActionListener{
 		}
 		//System.out.println("Ya llego a crear la tabla");
 		//if (tableModel.getRowCount()>0){
-			JTable nTable = new JTable(tableModel);
+			JTable nTable = new JTable(tableModel){
+				protected JTableHeader createDefaultTableHeader(){
+					return new JTableHeader(columnModel){
+						public String getToolTipText(MouseEvent e){
+							java.awt.Point p = e.getPoint();try{
+							int index = columnModel.getColumnIndexAtX(p.x);
+							int realIndex = columnModel.getColumn(index).getModelIndex();
+							//System.out.println((String)columnTooltip[realIndex]);
+							return "<html>"+(String)columnTooltip[realIndex]+"</html>";
+							} catch (Exception ex){
+								return null;
+							}
+						}
+					};
+				}
+			};
 			nTable.setEnabled(false);
 			return nTable;
 		//}
@@ -768,6 +802,18 @@ public class queryView extends JFrame implements ActionListener{
 			addNewTab(new File("C:/"));
 		}else if (e.getSource() == btnDelete){
 			textArea.setText("");
+		}else if (e.getSource() == btnVerbose){
+			if (!isVerbose){//no esta activo
+				btnVerbose.setBackground(Color.ORANGE);
+				btnVerbose.setToolTipText("Press to disable verbose");
+				isVerbose = true;
+			}else{
+				btnVerbose.setBackground(null);
+				btnVerbose.setToolTipText("Press to enable verbose");
+				isVerbose = false;
+				dataVerbose.setText("");
+			}
+			
 		}
 		
 	}
@@ -983,7 +1029,10 @@ public class queryView extends JFrame implements ActionListener{
 	        }
 	        
 	        // Generar verbose
-	        this.recursiveRoot(tree);
+	        if (isVerbose){
+	        	this.recursiveRoot(tree);
+	        	dataVerbose.setText(toStringVerbose());
+	        }
 	        //System.out.println(this.toStringVerbose());
 	        
 	        if (!semantic_checker.erroresToString().isEmpty())
