@@ -1732,8 +1732,29 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								fin.set(index2, newfila.get(index2));
 						}
 						
+						//Revisamos que no venga un NULL en una PrimaryKey
+						{
+							if (this.table_use.getPrimaryKeys().size() > 0)
+							{
+								Constraint key = this.table_use.getPrimaryKeys().get(0);
+								for (String idk : key.getIDS_local())
+								{
+									Atributo atrk = this.table_use.getID(idk);
+									int indexk = this.table_use.getAtributos().indexOf(atrk);
+									if (fila.get(indexk).toUpperCase().equals("NULL"))
+									{
+										flag = false;
+										String rule_5 = "Se esta queriendo insertar NULL en una llave primaria @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);	
+										break;
+									}
+								}
+							}
+						}
+						
 						if (PrimaryKey(fin,i))
 						{
+							//En update solo lo podemos cambiar si el foreign key no existe
 							if (!ForeignKey(fin,i))
 							{
 								
