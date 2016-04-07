@@ -8,6 +8,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.lang.ref.WeakReference;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -16,7 +21,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.Stack;
+import java.util.Comparator;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import javax.swing.JOptionPane;
 
@@ -1421,154 +1430,196 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	public Object visitInsert_value(sqlParser.Insert_valueContext ctx) 
 	{
 		String id = ctx.ID().getText();
-		//debemos revisar si existe la tabla en la base de datos actual
-		table_use = this.getActual().getTable(id);
 		
-		ArrayList<String> fila = new ArrayList();
-		
-		//Si no fueron ingresadas columnas tomamos el total en la tabla
-		int columnas;
-		int values;
-		if (ctx.getChildCount()==7)
+		if (this.actual.existTable(id))
 		{
-			columnas = ctx.getChild(3).getChildCount();
-			values = ctx.getChild(5).getChildCount();
+			//debemos revisar si existe la tabla en la base de datos actual
+			table_use = this.getActual().getTable(id);
 			
-		}
-		else
-		{
-			columnas = table_use.getAtributos().size()-1;
-			values = ctx.getChild(4).getChildCount();
+			ArrayList<String> fila = new ArrayList();
 			
-		}
-		
-		//Cantidad de errores antes de hacer el insert
-		int contErrores = this.errores.size();
-		
-		//llenamos la fila con NULL
-		int numCols = table_use.getAtributos().size();
-		for (int i=0;i<numCols;i++)
-		{
-			fila.add("NULL");
-		}
-		
-		if (table_use != null)
-		{
-			//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
-			if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
+			//Si no fueron ingresadas columnas tomamos el total en la tabla
+			int columnas;
+			int values;
+			if (ctx.getChildCount()==7)
 			{
+				columnas = ctx.getChild(3).getChildCount();
+				values = ctx.getChild(5).getChildCount();
 				
-				ArrayList<Atributo> cols;
-				ArrayList<Value> vals;
+			}
+			else
+			{
+				columnas = table_use.getAtributos().size()-1;
+				values = ctx.getChild(4).getChildCount();
 				
-				//Si no fueron ingresadas columnas tomamos todas las de la tabla
-				if (ctx.getChildCount()==7)
+			}
+			
+			//Cantidad de errores antes de hacer el insert
+			int contErrores = this.errores.size();
+			
+			//llenamos la fila con NULL
+			int numCols = table_use.getAtributos().size();
+			for (int i=0;i<numCols;i++)
+			{
+				fila.add("NULL");
+			}
+			
+			if (table_use != null)
+			{
+				//comparamos numero de columas es mayor o igual  a valores con y sin parentesis
+				if ( columnas <= values || (columnas+2 <= values && ctx.getChild(3).getText().contains("(")) || (columnas <= values+2 && ctx.getChild(5).getText().contains("(")))
 				{
-					cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
-					vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
 					
-				}
-				else
-				{
-					cols = table_use.getAtributos();
-					vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+					ArrayList<Atributo> cols;
+					ArrayList<Value> vals;
 					
-				}
-				
-				//si los array no son del mismo tamaño hubo algun error en el camino
-				//debemos revisar que el tipo del atributo sea igual al tipo del valor
-				//int cont = 0;
-				//if (cols.size()==vals.size())
-				{
-					for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
+					//Si no fueron ingresadas columnas tomamos todas las de la tabla
+					if (ctx.getChildCount()==7)
 					{
-						Atributo atr = cols.get(cont);
-						Value valor = vals.get(cont);
-						if (atr.getTipo().equals(valor.getTipo()))
+						cols = (ArrayList<Atributo>)this.visit(ctx.getChild(3));
+						vals = (ArrayList<Value>)this.visit(ctx.getChild(5));
+						
+					}
+					else
+					{
+						cols = table_use.getAtributos();
+						vals = (ArrayList<Value>)this.visit(ctx.getChild(4));
+						
+					}
+					
+					//si los array no son del mismo tamaño hubo algun error en el camino
+					//debemos revisar que el tipo del atributo sea igual al tipo del valor
+					//int cont = 0;
+					//if (cols.size()==vals.size())
+					{
+						for (int cont=0;cont<cols.size() && cont<vals.size();cont++)
 						{
-							if (atr.getTipo().equals("char"))
+							Atributo atr = cols.get(cont);
+							Value valor = vals.get(cont);
+							if (atr.getTipo().equals(valor.getTipo()))
 							{
-								if (atr.getSize()>=valor.getSize())
+								if (atr.getTipo().equals("char"))
+								{
+									if (atr.getSize()>=valor.getSize()-2)
+									{
+										//agrego el valor a la fila en el index del atributo
+										int index = this.table_use.getAtributos().indexOf(atr);
+										
+										fila.set(index, valor.getValue());
+									}
+									else
+									{
+										//error tamaño del valor mayor
+										String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
+								}
+								else
 								{
 									//agrego el valor a la fila en el index del atributo
 									int index = this.table_use.getAtributos().indexOf(atr);
 									fila.set(index, valor.getValue());
 								}
+							}
+							else
+							{
+								//debo revisar si pueden ser casteados
+								if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
+								{
+									String num = valor.getValue();
+									int index = num.indexOf('.');
+									num = num.substring(0, index);
+									valor.setValue(num);
+									valor.setTipo("int");
+									
+									//agrego el valor a la fila en el index del atributo
+									int index2 = this.table_use.getAtributos().indexOf(atr);
+									fila.set(index2, valor.getValue());
+								}
 								else
 								{
-									//error tamaño del valor mayor
-									String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+									if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
+									{
+										String num = valor.getValue();
+										num += ".0";
+										valor.setValue(num);
+										valor.setTipo("float");
+										
+										//agrego el valor a la fila en el index del atributo
+										int index = this.table_use.getAtributos().indexOf(atr);
+										fila.set(index, valor.getValue());
+									}
+									else
+										if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
+										{
+											if (atr.getSize() >= valor.getValue().length()-2)
+											{
+												//agrego el valor a la fila en el index del atributo
+												int index = this.table_use.getAtributos().indexOf(atr);
+												fila.set(index, valor.getValue());
+											}
+											else
+											{
+												//error tamaño del valor mayor
+												String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+											}
+										}
+										else
+										{
+											if (atr.getTipo().equals("date") && valor.getTipo().equals("char"))
+											{
+												if (checkDate(valor.getValue()))
+												{
+													int index = this.table_use.getAtributos().indexOf(atr);
+													fila.set(index, valor.getValue());
+												}
+												else
+												{
+													String rule_5 = "El valor '" + valor.getValue() + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+												}
+											}
+											else
+											{
+												String rule_5 = "El tipo de del valor'" + valor.getValue() + "' no puede ser casteado a '"+ atr.getTipo() +"' @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+											}
+										}
+								}
+							}
+							//cont++;
+						}
+						
+						//Agrego la fila solo si el numero de errores sigue siendo el mismo
+						if (contErrores == this.errores.size())
+						{
+							if (PrimaryKey(fila, -1))
+							{
+								if (ForeignKey(fila, -1))
+								{
+									this.table_use.addData(fila);
+									this.inserted_rows++;
+								}
+								else
+								{
+									String rule_5 = "Se esta queriendo insertar un valor que aun no existe en la tabla de la llave foranea @line: " + ctx.getStop().getLine();
 									this.errores.add(rule_5);
 								}
 							}
 							else
 							{
-								//agrego el valor a la fila en el index del atributo
-								int index = this.table_use.getAtributos().indexOf(atr);
-								fila.set(index, valor.getValue());
+								String rule_5 = "Se esta duplicando una llave primaria @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
 							}
 						}
-						else
-						{
-							//debo revisar si pueden ser casteados
-							if (atr.getTipo().equals("int") && valor.getTipo().equals("float"))
-							{
-								String num = valor.getValue();
-								int index = num.indexOf('.');
-								num = num.substring(0, index);
-								valor.setValue(num);
-								valor.setTipo("int");
-								
-								//agrego el valor a la fila en el index del atributo
-								int index2 = this.table_use.getAtributos().indexOf(atr);
-								fila.set(index2, valor.getValue());
-							}
-							else
-							{
-								if (valor.getTipo().equals("int") && atr.getTipo().equals("float"))
-								{
-									String num = valor.getValue();
-									num += ".0";
-									valor.setValue(num);
-									valor.setTipo("float");
-									
-									//agrego el valor a la fila en el index del atributo
-									int index = this.table_use.getAtributos().indexOf(atr);
-									fila.set(index, valor.getValue());
-								}
-								else
-									if (atr.getTipo().equals("char") && valor.getTipo().equals("date"))
-									{
-										if (atr.getSize() >= valor.getValue().length())
-										{
-											//agrego el valor a la fila en el index del atributo
-											int index = this.table_use.getAtributos().indexOf(atr);
-											fila.set(index, valor.getValue());
-										}
-										else
-										{
-											//error tamaño del valor mayor
-											String rule_5 = "El tamaño de '" + valor.getValue() + "' es mayor al tamaño reservado en la base de datos para '"+ atr.getId() +"' @line: " + ctx.getStop().getLine();
-											this.errores.add(rule_5);
-										}
-									}
-							}
-						}
-						//cont++;
-					}
-					
-					//Agrego la fila solo si el numero de errores sigue siendo el mismo
-					if (contErrores == this.errores.size())
-					{
-						this.table_use.addData(fila);
-						this.inserted_rows++;
 					}
 				}
-			}
-			else
-			{	
-				String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
-				this.errores.add(rule_5);
+				else
+				{	
+					String rule_5 = "No se puede hacer INSERT con mayor numero de columnas  que valores a insertar @line: " + ctx.getStop().getLine();
+					this.errores.add(rule_5);
+				}
 			}
 		}
 		else
@@ -1702,11 +1753,58 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				LinkedHashSet<Integer> indices = (LinkedHashSet<Integer>)obj;
 				ArrayList<Integer> index= new ArrayList(indices);
 				ArrayList<String> newfila = (ArrayList<String>)this.visit(ctx.getChild(3));
+				ArrayList<String> fila = new ArrayList<String>();
+				ArrayList<String> fin = new ArrayList<String>();
 				
+				for (int j=0;j<newfila.size();j++)
+					fin.add("");
+				
+				boolean flag = true;
 				if (contErrores == this.errores.size())
+				{
 					for (int i: index){
-						table_use.getData().set(i, newfila);
+						fila = table_use.getData().get(i);
+						for (String col : newfila)
+						{
+							int index2 = newfila.indexOf(col);
+							if (col.equals("UPDATE"))
+							{
+								fin.set(index2, fila.get(index2));
+							}
+							else
+								fin.set(index2, newfila.get(index2));
+						}
+						
+						if (PrimaryKey(fin,i))
+						{
+							if (!ForeignKey(fin,i))
+							{
+								
+							}
+							else
+							{
+								flag=false;
+								String rule_5 = "Se quiere actualizar un valor que hace referencia a otra tabla  @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+								break;
+							}
+						}
+						else
+						{
+							flag=false;
+							String rule_5 = "Una llave primaria esta siendo duplicada  @line: " + ctx.getStop().getLine();
+							this.errores.add(rule_5);
+							break;
+						}
 					}
+					
+					//Si todos cumplieron con las validaciones los actualizamos
+					if (flag)
+					{
+						for (int i: index)
+							this.table_use.getData().set(i, fin);
+					}
+				}
 			}
 		}
 		else
@@ -1722,7 +1820,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	/**************************
 	 * Asignacion
-	 * 
+	 * llenar fila con un valor default
+	 * las filas que permanezcan con ese valor 
+	 * no deben ser cambiadas
 	 */
 	@Override
 	public Object visitAsignacion(sqlParser.AsignacionContext ctx) {
@@ -1731,9 +1831,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		int numCols = this.table_use.getAtributos().size();
 		for (int i=0;i<numCols;i++)
-			newfila.add("NULL");
+			newfila.add("UPDATE");
 		
 		int index = 0;
+		Atributo atr = new Atributo();
 		for (int j=0;j<ctx.getChildCount();j++)
 		{
 			String text = ctx.getChild(j).getText();
@@ -1743,7 +1844,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					if (this.table_use.hasAtributo(text))
 					{
-						Atributo atr = this.table_use.getID(text);
+						atr = this.table_use.getID(text);
 						index = this.table_use.getAtributos().indexOf(atr);
 					}
 					else
@@ -1754,7 +1855,75 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				}
 				else
 				{
-					newfila.set(index, text);
+					String tipo = (String)this.visit(ctx.getChild(j));
+					//buscamos si el tipo puede ser casteado
+					if (atr.getTipo().equals(tipo))
+					{
+						if (tipo.equals("char"))
+						{
+							if (text.length()-2 <= atr.getSize())
+							{
+								newfila.set(index, text);
+							}
+							else
+							{
+								String rule_5 = "El tamaño de '" + text + "' es mayor al tamaño reservado para '"+ atr.getId() +" @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+							}
+						}
+						else
+							newfila.set(index, text);
+					}
+					else
+					{
+						if (atr.getTipo().equals("int") && tipo.equals("float"))
+						{
+							int k = text.indexOf('.');
+							newfila.set(index, text.substring(0, k));
+						}
+						else
+						{
+							if (atr.getTipo().equals("float") && tipo.equals("int"))
+							{
+								newfila.set(index, text+".0");
+							}
+							else
+							{
+								if (atr.getTipo().equals("char") && tipo.equals("date"))
+								{
+									if (text.length()-2 == atr.getSize())
+									{
+										newfila.set(index, text);
+									}
+									else
+									{
+										String rule_5 = "El tamaño de '" + text + "' es mayor al tamaño reservado para '"+ atr.getId() +" @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
+								}
+								else
+								{
+									if (atr.getTipo().equals("date") && tipo.equals("char"))
+									{
+										if (this.visit(ctx.getChild(j)).equals("date"))
+										{
+											newfila.set(index, text);
+										}
+										else
+										{
+											String rule_5 = "El valor '" + text + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
+									}
+									else
+									{
+										String rule_5 = "El tipo: '" + tipo + "', no puede ser casteado a '"+ atr.getTipo() +" @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1857,7 +2026,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		String logic = (String) visit(ctx.getChild(1));
 		
-		Object objCond = visit(ctx.getChild(0));
+		Object objCond = visit(ctx.getChild(2));
 		if (objCond == null) return null;
 		
 		if (!(objCond instanceof LinkedHashSet)) return null;
@@ -1867,9 +2036,11 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		switch (logic){
 			case "OR":
+				
 				compIndex.addAll(condIndex);
 				result = new LinkedHashSet<Integer>();
 				result.addAll(compIndex);
+				
 				break;
 			case "AND":
 				result = new LinkedHashSet<Integer>();
@@ -1931,17 +2102,28 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	@Override 
 	public T visitCompId(@NotNull sqlParser.CompIdContext ctx) 
 	{
+		
 		LinkedHashSet<Integer> list = new LinkedHashSet();
 		String op = ctx.getChild(1).getText(); //agarro el relational
 		
 		
-		String id = ctx.getChild(0).getText(); //agarro el primer id
+		String id = (String) visit(ctx.getChild(0)); //agarro el primer id
+		
 		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
 		{
+			
+			if (table_use.isAmbiguous(id)){
+				String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+				errores.add(error_);
+				return null;
+			}
 			//tomo el atributo de la tabla y el indice de este
+			
 			Atributo atr = this.table_use.getID(id);
+			
 			Atributo id2 = new Atributo();
 			int index = this.table_use.getAtributos().indexOf(atr);
+			
 			
 			//visito el ultimo hijo 
 			String tipo = (String)this.visit(ctx.getChild(2)); //si es literal, voy a recibir el tipo
@@ -1995,10 +2177,16 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				else
 				{
 					//Si es una columna de la tabla
-					String columna = ctx.getChild(2).getText(); 
+					String columna = (String)visit(ctx.getChild(2)); 
 					if (this.table_use.hasAtributo(columna))
 					{
+						if (table_use.isAmbiguous(columna)){
+							String error_ = "La llamada <<"+columna+">> es ambigua @line: " + ctx.getStop().getLine();
+							errores.add(error_);
+							return null;
+						}
 						id2 = this.table_use.getID(columna);
+						
 						value = "'";
 						
 						if (atr.getTipo().equals("int") && (id2.getTipo().equals("int") || id2.getTipo().equals("float")))
@@ -2616,6 +2804,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						break;
 				}
 			}
+			//System.out.println("llego a list: "+list);
 			return (T)list;
 		}
 		else
@@ -2623,7 +2812,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			String rule_5 = "La tabla " + this.table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
 			this.errores.add(rule_5);
 		}
-		
+		System.out.println("llego a list null");
 		return (T)null; 
 	}
 	
@@ -2645,9 +2834,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		
 		//visito el ultimo hijo 
 		String tipo2 = (String)this.visit(ctx.getChild(2)); //voy a recibir el tipo
-		String value2 = ctx.getChild(2).getText();
+		String value2 = (String)visit(ctx.getChild(2));
 		
-		boolean flag = true;
+
+		boolean flag = false;
+		
+		if (!tipo.equals("Error") && !tipo2.equals("Error"))
+			flag = true;
 		
 		if (flag)
 		{
@@ -2896,9 +3089,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		String op = ctx.getChild(1).getText(); //agarro el relational
 		
 		
-		String id = ctx.getChild(2).getText(); //agarro el primer id
+		String id = (String)visit(ctx.getChild(2)); //agarro el primer id
 		if (this.table_use.hasAtributo(id)) //reviso si existe en la tabla
 		{
+			if (table_use.isAmbiguous(id)){
+				String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+				errores.add(error_);
+				return null;
+			}
 			//tomo el atributo de la tabla y el indice de este
 			Atributo atr = this.table_use.getID(id);
 			int index = this.table_use.getAtributos().indexOf(atr);
@@ -3410,6 +3608,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	
 	public String compareDate(String date1, String date2)
 	{
+		date1.replaceAll("'", "");
+		date2.replaceAll("'", "");
+		
 		String valor1[] = date1.split("-");
 		String valor2[] = date2.split("-");
 		
@@ -3458,6 +3659,35 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		}
 	}
 	
+	public boolean checkDate(String date)
+	{
+		if (!date.contains("-"))
+		{
+			return false;
+		}
+		else
+		{
+			String fecha[] = date.split("-");
+			
+			int size = fecha.length;
+			if (size!=3)
+				return false;
+			else
+			{
+				fecha[0].replaceAll("'", "");
+				fecha[2].replaceAll("'", "");
+				if(fecha[0].length() >4 && fecha[1].length() > 2 && fecha[2].length()>2)
+				{
+					return false;
+				}
+				else
+				{
+					//revisar que sean fechas validas
+					return true;
+				}
+			}	
+		}
+	}
 	public T visitShow_column_statement(sqlParser.Show_column_statementContext ctx){
 		//SHOW COLUMNS FROM ID (comprobar use database, id contenido en database)
 		
@@ -3511,7 +3741,313 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 
 	public Object visitSelect_value (sqlParser.Select_valueContext ctx){
 		
+		if (actual.getName().isEmpty()){
+			String no_database_in_use = "No hay una Base de Datos en uso @line: " + ctx.getStop().getLine();
+        	this.errores.add(no_database_in_use);
+        	return null;
+		}
+			
+		
+		ArrayList<String> tables = (ArrayList<String>)visit(ctx.localIDS());
+		for (String st: tables){
+			if (!actual.existTable(st)){
+				String no_database_in_use = "No hay una Tabla " +st+" en la Base de Datos " +getActual().getName()+" @line: " + ctx.getStop().getLine();
+	        	this.errores.add(no_database_in_use);
+	        	return null;
+			}
+		}
+		
+		String dupTable = (String)checkDuplicates(tables);
+		if (!dupTable.isEmpty()){
+			String error_ = "La tabla <<" +dupTable+">> ha sido llamada mas de una vez @line: " + ctx.getStop().getLine();
+        	this.errores.add(error_);
+        	return null;
+		}
+		
+		Table crossTable = new Table(actual.getTable(tables.get(0)));
+		crossTable.setNamesByTable();
+		
+		int i = 0;
+		for (String st: tables){
+			if (i != 0){
+				crossTable = crossJoin(crossTable,actual.getTable(st));
+			}else{
+				i++;
+			}
+		}
+		
+		if (ctx.getChildCount() <= 5){//<= 5 porque hay que tomar en cuenta ';'
+			
+			return getTableFromSelectedColumns(crossTable, ctx.getChild(1));
+		}
+		
+		
+		String word = ctx.getChild(4).getText();
+		
+		if (word.toUpperCase().equals("WHERE")){
+			
+			table_use = crossTable;
+			
+			Object result = (Object) visit(ctx.getChild(5));//visitamos condition
+			
+			if (result == null){
+				String error_ = "Error en la definicion de condiciones @line: " + ctx.getStop().getLine();
+	        	this.errores.add(error_);
+				return null;
+			}
+			
+			if (!(result instanceof LinkedHashSet)){
+				String error_ = "Error en la definicion de condiciones @line: " + ctx.getStop().getLine();
+	        	this.errores.add(error_);
+				return null;
+			}
+			
+			LinkedHashSet<Integer> index = (LinkedHashSet<Integer>)result;
+			
+			ArrayList<ArrayList<String>> data = new ArrayList();
+			for (int j: index){
+				data.add(table_use.getData().get(j));
+			}
+			
+			
+			table_use.setData(data);
+			if (ctx.getChildCount()<=7)
+				return getTableFromSelectedColumns(table_use,ctx.getChild(1));
+			
+			//tiene orden
+			Object obj = getCompare(table_use, (sqlParser.OrderContext) ctx.order());
+			if (obj == null) return null;
+			
+			table_use = (Table) obj;
+			return getTableFromSelectedColumns(table_use,ctx.getChild(1));
+			
+		}else if (word.toUpperCase().equals("ORDER")){
+			
+			table_use = crossTable;
+			
+			//tiene orden
+			Object obj = getCompare(table_use, (sqlParser.OrderContext) ctx.order());
+			if (obj == null) return null;
+			
+			table_use = (Table) obj;
+			return getTableFromSelectedColumns(table_use,ctx.getChild(1));
+		}
+		
 		return null;
+	}
+	
+	public Object getCompare(Table table, sqlParser.OrderContext ctx){
+		
+		try{
+			Collections.sort(table.getData(), new DtComparator(){
+				public int compare(ArrayList<String> tupla1, ArrayList<String> tupla2){
+					
+					Object obj = visitOrder(tupla1,tupla2,ctx);
+					
+					if (obj == null) return (Integer)null;
+					
+					if (obj instanceof Integer) return (Integer) obj;
+					return (Integer)null;
+				}
+			});
+			
+			return table;
+		}catch (Exception e){
+			//e.printStackTrace();
+		}
+		
+		return null;
+				
+	}
+	
+	public Object visitOrder(ArrayList<String> tupla1, ArrayList<String> tupla2, sqlParser.OrderContext ctx){
+		if (ctx instanceof sqlParser.OrderUniContext) return visitOrderUni(tupla1, tupla2, (sqlParser.OrderUniContext)ctx);
+		
+		if (ctx instanceof sqlParser.OrderMultiContext) return visitOrderMulti(tupla1, tupla2, (sqlParser.OrderMultiContext)ctx);
+		
+		return null;
+	}
+	
+	public Object visitOrderUni (ArrayList<String> tupla1, ArrayList<String> tupla2, sqlParser.OrderUniContext ctx){
+		String id = (String) visit(ctx.getChild(0));//obtenemos id
+		
+		Atributo at = table_use.getID(id);//obtenemos el atributo
+		if (at == null){
+			String rule_5 = "La tabla " + table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+			errores.add(rule_5);
+			return null;
+		}
+		
+		if (table_use.isAmbiguous(id)){
+			String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+			errores.add(error_);
+			return null;
+		}
+		
+		String op = "ASC";
+		if (ctx.getChildCount()>1) op = ctx.getChild(1).getText().toUpperCase();
+		
+		String st = "";
+		
+		
+		int index = table_use.getAtributos().indexOf(at);//obtenemos el indice en data
+		String tipo = at.getTipo().toLowerCase();
+		DtComparator dt = new DtComparator();
+		switch (op){
+			case "ASC":
+				if (tipo.equals("date")){
+					return dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+			case "DESC":
+				if (tipo.equals("date")){
+					return -dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return -dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return -tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+		}
+		return null;
+	}
+
+	public Object visitOrderMulti (ArrayList<String> tupla1, ArrayList<String> tupla2, sqlParser.OrderMultiContext ctx){
+		String id = (String) visit(ctx.getChild(0));//obtenemos id
+		
+		Atributo at = table_use.getID(id);//obtenemos el atributo
+		if (at == null){
+			String rule_5 = "La tabla " + table_use.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+			errores.add(rule_5);
+			return null;
+		}
+		
+		if (table_use.isAmbiguous(id)){
+			String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+			errores.add(error_);
+			return null;
+		}
+		
+		String op = "ASC";
+		if (!ctx.getChild(1).getText().equals(","))
+			op = ctx.getChild(1).getText().toUpperCase();
+		
+		String st = "";
+		
+		int index = table_use.getAtributos().indexOf(at);//obtenemos el indice en data
+		String tipo = at.getTipo().toLowerCase();
+		
+		DtComparator dt = new DtComparator();
+		if (tipo.equals("date")){
+			if (dt.compareDate(tupla1.get(index),tupla2.get(index))==0){
+				return visitOrder(tupla1,tupla2,ctx.order());
+			}
+		}else if (tipo.equals("int") || tipo.equals("float")){
+			if (dt.compareNum(tupla1.get(index),tupla2.get(index))==0){
+				return visitOrder(tupla1,tupla2,ctx.order());
+			}
+		}else{
+			if (tupla1.get(index).compareTo(tupla2.get(index))==0){
+				return visitOrder(tupla1,tupla2,ctx.order());
+			}
+		}
+		
+		
+		switch (op){
+			case "ASC":
+				if (tipo.equals("date")){
+					return dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+			case "DESC":
+				if (tipo.equals("date")){
+					return -dt.compareDate(tupla1.get(index),tupla2.get(index));
+				}else if (tipo.equals("int") || tipo.equals("float")){
+					return -dt.compareNum(tupla1.get(index),tupla2.get(index));
+				}else{
+					return -tupla1.get(index).compareTo(tupla2.get(index));
+				}
+				//break;
+		}
+		return null;
+	}
+	
+	public Object getTableFromSelectedColumns(Table table, ParseTree pr){
+		if (pr.getText().equals("*")) return table;//selecciona todas
+		
+		if (!(pr instanceof sqlParser.NlocalIDSContext)) return null;
+		sqlParser.NlocalIDSContext ctx = (sqlParser.NlocalIDSContext) pr;
+		
+		ArrayList<String> columns = (ArrayList<String>) visit(ctx);
+		Table ntable = new Table();
+		ntable.setName(table.getName());
+		
+		ArrayList<ArrayList<String>> data = new ArrayList();
+		for (int i = 0; i < table.getData().size(); i++){
+			data.add(new ArrayList());
+		}
+		ntable.setData(data);
+		
+		for (String id : columns){
+			Atributo at = table.getID(id);
+			if (at == null){
+				String rule_5 = "La relacion " + table.getName() + " no contiene la columna " + id + " @line: " + ctx.getStop().getLine();
+				errores.add(rule_5);
+				return null;
+			}
+			
+			if (table.isAmbiguous(id)){
+				String error_ = "La llamada <<"+id+">> es ambigua @line: " + ctx.getStop().getLine();
+				errores.add(error_);
+				return null;
+			}
+			
+			int index = table.getAtributos().indexOf(at);
+			ntable.getAtributos().add(table.getAtributos().get(index));
+			ntable.getOthersIds().add(table.getOthersIds().get(index));
+			
+			int i = 0;
+			for (ArrayList<String> tupla: ntable.getData()){
+				tupla.add(table.getData().get(i).get(index));
+				i++;
+			}
+			
+		}		
+		
+		return ntable;
+	}
+	
+	public Object checkDuplicates (ArrayList<String> tables){
+		LinkedHashSet<String> ntables = new LinkedHashSet(tables);
+		LinkedHashSet<String> dup = new LinkedHashSet();
+		for (String st: ntables){
+			if (dup.contains(st)){
+				return st;
+			}
+			dup.add(st);
+		}
+		return "";
+	}
+	
+	public Object visitNlocalIDS (sqlParser.NlocalIDSContext ctx){
+		if (ctx.getChildCount() <= 1){
+			ArrayList<String> ar = new ArrayList();
+			ar.add((String)visitChildren(ctx));
+			return ar;
+		}
+		
+		ArrayList<String> ar = new ArrayList();
+		ar.add((String) visit(ctx.getChild(0)));
+		ar.addAll((ArrayList<String>)visit(ctx.getChild(2)));
+		return ar;		
 	}
 	
 	/**
@@ -3554,8 +4090,14 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 			}
 		}
 		nTb.setData(data);
-		
+		//System.out.println(data);
 		return nTb;
+	}
+	
+	public Object visitNID( sqlParser.NIDContext ctx){
+		if (ctx.getChildCount() <= 1) return ctx.getChild(0).getText();
+	
+		return ctx.getChild(0).getText()+"."+ctx.getChild(2).getText();
 	}
 	
 	public DataBase getActual() {
@@ -3566,4 +4108,104 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		this.actual = actual;
 	}
 	
+	public boolean PrimaryKey(ArrayList<String> fila, Integer indice)
+	{
+		ArrayList<Constraint> key = this.table_use.getPrimaryKeys();
+		
+		ArrayList<Integer> primary = new ArrayList<Integer>();
+		
+		if (key.size() != 0)
+		{
+			Constraint llave = key.get(0);
+			for (String id : llave.getIDS_local())	
+			{
+				Atributo atr = this.table_use.getID(id);
+				primary.add(this.table_use.getAtributos().indexOf(atr));
+			}
+			
+			int i=0;
+			for (ArrayList<String> newfila:this.table_use.getData())
+			{
+				int cont=0;
+				for (int index : primary)
+				{
+					if (newfila.get(index).equals(fila.get(index)))
+					{
+						cont++;
+					}
+				}
+				if (cont == primary.size())
+				{
+					if (indice!=-1)
+					{
+						if (indice!= i)
+						{
+							return false;
+						}
+					}
+					else
+						return false;
+				}
+				i++;
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	//devuelve si la llave foreana existe en la/las otras tablas
+	public boolean ForeignKey(ArrayList<String> fila, Integer indice)
+	{
+		ArrayList<Constraint> key = this.table_use.getForeignKey();
+		
+		int exist = 0;
+		for (Constraint llave : key)
+		{
+			//tengo que ir a traer la tabla a la que hacen referencia
+			//recorrer la tabla y ver si el valor en la fila en el indice del id local existe en la tabla
+			//aumento un contador
+			//si el contador al final es igla al total de constraints devuelve true 
+			Table ref_tabla = this.actual.getTable(llave.getId_ref());
+			if (ref_tabla != null)
+			{
+				int index = 0;
+				int cont = 0;
+				for (String id : llave.getIDS_refs()) 
+				{
+					//Traemos el atributo de la tabla a la que hacemos referencia
+					//Y el indice de esta en la tabla
+					Atributo atr = ref_tabla.getID(id);
+					int index_ref = ref_tabla.getAtributos().indexOf(atr);
+					
+					//Traems el atributo de la tabla local
+					//Y el indice de este en la tabla
+					String local = llave.getIDS_local().get(index);
+					Atributo atr2 = this.table_use.getID(local);
+					int index_loc = this.table_use.getAtributos().indexOf(atr2);
+					
+					for (ArrayList<String> row:ref_tabla.getData())
+					{
+						if(row.get(index_ref).equals(fila.get(index_loc)))
+						{
+							cont++;
+						}
+					}
+					
+					index++;
+				}
+				if (cont != llave.getIDS_refs().size())
+					return false;
+				else
+					exist++;
+			}
+			else
+				return false;
+		}
+		
+		if (exist == key.size())
+			return true;
+		else
+			return false;
+	}
 }

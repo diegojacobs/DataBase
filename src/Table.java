@@ -51,6 +51,16 @@ public class Table implements Serializable {
 			this.getOthersIds().add(col);
 		}
 	}
+	
+	public Table(Table table){
+		name = table.getName();
+		atributos = table.getAtributos();
+		PrimaryKeys = table.getPrimaryKeys();
+		ForeignKey = table.getForeignKey();
+		Checks = table.getChecks();
+		data = table.getData();
+		othersIds = table.getOthersIds();
+	}
 
 	/**
 	 * @return the name
@@ -176,12 +186,14 @@ public class Table implements Serializable {
 			}
 		}
 		
-		if (atr == null)
+		if (atr ==null)
 		{
 			for (String name : this.getOthersIds())
 			{
+				//System.out.println(name);
 				if (name.equals(id))
 				{
+					//System.out.println("Table: si lo encontro");
 					int index = this.getOthersIds().indexOf(name);
 					atr = this.atributos.get(index);
 				}
@@ -479,14 +491,14 @@ public class Table implements Serializable {
 			if (st.equals(id))
 				contador ++;
 		}
-		if (contador>0) return true;
+		if (contador>1) return true;
 		
 		for (Atributo at: atributos){
 			if (at.getId().equals(id))
 				contador ++;
 		}
 		
-		if (contador > 0) return true;
+		if (contador > 1) return true;
 		
 		return false;
 		

@@ -78,7 +78,7 @@ DESC: D E S C;
 
 fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
-fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' ;
+fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' | '.';
 fragment TWO_DIGITS : DIGIT DIGIT ;
 fragment THREE_DIGITS : DIGIT TWO_DIGITS ;
 fragment FOUR_DIGITS : DIGIT THREE_DIGITS ;
@@ -127,7 +127,7 @@ table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
 
 drop_schema_statement: DROP DATABASE ID ';' ;
 
-alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal (constraint)? ';' #alterAddColumn
+alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal constraint ';' #alterAddColumn
 					 | ALTER TABLE idTable ADD constraint ';' #alterAddConstraint
 					 | ALTER TABLE idTable DROP COLUMN idColumn ';' #alterDropColumn
 					 | ALTER TABLE idTable DROP CONSTRAINT idConstraint ';' #alterDropConstraint;
@@ -157,7 +157,7 @@ constraint: CONSTRAINT constraintType ;
 constraintType:
             ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
         |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
-        |   ID CHECK '(' condition ')' #constraintTypeCheck;
+        |   ID CHECK '('condition ')' #constraintTypeCheck;
 
 idRef: ID;
 
@@ -167,6 +167,9 @@ localIDS: ID
 refIDS: ID
 		| ID ',' refIDS;
 
+exp: logic #exp_logic
+	 | logic_not #exp_logic_not
+	 | relational #exp_relational;
 
 rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
 
@@ -189,7 +192,7 @@ asignacion : columna '=' literal (',' columna '=' literal)*;
 
 delete_value: DELETE FROM ID (WHERE condition)? ';' ;
 
-select_value: SELECT ('*' | nlocalIDS ) FROM localIDS (WHERE condition)?  ( order )? ';' ;
+select_value: SELECT ('*' | nlocalIDS ) FROM localIDS (WHERE condition)?  ( ORDER BY order )? ';' ;
 
 nID: ID
 	|ID '.' ID;
@@ -197,15 +200,15 @@ nID: ID
 nlocalIDS: nID
 		  | nID ',' nlocalIDS;
 	
-order: ORDER BY nID ( ASC | DESC )?
-	| ORDER BY nID (ASC | DESC )? ',' order;
+order: nID ( ASC | DESC )? #orderUni
+	| nID (ASC | DESC )? ',' order #orderMulti;
               
 condition: '(' condition ')' (logic condition)? #conditionCond
                  | comp (logic condition)? #conditionComp
                  | logic_not condition #conditionNot;        
 
-comp : ID relational (ID | literal) #compId
-	   | literal relational ID #compLitId
+comp : nID relational (nID | literal) #compId
+	   | literal relational nID #compLitId
 	   | literal relational literal #compLit;    
 
 columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
