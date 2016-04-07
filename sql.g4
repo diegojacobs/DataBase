@@ -158,7 +158,7 @@ constraint: CONSTRAINT constraintType ;
 constraintType:
             ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
         |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
-        |   ID CHECK '('ID exp ID ')' #constraintTypeCheck;
+        |   ID CHECK '('condition ')' #constraintTypeCheck;
 
 idRef: ID;
 

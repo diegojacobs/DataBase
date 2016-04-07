@@ -531,17 +531,18 @@ public class Table implements Serializable {
 		if (! this.PrimaryKeys.isEmpty())
 			for (String i: this.PrimaryKeys.get(0).getIDS_local())
 				if (i.equals(id))
-					ret += i.toString() + "\n";
+					ret += PrimaryKeys.toString() + "\n";
 		// FK
 		for (Constraint i: this.ForeignKey)
 			for (String j: i.getIDS_local())
 				if (j.equals(id))
-					ret += j.toString() + "\n";
+					ret += i.toString() + "\n";
 		// CHK
 		for (Constraint i: this.Checks)
 			for (String j: i.getIDS_local())
 				if (j.equals(id))
-					ret += j.toString() + "\n";
+					ret += i.toString() + "\n";
+		//System.out.println("esto es ret "+ret);
 		return ret;
 	}
 	
