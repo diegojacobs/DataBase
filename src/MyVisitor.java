@@ -1442,6 +1442,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										//agrego el valor a la fila en el index del atributo
 										int index = this.table_use.getAtributos().indexOf(atr);
+										
 										fila.set(index, valor.getValue());
 									}
 									else
@@ -1532,13 +1533,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						if (contErrores == this.errores.size())
 						{
 							if (PrimaryKey(fila, -1))
-							{	
-								this.table_use.addData(fila);
-								this.inserted_rows++;
+							{
+								if (ForeignKey(fila, -1))
+								{
+									this.table_use.addData(fila);
+									this.inserted_rows++;
+								}
+								else
+								{
+									String rule_5 = "Se esta queriendo insertar un valor que aun no existe en la tabla de la llave foranea @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+								}
 							}
 							else
 							{
-								String rule_5 = "No se puede hacer INSERT. Primary Key @line: " + ctx.getStop().getLine();
+								String rule_5 = "Se esta duplicando una llave primaria @line: " + ctx.getStop().getLine();
 								this.errores.add(rule_5);
 							}
 						}
@@ -1688,7 +1697,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				for (int j=0;j<newfila.size();j++)
 					fin.add("");
 				
+				boolean flag = true;
 				if (contErrores == this.errores.size())
+				{
 					for (int i: index){
 						fila = table_use.getData().get(i);
 						for (String col : newfila)
@@ -1701,9 +1712,37 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							else
 								fin.set(index2, newfila.get(index2));
 						}
+						
 						if (PrimaryKey(fin,i))
+						{
+							if (!ForeignKey(fin,i))
+							{
+								
+							}
+							else
+							{
+								flag=false;
+								String rule_5 = "Se quiere actualizar un valor que hace referencia a otra tabla  @line: " + ctx.getStop().getLine();
+								this.errores.add(rule_5);
+								break;
+							}
+						}
+						else
+						{
+							flag=false;
+							String rule_5 = "Una llave primaria esta siendo duplicada  @line: " + ctx.getStop().getLine();
+							this.errores.add(rule_5);
+							break;
+						}
+					}
+					
+					//Si todos cumplieron con las validaciones los actualizamos
+					if (flag)
+					{
+						for (int i: index)
 							this.table_use.getData().set(i, fin);
 					}
+				}
 			}
 		}
 		else
@@ -4052,18 +4091,53 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 	{
 		ArrayList<Constraint> key = this.table_use.getForeignKey();
 		
+		int exist = 0;
 		for (Constraint llave : key)
 		{
 			//tengo que ir a traer la tabla a la que hacen referencia
 			//recorrer la tabla y ver si el valor en la fila en el indice del id local existe en la tabla
 			//aumento un contador
 			//si el contador al final es igla al total de constraints devuelve true 
-			int index = 0;
-			for (String id : llave.getIDS_refs()) 
+			Table ref_tabla = this.actual.getTable(llave.getId_ref());
+			if (ref_tabla != null)
 			{
-				
+				int index = 0;
+				int cont = 0;
+				for (String id : llave.getIDS_refs()) 
+				{
+					//Traemos el atributo de la tabla a la que hacemos referencia
+					//Y el indice de esta en la tabla
+					Atributo atr = ref_tabla.getID(id);
+					int index_ref = ref_tabla.getAtributos().indexOf(atr);
+					
+					//Traems el atributo de la tabla local
+					//Y el indice de este en la tabla
+					String local = llave.getIDS_local().get(index);
+					Atributo atr2 = this.table_use.getID(local);
+					int index_loc = this.table_use.getAtributos().indexOf(atr2);
+					
+					for (ArrayList<String> row:ref_tabla.getData())
+					{
+						if(row.get(index_ref).equals(fila.get(index_loc)))
+						{
+							cont++;
+						}
+					}
+					
+					index++;
+				}
+				if (cont != llave.getIDS_refs().size())
+					return false;
+				else
+					exist++;
 			}
+			else
+				return false;
 		}
-		return true;
+		
+		if (exist == key.size())
+			return true;
+		else
+			return false;
 	}
 }
