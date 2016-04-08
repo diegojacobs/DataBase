@@ -1175,7 +1175,7 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								for (String i: con.getIDS_local())
 								{
 									int n_nulls = 0;
-									int index_data_atr = toAlter.getAtributos().indexOf(i);
+									int index_data_atr = toAlter.getAtributosNames().indexOf(i);
 									for (String data_i: toAlter.dataColumnI(index_data_atr))
 										if (data_i.toLowerCase().equals("null"))
 											n_nulls++;
