@@ -219,6 +219,13 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 		return ret;
 	}
 	
+	public Object visitSql2003Parser (sqlParser.Sql2003ParserContext ctx){
+		Object obj = visitChildren(ctx);
+		if (this.updated_rows != 0) this.messages.add("Update "+updated_rows+" con exito");
+		if (this.inserted_rows != 0) this.messages.add("Insert "+inserted_rows+" con exito");
+		return obj;
+	}
+	
 	@Override 
 	public T visitUse_schema_statement(@NotNull sqlParser.Use_schema_statementContext ctx) 
 	{ 
@@ -1733,6 +1740,8 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							{
 								if (PrimaryKey(fila, -1))
 								{
+									
+									
 									//revisar check
 									ArrayList<Constraint> check = table_use.getChecks();//obtenemos checks
 									Table temp = table_use;//guardo la tabla temporal
@@ -1746,8 +1755,9 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 										CommonTokenStream tokens = new CommonTokenStream(lexer);
 										sqlParser parser = new sqlParser(tokens);
 										ParseTree tree = parser.condition();
-										
+										System.out.println(tree.getText());
 										Object obj = (Object)visit(tree);
+										
 										if (obj == null){
 											String rule_5 = "Error inesperado en evaluacion de check "+ct.getId()+" @line: " + ctx.getStop().getLine();
 											this.errores.add(rule_5);
@@ -1764,10 +1774,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									}
 									
 									if (set){
-										table_use = temp;
+										if (ForeignKey(fila,-1)){
+											table_use = temp;
 
-										this.table_use.addData(fila);
-										this.inserted_rows++;
+											this.table_use.addData(fila);
+											this.inserted_rows++;
+										}else{
+											String rule_5 = "Valor de llave foranea no existe @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+										}
 										
 									}
 								}
@@ -1975,6 +1990,35 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								//En update solo lo podemos cambiar si el foreign key no existe
 								if (!ForeignKey(fin,i))
 								{
+									//revisar check
+									ArrayList<Constraint> check = table_use.getChecks();//obtenemos checks
+									Table temp = table_use;//guardo la tabla temporal
+									table_use = new Table();
+									table_use.setAtributos(temp.getAtributos());//seteamos atributos
+									table_use.addData(fin);//agregamos fila para evaluar check
+									
+									for (Constraint ct: check){
+										ANTLRInputStream input = new ANTLRInputStream(ct.getCondition());
+										sqlLexer lexer = new sqlLexer(input);
+										CommonTokenStream tokens = new CommonTokenStream(lexer);
+										sqlParser parser = new sqlParser(tokens);
+										ParseTree tree = parser.condition();
+										
+										Object obj1 = (Object)visit(tree);
+										if (obj1 == null){
+											String rule_5 = "Error inesperado en evaluacion de check "+ct.getId()+" @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											flag = false;
+										}else{
+											LinkedHashSet<Integer> lhk = (LinkedHashSet<Integer>) obj1;
+											if (lhk.size() == 0){
+												String rule_5 = "Valores ingresados no cumplen evaluacion de check "+ct.getId()+" "+ct.getCondition()+" @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												flag = false;
+											}
+										}
+										
+									}
 									
 								}
 								else
@@ -1997,8 +2041,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 						//Si todos cumplieron con las validaciones los actualizamos
 						if (flag)
 						{
-							for (int i: index)
+							for (int i: index){
 								this.table_use.getData().set(i, fin);
+								this.updated_rows++;
+							}
 						}
 					}
 				}

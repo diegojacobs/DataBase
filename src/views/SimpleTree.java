@@ -77,9 +77,15 @@ public class SimpleTree extends JPanel {
 	    }
 	}*/
   	
-  	public void reload(){
-  		//fileTree.relo
-  		
+  	public void revalidate(){
+  		removeAll();
+  		fileSystemModel = new FileSystemModel(new File(System.getProperty("user.dir")+"/data"));
+		fileTree = new JTree(fileSystemModel);
+		fileTree.setEditable(false);//to edit names in tree
+		setLayout(new BorderLayout());
+		add(new JScrollPane((JTree)fileTree),"Center");
+		fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		super.revalidate();
   	}
   	
   	public JTree getTree(){
