@@ -1175,7 +1175,24 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								String more_than_one_pk = "Una tabla no puede tener declarada mas de una Primary Key @line: " + ctx.getStop().getLine();
 					        	this.errores.add(more_than_one_pk);
 								errores++;								
-							}							
+							}
+							if (errores == 0)
+							{
+								// Revisar Data en la tabla
+								for (String i: con.getIDS_local())
+								{
+									int n_nulls = 0;
+									int index_data_atr = toAlter.getAtributos().indexOf(i);
+									for (String data_i: toAlter.dataColumnI(index_data_atr))
+										if (data_i.toLowerCase().equals("null"))
+											n_nulls++;
+									if (n_nulls > 0)
+									{
+										String pk_cant_have_null = "No se puede agregar la Primary Key \"" + con.getId() + "\" porque el Atributo \"" + i + "\" tiene " + n_nulls + " valores nulos @line: " + ctx.getStop().getLine();
+										this.errores.add(pk_cant_have_null);
+									}
+								}
+							}
 							break;
 						case "Foreign Key":
 							// Ref IDS
@@ -2629,10 +2646,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)==0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+								}
+								else
+								{
+									Double comp = Double.parseDouble(s);
+									if (valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else //si es una columna de tipo int o float
@@ -2643,11 +2670,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int cont = 0;
 								for (ArrayList<String> fila : this.table_use.getData())
 								{
-									Double valor = Double.parseDouble(fila.get(index2));
-									Double comp = Double.parseDouble(fila.get(index));
-									if (valor.compareTo(comp)==0)
-										list.add(cont);
-									cont++;
+									String s = fila.get(index2);
+									String s1 = fila.get(index);
+									if (s.toLowerCase().equals("null") || s1.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										Double valor = Double.parseDouble(s);
+										Double comp = Double.parseDouble(s1);
+										if (valor.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -2660,9 +2698,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										
 										String comp = fila.get(index);
-										if (compareDate(comp, value).equals("igual"))
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (compareDate(comp, value).equals("igual"))
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 								else
@@ -2677,9 +2724,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											
 											String comp = fila.get(index);
 											String valor = fila.get(index2);
-											if (compareDate(comp, valor).equals("igual"))
-												list.add(cont);
-											cont++;
+											if (comp.toLowerCase().equals("null") || valor.toLowerCase().equals("null"))
+											{
+												String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												return null;
+											}
+											else
+											{
+												if (compareDate(comp, valor).equals("igual"))
+													list.add(cont);
+												cont++;
+											}
 										}
 									}
 									else
@@ -2691,9 +2747,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											for (ArrayList<String> fila : this.table_use.getData())
 											{
 												String comp = fila.get(index);
-												if (value.compareTo(comp)==0)
-													list.add(cont);
-												cont++;
+												if (comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (value.compareTo(comp)==0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 										else
@@ -2704,9 +2769,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											{
 												String valor = fila.get(index2);
 												String comp = fila.get(index);
-												if (valor.compareTo(comp)==0)
-													list.add(cont);
-												cont++;
+												if (valor.toLowerCase().equals("null") || comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (valor.compareTo(comp)==0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 									}
@@ -2724,10 +2798,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)!=0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+								}
+								else
+								{
+									Double comp = Double.parseDouble(s);
+									if (valor.compareTo(comp)!=0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else //si es una columna de tipo int o float
@@ -2738,11 +2822,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int cont = 0;
 								for (ArrayList<String> fila : this.table_use.getData())
 								{
-									Double valor = Double.parseDouble(fila.get(index2));
-									Double comp = Double.parseDouble(fila.get(index));
-									if (valor.compareTo(comp)!=0)
-										list.add(cont);
-									cont++;
+									String s = fila.get(index2);
+									String s1 = fila.get(index);
+									if (s.toLowerCase().equals("null") || s1.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										Double valor = Double.parseDouble(s);
+										Double comp = Double.parseDouble(s1);
+										if (valor.compareTo(comp)!=0)
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -2755,9 +2850,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										
 										String comp = fila.get(index);
-										if (!compareDate(comp, value).equals("igual"))
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (!compareDate(comp, value).equals("igual"))
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 								else
@@ -2772,9 +2876,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											
 											String comp = fila.get(index);
 											String valor = fila.get(index2);
-											if (!compareDate(comp, valor).equals("igual"))
-												list.add(cont);
-											cont++;
+											if (comp.toLowerCase().equals("null") || valor.toLowerCase().equals("null"))
+											{
+												String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												return null;
+											}
+											else
+											{
+												if (!compareDate(comp, valor).equals("igual"))
+													list.add(cont);
+												cont++;
+											}
 										}
 									}
 									else
@@ -2786,9 +2899,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											for (ArrayList<String> fila : this.table_use.getData())
 											{
 												String comp = fila.get(index);
-												if (value.compareTo(comp)!=0)
-													list.add(cont);
-												cont++;
+												if (comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (value.compareTo(comp)!=0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 										else
@@ -2799,9 +2921,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											{
 												String valor = fila.get(index2);
 												String comp = fila.get(index);
-												if (valor.compareTo(comp)!=0)
-													list.add(cont);
-												cont++;
+												if (valor.toLowerCase().equals("null") || comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (valor.compareTo(comp)!=0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 									}
@@ -2818,10 +2949,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (comp.compareTo(valor)<0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)<0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else //si es una columna de tipo int o float
@@ -2832,11 +2973,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int cont = 0;
 								for (ArrayList<String> fila : this.table_use.getData())
 								{
-									Double valor = Double.parseDouble(fila.get(index2));
-									Double comp = Double.parseDouble(fila.get(index));
-									if (comp.compareTo(valor)<0)
-										list.add(cont);
-									cont++;
+									String s = fila.get(index2);
+									String s1 = fila.get(index);
+									if (s.toLowerCase().equals("null") || s1.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										Double valor = Double.parseDouble(s);
+										Double comp = Double.parseDouble(s1);
+										if (comp.compareTo(valor)<0)
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -2849,9 +3001,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										
 										String comp = fila.get(index);
-										if (compareDate(comp, value).equals("menor"))
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (compareDate(comp, value).equals("menor"))
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 								else
@@ -2866,9 +3027,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											
 											String comp = fila.get(index);
 											String valor = fila.get(index2);
-											if (compareDate(comp, valor).equals("menor"))
-												list.add(cont);
-											cont++;
+											if (comp.toLowerCase().equals("null") || valor.toLowerCase().equals("null"))
+											{
+												String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												return null;
+											}
+											else
+											{
+												if (compareDate(comp, valor).equals("menor"))
+													list.add(cont);
+												cont++;
+											}
 										}
 									}
 									else
@@ -2880,9 +3050,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											for (ArrayList<String> fila : this.table_use.getData())
 											{
 												String comp = fila.get(index);
-												if (comp.compareTo(value)<0)
-													list.add(cont);
-												cont++;
+												if (comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(value)<0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 										else
@@ -2893,9 +3072,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											{
 												String valor = fila.get(index2);
 												String comp = fila.get(index);
-												if (comp.compareTo(valor)<0)
-													list.add(cont);
-												cont++;
+												if (valor.toLowerCase().equals("null") || comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(valor)<0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 									}
@@ -2912,10 +3100,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (comp.compareTo(valor)>0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+								}
+								else
+								{
+									Double comp = Double.parseDouble(s);
+									if (comp.compareTo(valor)>0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else //si es una columna de tipo int o float
@@ -2926,11 +3124,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int cont = 0;
 								for (ArrayList<String> fila : this.table_use.getData())
 								{
-									Double valor = Double.parseDouble(fila.get(index2));
-									Double comp = Double.parseDouble(fila.get(index));
-									if (comp.compareTo(valor)>0)
-										list.add(cont);
-									cont++;
+									String s = fila.get(index2);
+									String s1 = fila.get(index);
+									if (s.toLowerCase().equals("null") || s1.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										Double valor = Double.parseDouble(fila.get(index2));
+										Double comp = Double.parseDouble(fila.get(index));
+										if (comp.compareTo(valor)>0)
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -2943,9 +3152,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										
 										String comp = fila.get(index);
-										if (compareDate(comp, value).equals("mayor"))
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (compareDate(comp, value).equals("mayor"))
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 								else
@@ -2960,9 +3178,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											
 											String comp = fila.get(index);
 											String valor = fila.get(index2);
-											if (compareDate(comp, valor).equals("mayor"))
-												list.add(cont);
-											cont++;
+											if (comp.toLowerCase().equals("null") || valor.toLowerCase().equals("null"))
+											{
+												String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												return null;
+											}
+											else
+											{
+												if (compareDate(comp, valor).equals("mayor"))
+													list.add(cont);
+												cont++;
+											}
 										}
 									}
 									else
@@ -2974,9 +3201,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											for (ArrayList<String> fila : this.table_use.getData())
 											{
 												String comp = fila.get(index);
-												if (comp.compareTo(value)>0)
-													list.add(cont);
-												cont++;
+												if (comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(value)>0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 										else
@@ -2987,9 +3223,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											{
 												String valor = fila.get(index2);
 												String comp = fila.get(index);
-												if (comp.compareTo(valor)>0)
-													list.add(cont);
-												cont++;
+												if (valor.toLowerCase().equals("null") || comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(valor)>0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 									}
@@ -3006,10 +3251,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (comp.compareTo(valor)<0 || valor.compareTo(comp)==0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)<0 || valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else //si es una columna de tipo int o float
@@ -3020,11 +3275,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int cont = 0;
 								for (ArrayList<String> fila : this.table_use.getData())
 								{
-									Double valor = Double.parseDouble(fila.get(index2));
-									Double comp = Double.parseDouble(fila.get(index));
-									if (comp.compareTo(valor)<0 || valor.compareTo(comp)==0)
-										list.add(cont);
-									cont++;
+									String s = fila.get(index2);
+									String s1 = fila.get(index);
+									if (s.toLowerCase().equals("null") || s1.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										Double valor = Double.parseDouble(fila.get(index2));
+										Double comp = Double.parseDouble(fila.get(index));
+										if (comp.compareTo(valor)<0 || valor.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3037,9 +3303,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										
 										String comp = fila.get(index);
-										if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("menor"))
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("menor"))
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 								else
@@ -3054,9 +3329,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											
 											String comp = fila.get(index);
 											String valor = fila.get(index2);
-											if (compareDate(comp, valor).equals("igual") || compareDate(comp, valor).equals("menor"))
-												list.add(cont);
-											cont++;
+											if (comp.toLowerCase().equals("null") || valor.toLowerCase().equals("null"))
+											{
+												String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												return null;
+											}
+											else
+											{
+												if (compareDate(comp, valor).equals("igual") || compareDate(comp, valor).equals("menor"))
+													list.add(cont);
+												cont++;
+											}
 										}
 									}
 									else
@@ -3068,9 +3352,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											for (ArrayList<String> fila : this.table_use.getData())
 											{
 												String comp = fila.get(index);
-												if (comp.compareTo(value)<0 || comp.compareTo(value)==0)
-													list.add(cont);
-												cont++;
+												if (comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(value)<0 || comp.compareTo(value)==0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 										else
@@ -3081,9 +3374,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											{
 												String valor = fila.get(index2);
 												String comp = fila.get(index);
-												if (comp.compareTo(valor)<0 || comp.compareTo(valor)==0)
-													list.add(cont);
-												cont++;
+												if (valor.toLowerCase().equals("null") || comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(valor)<0 || comp.compareTo(valor)==0)
+														list.add(cont);
+													cont++;	
+												}
 											}
 										}
 									}
@@ -3100,10 +3402,20 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (comp.compareTo(valor)>0 || comp.compareTo(valor)==0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (comp.compareTo(valor)>0 || valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else //si es una columna de tipo int o float
@@ -3114,11 +3426,22 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int cont = 0;
 								for (ArrayList<String> fila : this.table_use.getData())
 								{
-									Double valor = Double.parseDouble(fila.get(index2));
-									Double comp = Double.parseDouble(fila.get(index));
-									if (comp.compareTo(valor)>0 || comp.compareTo(valor)==0)
-										list.add(cont);
-									cont++;
+									String s = fila.get(index2);
+									String s1 = fila.get(index);
+									if (s.toLowerCase().equals("null") || s1.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										Double valor = Double.parseDouble(fila.get(index2));
+										Double comp = Double.parseDouble(fila.get(index));
+										if (comp.compareTo(valor)>0 || valor.compareTo(comp)==0)
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3131,9 +3454,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									{
 										
 										String comp = fila.get(index);
-										if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("mayor"))
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("mayor"))
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 								else
@@ -3148,9 +3480,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											
 											String comp = fila.get(index);
 											String valor = fila.get(index2);
-											if (compareDate(comp, valor).equals("igual") || compareDate(comp, valor).equals("mayor"))
-												list.add(cont);
-											cont++;
+											if (comp.toLowerCase().equals("null") || valor.toLowerCase().equals("null"))
+											{
+												String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+												this.errores.add(rule_5);
+												return null;
+											}
+											else
+											{
+												if (compareDate(comp, valor).equals("igual") || compareDate(comp, valor).equals("mayor"))
+													list.add(cont);
+												cont++;
+											}
 										}
 									}
 									else
@@ -3162,9 +3503,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											for (ArrayList<String> fila : this.table_use.getData())
 											{
 												String comp = fila.get(index);
-												if (comp.compareTo(value)>0 || comp.compareTo(value)==0)
-													list.add(cont);
-												cont++;
+												if (comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(value)>0 || comp.compareTo(value)==0)
+														list.add(cont);
+													cont++;
+												}
 											}
 										}
 										else
@@ -3175,9 +3525,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 											{
 												String valor = fila.get(index2);
 												String comp = fila.get(index);
-												if (comp.compareTo(valor)>0 || comp.compareTo(valor)==0)
-													list.add(cont);
-												cont++;
+												if (valor.toLowerCase().equals("null") || comp.toLowerCase().equals("null"))
+												{
+													String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+													this.errores.add(rule_5);
+													return null;
+												}
+												else
+												{
+													if (comp.compareTo(valor)<0 || comp.compareTo(valor)==0)
+														list.add(cont);
+													cont++;	
+												}
 											}
 										}
 									}
@@ -3582,10 +3941,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)==0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+									
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)==0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else
@@ -3598,9 +3968,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									
 									String comp = fila.get(index);
-									if (compareDate(comp, value).equals("igual"))
-										list.add(cont);
-									cont++;
+									if (comp.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										if (compareDate(comp, value).equals("igual"))
+											list.add(cont);
+										cont++;
+									}	
 								}
 							}
 							else
@@ -3612,9 +3991,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									for (ArrayList<String> fila : this.table_use.getData())
 									{
 										String comp = fila.get(index);
-										if (value.compareTo(comp)==0)
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (value.compareTo(comp)==0)
+												list.add(cont);
+											cont++;
+										}
 									}
 								}						
 							}
@@ -3629,10 +4017,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)!=0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+									
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)!=0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}					
 						else
@@ -3645,9 +4044,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									
 									String comp = fila.get(index);
-									if (!compareDate(comp, value).equals("igual"))
-										list.add(cont);
-									cont++;
+									if (comp.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										if (!compareDate(comp, value).equals("igual"))
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3659,9 +4067,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									for (ArrayList<String> fila : this.table_use.getData())
 									{
 										String comp = fila.get(index);
-										if (value.compareTo(comp)!=0)
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (value.compareTo(comp)!=0)
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 							}
@@ -3676,10 +4093,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)<0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+									
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)<0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else
@@ -3692,9 +4120,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									
 									String comp = fila.get(index);
-									if (compareDate(value, comp).equals("menor"))
-										list.add(cont);
-									cont++;
+									if (comp.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										if (compareDate(comp, value).equals("menor"))
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3706,9 +4143,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									for (ArrayList<String> fila : this.table_use.getData())
 									{
 										String comp = fila.get(index);
-										if (value.compareTo(comp)<0)
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (value.compareTo(comp)<0)
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 							}
@@ -3723,10 +4169,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)>0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+									
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)>0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else
@@ -3739,9 +4196,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									
 									String comp = fila.get(index);
-									if (compareDate(value, comp).equals("mayor"))
-										list.add(cont);
-									cont++;
+									if (comp.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										if (compareDate(comp, value).equals("mayor"))
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3753,9 +4219,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									for (ArrayList<String> fila : this.table_use.getData())
 									{
 										String comp = fila.get(index);
-										if (value.compareTo(comp)>0)
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (value.compareTo(comp)>0)
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 							}
@@ -3770,10 +4245,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)<0 || valor.compareTo(comp)==0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+									
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)==0 || valor.compareTo(comp)<0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else
@@ -3786,9 +4272,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									
 									String comp = fila.get(index);
-									if (compareDate(value, comp).equals("igual") || compareDate(value, comp).equals("menor"))
-										list.add(cont);
-									cont++;
+									if (comp.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("menor"))
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3800,9 +4295,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									for (ArrayList<String> fila : this.table_use.getData())
 									{
 										String comp = fila.get(index);
-										if (value.compareTo(comp)<0 || value.compareTo(comp)==0)
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (value.compareTo(comp)==0 || value.compareTo(comp)<0)
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 							}
@@ -3817,10 +4321,21 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 							int cont = 0;
 							for (ArrayList<String> fila : this.table_use.getData())
 							{
-								Double comp = Double.parseDouble(fila.get(index));
-								if (valor.compareTo(comp)>0 || valor.compareTo(comp)==0)
-									list.add(cont);
-								cont++;
+								String s = fila.get(index);
+								if (s.toLowerCase().equals("null"))
+								{
+									String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+									this.errores.add(rule_5);
+									return null;
+									
+								}
+								else
+								{
+									Double comp = Double.parseDouble(fila.get(index));
+									if (valor.compareTo(comp)==0 || valor.compareTo(comp)>0)
+										list.add(cont);
+									cont++;
+								}
 							}
 						}
 						else
@@ -3833,9 +4348,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								{
 									
 									String comp = fila.get(index);
-									if (compareDate(value, comp).equals("igual") || compareDate(value, comp).equals("mayor"))
-										list.add(cont);
-									cont++;
+									if (comp.toLowerCase().equals("null"))
+									{
+										String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+										this.errores.add(rule_5);
+										return null;
+									}
+									else
+									{
+										if (compareDate(comp, value).equals("igual") || compareDate(comp, value).equals("mayor"))
+											list.add(cont);
+										cont++;
+									}
 								}
 							}
 							else
@@ -3847,9 +4371,18 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 									for (ArrayList<String> fila : this.table_use.getData())
 									{
 										String comp = fila.get(index);
-										if (value.compareTo(comp)>0 || value.compareTo(comp)==0)
-											list.add(cont);
-										cont++;
+										if (comp.toLowerCase().equals("null"))
+										{
+											String rule_5 = "No se puede comparar un null con un valor @line: " + ctx.getStop().getLine();
+											this.errores.add(rule_5);
+											return null;
+										}
+										else
+										{
+											if (value.compareTo(comp)==0 || value.compareTo(comp)>0)
+												list.add(cont);
+											cont++;
+										}
 									}
 								}
 							}
