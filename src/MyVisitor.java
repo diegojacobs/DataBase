@@ -425,14 +425,15 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 				{
 					// Verificar que no exista una tabla ya creada con ID == NEW_ID
 					if (! this.getActual().existTable(NEW_ID))
-					{
+					{						
 						// Renombrar referencias
 						if (this.getActual().existRef(ID))
 						{
 							for (Table i: this.getActual().getTables())
 								i.renameRefIdFK(ID, NEW_ID);
 						}
-						this.getActual().renameRef(ID, NEW_ID);
+						if (! this.getActual().getConstraints_refs().isEmpty())
+							this.getActual().renameRef(ID, NEW_ID);
 						System.out.println("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
 						this.messages.add("La Tabla \"" + ID + "\" se ha renombrado exitosamente a \"" + NEW_ID + "\"");
 						Table new_table = this.getActual().getTable(ID);
@@ -1959,10 +1960,10 @@ public class MyVisitor<T> extends sqlBaseVisitor<Object> {
 								int index2 = newfila.indexOf(col);
 								if (col.equals("UPDATE"))
 								{
-									fin.set(index2, fila.get(index2));
+									fin.set(i, fila.get(index2));
 								}
 								else
-									fin.set(index2, newfila.get(index2));
+									fin.set(i, newfila.get(index2));
 							}
 							
 							//Revisamos que no venga un NULL en una PrimaryKey
