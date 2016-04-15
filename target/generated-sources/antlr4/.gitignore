@@ -1,6 +1,8 @@
 /sql.tokens
 /sqlBaseListener.java
 /sqlBaseVisitor.java
+/sqlLexer.java
+/sqlLexer.tokens
 /sqlListener.java
 /sqlParser.java
 /sqlVisitor.java

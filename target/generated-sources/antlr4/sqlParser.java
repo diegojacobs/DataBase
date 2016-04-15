@@ -16,50 +16,52 @@ public class sqlParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__11=1, T__10=2, T__9=3, T__8=4, T__7=5, T__6=6, T__5=7, T__4=8, T__3=9, 
-		T__2=10, T__1=11, T__0=12, CREATE=13, DATABASE=14, DATABASES=15, TABLE=16, 
-		TABLES=17, DROP=18, ALTER=19, RENAME=20, TO=21, SHOW=22, USE=23, RES_INT=24, 
-		RES_FLOAT=25, RES_CHAR=26, RES_DATE=27, CONSTRAINT=28, KEY=29, PRIMARY=30, 
-		FOREIGN=31, REFERENCES=32, CHECK=33, ADD=34, COLUMN=35, COLUMNS=36, FROM=37, 
-		RES_AND=38, RES_OR=39, RES_NOT=40, INSERT=41, INTO=42, VALUES=43, UPDATE=44, 
-		SET=45, WHERE=46, DELETE=47, SELECT=48, ORDER=49, BY=50, ASC=51, DESC=52, 
-		INT=53, ID=54, NUM=55, CHAR=56, DATE=57, WHITESPACE=58, COMMENT=59;
+		T__12=1, T__11=2, T__10=3, T__9=4, T__8=5, T__7=6, T__6=7, T__5=8, T__4=9, 
+		T__3=10, T__2=11, T__1=12, T__0=13, CREATE=14, DATABASE=15, DATABASES=16, 
+		TABLE=17, TABLES=18, DROP=19, ALTER=20, RENAME=21, TO=22, SHOW=23, USE=24, 
+		RES_INT=25, RES_FLOAT=26, RES_CHAR=27, RES_DATE=28, CONSTRAINT=29, KEY=30, 
+		PRIMARY=31, FOREIGN=32, REFERENCES=33, CHECK=34, ADD=35, COLUMN=36, COLUMNS=37, 
+		FROM=38, RES_AND=39, RES_OR=40, RES_NOT=41, INSERT=42, INTO=43, VALUES=44, 
+		UPDATE=45, SET=46, WHERE=47, DELETE=48, SELECT=49, ORDER=50, BY=51, ASC=52, 
+		DESC=53, NULL=54, INT=55, ID=56, DATE=57, CHAR=58, WHITESPACE=59, COMMENT=60;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'<='", "'<>'", "'('", "')'", "'*'", "'>='", "';'", "'<'", 
-		"','", "'='", "'.'", "'>'", "CREATE", "DATABASE", "DATABASES", "TABLE", 
-		"TABLES", "DROP", "ALTER", "RENAME", "TO", "SHOW", "USE", "RES_INT", "RES_FLOAT", 
-		"RES_CHAR", "RES_DATE", "CONSTRAINT", "KEY", "PRIMARY", "FOREIGN", "REFERENCES", 
-		"CHECK", "ADD", "COLUMN", "COLUMNS", "FROM", "RES_AND", "RES_OR", "RES_NOT", 
-		"INSERT", "INTO", "VALUES", "UPDATE", "SET", "WHERE", "DELETE", "SELECT", 
-		"ORDER", "BY", "ASC", "DESC", "INT", "ID", "NUM", "CHAR", "DATE", "WHITESPACE", 
-		"COMMENT"
+		"<INVALID>", "'>='", "';'", "'<'", "'='", "'>'", "'<='", "'<>'", "'('", 
+		"')'", "'*'", "','", "'-'", "'.'", "CREATE", "DATABASE", "DATABASES", 
+		"TABLE", "TABLES", "DROP", "ALTER", "RENAME", "TO", "SHOW", "USE", "RES_INT", 
+		"RES_FLOAT", "RES_CHAR", "RES_DATE", "CONSTRAINT", "KEY", "PRIMARY", "FOREIGN", 
+		"REFERENCES", "CHECK", "ADD", "COLUMN", "COLUMNS", "FROM", "RES_AND", 
+		"RES_OR", "RES_NOT", "INSERT", "INTO", "VALUES", "UPDATE", "SET", "WHERE", 
+		"DELETE", "SELECT", "ORDER", "BY", "ASC", "DESC", "NULL", "INT", "ID", 
+		"DATE", "CHAR", "WHITESPACE", "COMMENT"
 	};
 	public static final int
 		RULE_sql2003Parser = 0, RULE_sql_executable_statement = 1, RULE_sql_schema_statement = 2, 
 		RULE_sql_schema_definition_statement = 3, RULE_sql_schema_manipulation_statement = 4, 
 		RULE_sql_data_statement = 5, RULE_schema_definition = 6, RULE_table_definition = 7, 
-		RULE_drop_schema_statement = 8, RULE_alter_table_statement = 9, RULE_drop_table_statement = 10, 
-		RULE_alter_database_statement = 11, RULE_show_schema_statement = 12, RULE_use_schema_statement = 13, 
-		RULE_column = 14, RULE_tipo_literal = 15, RULE_constraint = 16, RULE_constraintType = 17, 
-		RULE_idRef = 18, RULE_localIDS = 19, RULE_refIDS = 20, RULE_exp = 21, 
-		RULE_rename_table_statement = 22, RULE_accion = 23, RULE_show_table_statement = 24, 
-		RULE_show_column_statement = 25, RULE_logic = 26, RULE_logic_not = 27, 
-		RULE_relational = 28, RULE_insert_value = 29, RULE_update_value = 30, 
-		RULE_delete_value = 31, RULE_select_value = 32, RULE_condition = 33, RULE_comp = 34, 
-		RULE_columns = 35, RULE_columna = 36, RULE_list = 37, RULE_list_values = 38, 
-		RULE_value = 39, RULE_tipo = 40, RULE_literal = 41, RULE_int_literal = 42, 
-		RULE_float_literal = 43, RULE_date_literal = 44, RULE_char_literal = 45;
+		RULE_drop_schema_statement = 8, RULE_alter_table_statement = 9, RULE_idTable = 10, 
+		RULE_idColumn = 11, RULE_idConstraint = 12, RULE_drop_table_statement = 13, 
+		RULE_alter_database_statement = 14, RULE_show_schema_statement = 15, RULE_use_schema_statement = 16, 
+		RULE_column = 17, RULE_tipo_literal = 18, RULE_constraint = 19, RULE_constraintType = 20, 
+		RULE_idRef = 21, RULE_localIDS = 22, RULE_refIDS = 23, RULE_exp = 24, 
+		RULE_rename_table_statement = 25, RULE_show_table_statement = 26, RULE_show_column_statement = 27, 
+		RULE_logic = 28, RULE_logic_not = 29, RULE_relational = 30, RULE_insert_value = 31, 
+		RULE_update_value = 32, RULE_asignacion = 33, RULE_delete_value = 34, 
+		RULE_select_value = 35, RULE_nID = 36, RULE_nlocalIDS = 37, RULE_order = 38, 
+		RULE_condition = 39, RULE_comp = 40, RULE_columns = 41, RULE_columna = 42, 
+		RULE_list = 43, RULE_literal = 44, RULE_int_literal = 45, RULE_float_literal = 46, 
+		RULE_date_literal = 47, RULE_char_literal = 48;
 	public static final String[] ruleNames = {
 		"sql2003Parser", "sql_executable_statement", "sql_schema_statement", "sql_schema_definition_statement", 
 		"sql_schema_manipulation_statement", "sql_data_statement", "schema_definition", 
 		"table_definition", "drop_schema_statement", "alter_table_statement", 
-		"drop_table_statement", "alter_database_statement", "show_schema_statement", 
-		"use_schema_statement", "column", "tipo_literal", "constraint", "constraintType", 
-		"idRef", "localIDS", "refIDS", "exp", "rename_table_statement", "accion", 
-		"show_table_statement", "show_column_statement", "logic", "logic_not", 
-		"relational", "insert_value", "update_value", "delete_value", "select_value", 
-		"condition", "comp", "columns", "columna", "list", "list_values", "value", 
-		"tipo", "literal", "int_literal", "float_literal", "date_literal", "char_literal"
+		"idTable", "idColumn", "idConstraint", "drop_table_statement", "alter_database_statement", 
+		"show_schema_statement", "use_schema_statement", "column", "tipo_literal", 
+		"constraint", "constraintType", "idRef", "localIDS", "refIDS", "exp", 
+		"rename_table_statement", "show_table_statement", "show_column_statement", 
+		"logic", "logic_not", "relational", "insert_value", "update_value", "asignacion", 
+		"delete_value", "select_value", "nID", "nlocalIDS", "order", "condition", 
+		"comp", "columns", "columna", "list", "literal", "int_literal", "float_literal", 
+		"date_literal", "char_literal"
 	};
 
 	@Override
@@ -114,19 +116,19 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(93); 
+			setState(99); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(92); sql_executable_statement();
+				setState(98); sql_executable_statement();
 				}
 				}
-				setState(95); 
+				setState(101); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CREATE) | (1L << DROP) | (1L << ALTER) | (1L << SHOW) | (1L << USE) | (1L << SELECT))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CREATE) | (1L << DROP) | (1L << ALTER) | (1L << SHOW) | (1L << USE) | (1L << INSERT) | (1L << UPDATE) | (1L << DELETE) | (1L << SELECT))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -170,7 +172,7 @@ public class sqlParser extends Parser {
 		Sql_executable_statementContext _localctx = new Sql_executable_statementContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_sql_executable_statement);
 		try {
-			setState(99);
+			setState(105);
 			switch (_input.LA(1)) {
 			case CREATE:
 			case DROP:
@@ -179,13 +181,16 @@ public class sqlParser extends Parser {
 			case USE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(97); sql_schema_statement();
+				setState(103); sql_schema_statement();
 				}
 				break;
+			case INSERT:
+			case UPDATE:
+			case DELETE:
 			case SELECT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(98); sql_data_statement();
+				setState(104); sql_data_statement();
 				}
 				break;
 			default:
@@ -233,12 +238,12 @@ public class sqlParser extends Parser {
 		Sql_schema_statementContext _localctx = new Sql_schema_statementContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_sql_schema_statement);
 		try {
-			setState(103);
+			setState(109);
 			switch (_input.LA(1)) {
 			case CREATE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(101); sql_schema_definition_statement();
+				setState(107); sql_schema_definition_statement();
 				}
 				break;
 			case DROP:
@@ -247,7 +252,7 @@ public class sqlParser extends Parser {
 			case USE:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(102); sql_schema_manipulation_statement();
+				setState(108); sql_schema_manipulation_statement();
 				}
 				break;
 			default:
@@ -295,18 +300,18 @@ public class sqlParser extends Parser {
 		Sql_schema_definition_statementContext _localctx = new Sql_schema_definition_statementContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_sql_schema_definition_statement);
 		try {
-			setState(107);
+			setState(113);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(105); schema_definition();
+				setState(111); schema_definition();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(106); table_definition();
+				setState(112); table_definition();
 				}
 				break;
 			}
@@ -373,60 +378,60 @@ public class sqlParser extends Parser {
 		Sql_schema_manipulation_statementContext _localctx = new Sql_schema_manipulation_statementContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_sql_schema_manipulation_statement);
 		try {
-			setState(118);
+			setState(124);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(109); drop_schema_statement();
+				setState(115); drop_schema_statement();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(110); alter_table_statement();
+				setState(116); alter_table_statement();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(111); drop_table_statement();
+				setState(117); drop_table_statement();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(112); alter_database_statement();
+				setState(118); alter_database_statement();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(113); use_schema_statement();
+				setState(119); use_schema_statement();
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(114); show_schema_statement();
+				setState(120); show_schema_statement();
 				}
 				break;
 			case 7:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(115); rename_table_statement();
+				setState(121); rename_table_statement();
 				}
 				break;
 			case 8:
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(116); show_table_statement();
+				setState(122); show_table_statement();
 				}
 				break;
 			case 9:
 				enterOuterAlt(_localctx, 9);
 				{
-				setState(117); show_column_statement();
+				setState(123); show_column_statement();
 				}
 				break;
 			}
@@ -443,6 +448,15 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Sql_data_statementContext extends ParserRuleContext {
+		public Delete_valueContext delete_value() {
+			return getRuleContext(Delete_valueContext.class,0);
+		}
+		public Insert_valueContext insert_value() {
+			return getRuleContext(Insert_valueContext.class,0);
+		}
+		public Update_valueContext update_value() {
+			return getRuleContext(Update_valueContext.class,0);
+		}
 		public Select_valueContext select_value() {
 			return getRuleContext(Select_valueContext.class,0);
 		}
@@ -469,9 +483,34 @@ public class sqlParser extends Parser {
 		Sql_data_statementContext _localctx = new Sql_data_statementContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_sql_data_statement);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(120); select_value();
+			setState(130);
+			switch (_input.LA(1)) {
+			case SELECT:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(126); select_value();
+				}
+				break;
+			case INSERT:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(127); insert_value();
+				}
+				break;
+			case DELETE:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(128); delete_value();
+				}
+				break;
+			case UPDATE:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(129); update_value();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -514,10 +553,10 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(122); match(CREATE);
-			setState(123); match(DATABASE);
-			setState(124); match(ID);
-			setState(125); match(T__5);
+			setState(132); match(CREATE);
+			setState(133); match(DATABASE);
+			setState(134); match(ID);
+			setState(135); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -567,27 +606,27 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(127); match(CREATE);
-			setState(128); match(TABLE);
-			setState(129); match(ID);
-			setState(130); match(T__9);
-			setState(131); column();
-			setState(136);
+			setState(137); match(CREATE);
+			setState(138); match(TABLE);
+			setState(139); match(ID);
+			setState(140); match(T__5);
+			setState(141); column();
+			setState(146);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__3) {
+			while (_la==T__2) {
 				{
 				{
-				setState(132); match(T__3);
-				setState(133); column();
+				setState(142); match(T__2);
+				setState(143); column();
 				}
 				}
-				setState(138);
+				setState(148);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(139); match(T__8);
-			setState(140); match(T__5);
+			setState(149); match(T__4);
+			setState(150); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -630,10 +669,10 @@ public class sqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(142); match(DROP);
-			setState(143); match(DATABASE);
-			setState(144); match(ID);
-			setState(145); match(T__5);
+			setState(152); match(DROP);
+			setState(153); match(DATABASE);
+			setState(154); match(ID);
+			setState(155); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -648,27 +687,122 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Alter_table_statementContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public AccionContext accion() {
-			return getRuleContext(AccionContext.class,0);
-		}
-		public TerminalNode ALTER() { return getToken(sqlParser.ALTER, 0); }
-		public TerminalNode TABLE() { return getToken(sqlParser.TABLE, 0); }
 		public Alter_table_statementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_alter_table_statement; }
+	 
+		public Alter_table_statementContext() { }
+		public void copyFrom(Alter_table_statementContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class AlterAddColumnContext extends Alter_table_statementContext {
+		public IdTableContext idTable() {
+			return getRuleContext(IdTableContext.class,0);
+		}
+		public TerminalNode COLUMN() { return getToken(sqlParser.COLUMN, 0); }
+		public ConstraintContext constraint() {
+			return getRuleContext(ConstraintContext.class,0);
+		}
+		public TerminalNode ADD() { return getToken(sqlParser.ADD, 0); }
+		public TerminalNode ALTER() { return getToken(sqlParser.ALTER, 0); }
+		public Tipo_literalContext tipo_literal() {
+			return getRuleContext(Tipo_literalContext.class,0);
+		}
+		public IdColumnContext idColumn() {
+			return getRuleContext(IdColumnContext.class,0);
+		}
+		public TerminalNode TABLE() { return getToken(sqlParser.TABLE, 0); }
+		public AlterAddColumnContext(Alter_table_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAlter_table_statement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAlterAddColumn(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAlter_table_statement(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAlterAddColumn(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAlter_table_statement(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAlterAddColumn(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AlterDropColumnContext extends Alter_table_statementContext {
+		public IdTableContext idTable() {
+			return getRuleContext(IdTableContext.class,0);
+		}
+		public TerminalNode COLUMN() { return getToken(sqlParser.COLUMN, 0); }
+		public TerminalNode DROP() { return getToken(sqlParser.DROP, 0); }
+		public TerminalNode ALTER() { return getToken(sqlParser.ALTER, 0); }
+		public IdColumnContext idColumn() {
+			return getRuleContext(IdColumnContext.class,0);
+		}
+		public TerminalNode TABLE() { return getToken(sqlParser.TABLE, 0); }
+		public AlterDropColumnContext(Alter_table_statementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAlterDropColumn(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAlterDropColumn(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAlterDropColumn(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AlterDropConstraintContext extends Alter_table_statementContext {
+		public IdTableContext idTable() {
+			return getRuleContext(IdTableContext.class,0);
+		}
+		public IdConstraintContext idConstraint() {
+			return getRuleContext(IdConstraintContext.class,0);
+		}
+		public TerminalNode DROP() { return getToken(sqlParser.DROP, 0); }
+		public TerminalNode CONSTRAINT() { return getToken(sqlParser.CONSTRAINT, 0); }
+		public TerminalNode ALTER() { return getToken(sqlParser.ALTER, 0); }
+		public TerminalNode TABLE() { return getToken(sqlParser.TABLE, 0); }
+		public AlterDropConstraintContext(Alter_table_statementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAlterDropConstraint(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAlterDropConstraint(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAlterDropConstraint(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AlterAddConstraintContext extends Alter_table_statementContext {
+		public IdTableContext idTable() {
+			return getRuleContext(IdTableContext.class,0);
+		}
+		public ConstraintContext constraint() {
+			return getRuleContext(ConstraintContext.class,0);
+		}
+		public TerminalNode ADD() { return getToken(sqlParser.ADD, 0); }
+		public TerminalNode ALTER() { return getToken(sqlParser.ALTER, 0); }
+		public TerminalNode TABLE() { return getToken(sqlParser.TABLE, 0); }
+		public AlterAddConstraintContext(Alter_table_statementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAlterAddConstraint(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAlterAddConstraint(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAlterAddConstraint(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -676,14 +810,193 @@ public class sqlParser extends Parser {
 	public final Alter_table_statementContext alter_table_statement() throws RecognitionException {
 		Alter_table_statementContext _localctx = new Alter_table_statementContext(_ctx, getState());
 		enterRule(_localctx, 18, RULE_alter_table_statement);
+		int _la;
+		try {
+			setState(192);
+			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+			case 1:
+				_localctx = new AlterAddColumnContext(_localctx);
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(157); match(ALTER);
+				setState(158); match(TABLE);
+				setState(159); idTable();
+				setState(160); match(ADD);
+				setState(161); match(COLUMN);
+				setState(162); idColumn();
+				setState(163); tipo_literal();
+				setState(165);
+				_la = _input.LA(1);
+				if (_la==CONSTRAINT) {
+					{
+					setState(164); constraint();
+					}
+				}
+
+				setState(167); match(T__11);
+				}
+				break;
+			case 2:
+				_localctx = new AlterAddConstraintContext(_localctx);
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(169); match(ALTER);
+				setState(170); match(TABLE);
+				setState(171); idTable();
+				setState(172); match(ADD);
+				setState(173); constraint();
+				setState(174); match(T__11);
+				}
+				break;
+			case 3:
+				_localctx = new AlterDropColumnContext(_localctx);
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(176); match(ALTER);
+				setState(177); match(TABLE);
+				setState(178); idTable();
+				setState(179); match(DROP);
+				setState(180); match(COLUMN);
+				setState(181); idColumn();
+				setState(182); match(T__11);
+				}
+				break;
+			case 4:
+				_localctx = new AlterDropConstraintContext(_localctx);
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(184); match(ALTER);
+				setState(185); match(TABLE);
+				setState(186); idTable();
+				setState(187); match(DROP);
+				setState(188); match(CONSTRAINT);
+				setState(189); idConstraint();
+				setState(190); match(T__11);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IdTableContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
+		public IdTableContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_idTable; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterIdTable(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitIdTable(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitIdTable(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final IdTableContext idTable() throws RecognitionException {
+		IdTableContext _localctx = new IdTableContext(_ctx, getState());
+		enterRule(_localctx, 20, RULE_idTable);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(147); match(ALTER);
-			setState(148); match(TABLE);
-			setState(149); match(ID);
-			setState(150); accion();
-			setState(151); match(T__5);
+			setState(194); match(ID);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IdColumnContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
+		public IdColumnContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_idColumn; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterIdColumn(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitIdColumn(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitIdColumn(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final IdColumnContext idColumn() throws RecognitionException {
+		IdColumnContext _localctx = new IdColumnContext(_ctx, getState());
+		enterRule(_localctx, 22, RULE_idColumn);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(196); match(ID);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IdConstraintContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
+		public IdConstraintContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_idConstraint; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterIdConstraint(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitIdConstraint(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitIdConstraint(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final IdConstraintContext idConstraint() throws RecognitionException {
+		IdConstraintContext _localctx = new IdConstraintContext(_ctx, getState());
+		enterRule(_localctx, 24, RULE_idConstraint);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(198); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -722,14 +1035,14 @@ public class sqlParser extends Parser {
 
 	public final Drop_table_statementContext drop_table_statement() throws RecognitionException {
 		Drop_table_statementContext _localctx = new Drop_table_statementContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_drop_table_statement);
+		enterRule(_localctx, 26, RULE_drop_table_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(153); match(DROP);
-			setState(154); match(TABLE);
-			setState(155); match(ID);
-			setState(156); match(T__5);
+			setState(200); match(DROP);
+			setState(201); match(TABLE);
+			setState(202); match(ID);
+			setState(203); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -773,17 +1086,17 @@ public class sqlParser extends Parser {
 
 	public final Alter_database_statementContext alter_database_statement() throws RecognitionException {
 		Alter_database_statementContext _localctx = new Alter_database_statementContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_alter_database_statement);
+		enterRule(_localctx, 28, RULE_alter_database_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(158); match(ALTER);
-			setState(159); match(DATABASE);
-			setState(160); match(ID);
-			setState(161); match(RENAME);
-			setState(162); match(TO);
-			setState(163); match(ID);
-			setState(164); match(T__5);
+			setState(205); match(ALTER);
+			setState(206); match(DATABASE);
+			setState(207); match(ID);
+			setState(208); match(RENAME);
+			setState(209); match(TO);
+			setState(210); match(ID);
+			setState(211); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -821,13 +1134,13 @@ public class sqlParser extends Parser {
 
 	public final Show_schema_statementContext show_schema_statement() throws RecognitionException {
 		Show_schema_statementContext _localctx = new Show_schema_statementContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_show_schema_statement);
+		enterRule(_localctx, 30, RULE_show_schema_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(166); match(SHOW);
-			setState(167); match(DATABASES);
-			setState(168); match(T__5);
+			setState(213); match(SHOW);
+			setState(214); match(DATABASES);
+			setState(215); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -866,14 +1179,14 @@ public class sqlParser extends Parser {
 
 	public final Use_schema_statementContext use_schema_statement() throws RecognitionException {
 		Use_schema_statementContext _localctx = new Use_schema_statementContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_use_schema_statement);
+		enterRule(_localctx, 32, RULE_use_schema_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(170); match(USE);
-			setState(171); match(DATABASE);
-			setState(172); match(ID);
-			setState(173); match(T__5);
+			setState(217); match(USE);
+			setState(218); match(DATABASE);
+			setState(219); match(ID);
+			setState(220); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -940,23 +1253,23 @@ public class sqlParser extends Parser {
 
 	public final ColumnContext column() throws RecognitionException {
 		ColumnContext _localctx = new ColumnContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_column);
+		enterRule(_localctx, 34, RULE_column);
 		try {
-			setState(178);
+			setState(225);
 			switch (_input.LA(1)) {
 			case ID:
 				_localctx = new Column_literalContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(175); match(ID);
-				setState(176); tipo_literal();
+				setState(222); match(ID);
+				setState(223); tipo_literal();
 				}
 				break;
 			case CONSTRAINT:
 				_localctx = new Column_constraintContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(177); constraint();
+				setState(224); constraint();
 				}
 				break;
 			default:
@@ -1057,22 +1370,22 @@ public class sqlParser extends Parser {
 
 	public final Tipo_literalContext tipo_literal() throws RecognitionException {
 		Tipo_literalContext _localctx = new Tipo_literalContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_tipo_literal);
+		enterRule(_localctx, 36, RULE_tipo_literal);
 		try {
-			setState(187);
+			setState(234);
 			switch (_input.LA(1)) {
 			case RES_INT:
 				_localctx = new Tipo_lit_intContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(180); match(RES_INT);
+				setState(227); match(RES_INT);
 				}
 				break;
 			case RES_FLOAT:
 				_localctx = new Tipo_lit_floatContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(181); match(RES_FLOAT);
+				setState(228); match(RES_FLOAT);
 				}
 				break;
 			case RES_CHAR:
@@ -1080,10 +1393,10 @@ public class sqlParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				{
-				setState(182); match(RES_CHAR);
-				setState(183); match(T__9);
-				setState(184); match(INT);
-				setState(185); match(T__8);
+				setState(229); match(RES_CHAR);
+				setState(230); match(T__5);
+				setState(231); match(INT);
+				setState(232); match(T__4);
 				}
 				}
 				break;
@@ -1091,7 +1404,7 @@ public class sqlParser extends Parser {
 				_localctx = new Tipo_lit_dateContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(186); match(RES_DATE);
+				setState(233); match(RES_DATE);
 				}
 				break;
 			default:
@@ -1135,12 +1448,12 @@ public class sqlParser extends Parser {
 
 	public final ConstraintContext constraint() throws RecognitionException {
 		ConstraintContext _localctx = new ConstraintContext(_ctx, getState());
-		enterRule(_localctx, 32, RULE_constraint);
+		enterRule(_localctx, 38, RULE_constraint);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(189); match(CONSTRAINT);
-			setState(190); constraintType();
+			setState(236); match(CONSTRAINT);
+			setState(237); constraintType();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1218,12 +1531,9 @@ public class sqlParser extends Parser {
 	}
 	public static class ConstraintTypeCheckContext extends ConstraintTypeContext {
 		public TerminalNode CHECK() { return getToken(sqlParser.CHECK, 0); }
-		public ExpContext exp() {
-			return getRuleContext(ExpContext.class,0);
-		}
-		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(sqlParser.ID, i);
+		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
+		public ConditionContext condition() {
+			return getRuleContext(ConditionContext.class,0);
 		}
 		public ConstraintTypeCheckContext(ConstraintTypeContext ctx) { copyFrom(ctx); }
 		@Override
@@ -1243,50 +1553,48 @@ public class sqlParser extends Parser {
 
 	public final ConstraintTypeContext constraintType() throws RecognitionException {
 		ConstraintTypeContext _localctx = new ConstraintTypeContext(_ctx, getState());
-		enterRule(_localctx, 34, RULE_constraintType);
+		enterRule(_localctx, 40, RULE_constraintType);
 		try {
-			setState(219);
-			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+			setState(264);
+			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
 				_localctx = new ConstraintTypePrimaryKeyContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(192); match(ID);
-				setState(193); match(PRIMARY);
-				setState(194); match(KEY);
-				setState(195); match(T__9);
-				setState(196); localIDS();
-				setState(197); match(T__8);
+				setState(239); match(ID);
+				setState(240); match(PRIMARY);
+				setState(241); match(KEY);
+				setState(242); match(T__5);
+				setState(243); localIDS();
+				setState(244); match(T__4);
 				}
 				break;
 			case 2:
 				_localctx = new ConstraintTypeForeignKeyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(199); match(ID);
-				setState(200); match(FOREIGN);
-				setState(201); match(KEY);
-				setState(202); match(T__9);
-				setState(203); localIDS();
-				setState(204); match(T__8);
-				setState(205); match(REFERENCES);
-				setState(206); idRef();
-				setState(207); match(T__9);
-				setState(208); refIDS();
-				setState(209); match(T__8);
+				setState(246); match(ID);
+				setState(247); match(FOREIGN);
+				setState(248); match(KEY);
+				setState(249); match(T__5);
+				setState(250); localIDS();
+				setState(251); match(T__4);
+				setState(252); match(REFERENCES);
+				setState(253); idRef();
+				setState(254); match(T__5);
+				setState(255); refIDS();
+				setState(256); match(T__4);
 				}
 				break;
 			case 3:
 				_localctx = new ConstraintTypeCheckContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(211); match(ID);
-				setState(212); match(CHECK);
-				setState(213); match(T__9);
-				setState(214); match(ID);
-				setState(215); exp();
-				setState(216); match(ID);
-				setState(217); match(T__8);
+				setState(258); match(ID);
+				setState(259); match(CHECK);
+				setState(260); match(T__5);
+				setState(261); condition();
+				setState(262); match(T__4);
 				}
 				break;
 			}
@@ -1325,11 +1633,11 @@ public class sqlParser extends Parser {
 
 	public final IdRefContext idRef() throws RecognitionException {
 		IdRefContext _localctx = new IdRefContext(_ctx, getState());
-		enterRule(_localctx, 36, RULE_idRef);
+		enterRule(_localctx, 42, RULE_idRef);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(221); match(ID);
+			setState(266); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1369,22 +1677,22 @@ public class sqlParser extends Parser {
 
 	public final LocalIDSContext localIDS() throws RecognitionException {
 		LocalIDSContext _localctx = new LocalIDSContext(_ctx, getState());
-		enterRule(_localctx, 38, RULE_localIDS);
+		enterRule(_localctx, 44, RULE_localIDS);
 		try {
-			setState(227);
-			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
+			setState(272);
+			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(223); match(ID);
+				setState(268); match(ID);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(224); match(ID);
-				setState(225); match(T__3);
-				setState(226); localIDS();
+				setState(269); match(ID);
+				setState(270); match(T__2);
+				setState(271); localIDS();
 				}
 				break;
 			}
@@ -1426,22 +1734,22 @@ public class sqlParser extends Parser {
 
 	public final RefIDSContext refIDS() throws RecognitionException {
 		RefIDSContext _localctx = new RefIDSContext(_ctx, getState());
-		enterRule(_localctx, 40, RULE_refIDS);
+		enterRule(_localctx, 46, RULE_refIDS);
 		try {
-			setState(233);
-			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+			setState(278);
+			switch ( getInterpreter().adaptivePredict(_input,13,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(229); match(ID);
+				setState(274); match(ID);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(230); match(ID);
-				setState(231); match(T__3);
-				setState(232); refIDS();
+				setState(275); match(ID);
+				setState(276); match(T__2);
+				setState(277); refIDS();
 				}
 				break;
 			}
@@ -1528,35 +1836,35 @@ public class sqlParser extends Parser {
 
 	public final ExpContext exp() throws RecognitionException {
 		ExpContext _localctx = new ExpContext(_ctx, getState());
-		enterRule(_localctx, 42, RULE_exp);
+		enterRule(_localctx, 48, RULE_exp);
 		try {
-			setState(238);
+			setState(283);
 			switch (_input.LA(1)) {
 			case RES_AND:
 			case RES_OR:
 				_localctx = new Exp_logicContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(235); logic();
+				setState(280); logic();
 				}
 				break;
 			case RES_NOT:
 				_localctx = new Exp_logic_notContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(236); logic_not();
+				setState(281); logic_not();
 				}
 				break;
-			case T__11:
+			case T__12:
 			case T__10:
+			case T__9:
+			case T__8:
+			case T__7:
 			case T__6:
-			case T__4:
-			case T__2:
-			case T__0:
 				_localctx = new Exp_relationalContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(237); relational();
+				setState(282); relational();
 				}
 				break;
 			default:
@@ -1604,102 +1912,17 @@ public class sqlParser extends Parser {
 
 	public final Rename_table_statementContext rename_table_statement() throws RecognitionException {
 		Rename_table_statementContext _localctx = new Rename_table_statementContext(_ctx, getState());
-		enterRule(_localctx, 44, RULE_rename_table_statement);
+		enterRule(_localctx, 50, RULE_rename_table_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(240); match(ALTER);
-			setState(241); match(TABLE);
-			setState(242); match(ID);
-			setState(243); match(RENAME);
-			setState(244); match(TO);
-			setState(245); match(ID);
-			setState(246); match(T__5);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class AccionContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public TerminalNode COLUMN() { return getToken(sqlParser.COLUMN, 0); }
-		public ConstraintContext constraint() {
-			return getRuleContext(ConstraintContext.class,0);
-		}
-		public TerminalNode ADD() { return getToken(sqlParser.ADD, 0); }
-		public TerminalNode DROP() { return getToken(sqlParser.DROP, 0); }
-		public TerminalNode CONSTRAINT() { return getToken(sqlParser.CONSTRAINT, 0); }
-		public Tipo_literalContext tipo_literal() {
-			return getRuleContext(Tipo_literalContext.class,0);
-		}
-		public AccionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_accion; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAccion(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAccion(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAccion(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final AccionContext accion() throws RecognitionException {
-		AccionContext _localctx = new AccionContext(_ctx, getState());
-		enterRule(_localctx, 46, RULE_accion);
-		try {
-			setState(262);
-			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
-			case 1:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(248); match(ADD);
-				setState(249); match(COLUMN);
-				setState(250); match(ID);
-				setState(251); tipo_literal();
-				{
-				setState(252); constraint();
-				}
-				}
-				break;
-			case 2:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(254); match(ADD);
-				setState(255); constraint();
-				}
-				break;
-			case 3:
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(256); match(DROP);
-				setState(257); match(COLUMN);
-				setState(258); match(ID);
-				}
-				break;
-			case 4:
-				enterOuterAlt(_localctx, 4);
-				{
-				setState(259); match(DROP);
-				setState(260); match(CONSTRAINT);
-				setState(261); match(ID);
-				}
-				break;
+			setState(285); match(ALTER);
+			setState(286); match(TABLE);
+			setState(287); match(ID);
+			setState(288); match(RENAME);
+			setState(289); match(TO);
+			setState(290); match(ID);
+			setState(291); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1737,13 +1960,13 @@ public class sqlParser extends Parser {
 
 	public final Show_table_statementContext show_table_statement() throws RecognitionException {
 		Show_table_statementContext _localctx = new Show_table_statementContext(_ctx, getState());
-		enterRule(_localctx, 48, RULE_show_table_statement);
+		enterRule(_localctx, 52, RULE_show_table_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(264); match(SHOW);
-			setState(265); match(TABLES);
-			setState(266); match(T__5);
+			setState(293); match(SHOW);
+			setState(294); match(TABLES);
+			setState(295); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1783,15 +2006,15 @@ public class sqlParser extends Parser {
 
 	public final Show_column_statementContext show_column_statement() throws RecognitionException {
 		Show_column_statementContext _localctx = new Show_column_statementContext(_ctx, getState());
-		enterRule(_localctx, 50, RULE_show_column_statement);
+		enterRule(_localctx, 54, RULE_show_column_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(268); match(SHOW);
-			setState(269); match(COLUMNS);
-			setState(270); match(FROM);
-			setState(271); match(ID);
-			setState(272); match(T__5);
+			setState(297); match(SHOW);
+			setState(298); match(COLUMNS);
+			setState(299); match(FROM);
+			setState(300); match(ID);
+			setState(301); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1853,22 +2076,22 @@ public class sqlParser extends Parser {
 
 	public final LogicContext logic() throws RecognitionException {
 		LogicContext _localctx = new LogicContext(_ctx, getState());
-		enterRule(_localctx, 52, RULE_logic);
+		enterRule(_localctx, 56, RULE_logic);
 		try {
-			setState(276);
+			setState(305);
 			switch (_input.LA(1)) {
 			case RES_AND:
 				_localctx = new Logic_andContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(274); match(RES_AND);
+				setState(303); match(RES_AND);
 				}
 				break;
 			case RES_OR:
 				_localctx = new Logic_orContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(275); match(RES_OR);
+				setState(304); match(RES_OR);
 				}
 				break;
 			default:
@@ -1909,11 +2132,11 @@ public class sqlParser extends Parser {
 
 	public final Logic_notContext logic_not() throws RecognitionException {
 		Logic_notContext _localctx = new Logic_notContext(_ctx, getState());
-		enterRule(_localctx, 54, RULE_logic_not);
+		enterRule(_localctx, 58, RULE_logic_not);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(278); match(RES_NOT);
+			setState(307); match(RES_NOT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1949,14 +2172,14 @@ public class sqlParser extends Parser {
 
 	public final RelationalContext relational() throws RecognitionException {
 		RelationalContext _localctx = new RelationalContext(_ctx, getState());
-		enterRule(_localctx, 56, RULE_relational);
+		enterRule(_localctx, 60, RULE_relational);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(280);
+			setState(309);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__11) | (1L << T__10) | (1L << T__6) | (1L << T__4) | (1L << T__2) | (1L << T__0))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__12) | (1L << T__10) | (1L << T__9) | (1L << T__8) | (1L << T__7) | (1L << T__6))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			consume();
@@ -2005,17 +2228,25 @@ public class sqlParser extends Parser {
 
 	public final Insert_valueContext insert_value() throws RecognitionException {
 		Insert_valueContext _localctx = new Insert_valueContext(_ctx, getState());
-		enterRule(_localctx, 58, RULE_insert_value);
+		enterRule(_localctx, 62, RULE_insert_value);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(282); match(INSERT);
-			setState(283); match(INTO);
-			setState(284); match(ID);
-			setState(285); columns();
-			setState(286); match(VALUES);
-			setState(287); list();
-			setState(288); match(T__5);
+			setState(311); match(INSERT);
+			setState(312); match(INTO);
+			setState(313); match(ID);
+			setState(315);
+			_la = _input.LA(1);
+			if (_la==T__5 || _la==ID) {
+				{
+				setState(314); columns();
+				}
+			}
+
+			setState(317); match(VALUES);
+			setState(318); list();
+			setState(319); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2031,18 +2262,9 @@ public class sqlParser extends Parser {
 
 	public static class Update_valueContext extends ParserRuleContext {
 		public TerminalNode ID() { return getToken(sqlParser.ID, 0); }
-		public List<ValueContext> value() {
-			return getRuleContexts(ValueContext.class);
-		}
 		public TerminalNode UPDATE() { return getToken(sqlParser.UPDATE, 0); }
-		public ValueContext value(int i) {
-			return getRuleContext(ValueContext.class,i);
-		}
-		public List<ColumnaContext> columna() {
-			return getRuleContexts(ColumnaContext.class);
-		}
-		public ColumnaContext columna(int i) {
-			return getRuleContext(ColumnaContext.class,i);
+		public AsignacionContext asignacion() {
+			return getRuleContext(AsignacionContext.class,0);
 		}
 		public TerminalNode WHERE() { return getToken(sqlParser.WHERE, 0); }
 		public TerminalNode SET() { return getToken(sqlParser.SET, 0); }
@@ -2070,32 +2292,96 @@ public class sqlParser extends Parser {
 
 	public final Update_valueContext update_value() throws RecognitionException {
 		Update_valueContext _localctx = new Update_valueContext(_ctx, getState());
-		enterRule(_localctx, 60, RULE_update_value);
+		enterRule(_localctx, 64, RULE_update_value);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(290); match(UPDATE);
-			setState(291); match(ID);
-			setState(292); match(SET);
-			setState(297); 
+			setState(321); match(UPDATE);
+			setState(322); match(ID);
+			setState(323); match(SET);
+			setState(324); asignacion();
+			setState(327);
+			_la = _input.LA(1);
+			if (_la==WHERE) {
+				{
+				setState(325); match(WHERE);
+				setState(326); condition();
+				}
+			}
+
+			setState(329); match(T__11);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class AsignacionContext extends ParserRuleContext {
+		public LiteralContext literal(int i) {
+			return getRuleContext(LiteralContext.class,i);
+		}
+		public List<ColumnaContext> columna() {
+			return getRuleContexts(ColumnaContext.class);
+		}
+		public ColumnaContext columna(int i) {
+			return getRuleContext(ColumnaContext.class,i);
+		}
+		public List<LiteralContext> literal() {
+			return getRuleContexts(LiteralContext.class);
+		}
+		public AsignacionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_asignacion; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterAsignacion(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitAsignacion(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitAsignacion(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final AsignacionContext asignacion() throws RecognitionException {
+		AsignacionContext _localctx = new AsignacionContext(_ctx, getState());
+		enterRule(_localctx, 66, RULE_asignacion);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(331); columna();
+			setState(332); match(T__9);
+			setState(333); literal();
+			setState(341);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			do {
+			while (_la==T__2) {
 				{
 				{
-				setState(293); columna();
-				setState(294); match(T__2);
-				setState(295); value();
+				setState(334); match(T__2);
+				setState(335); columna();
+				setState(336); match(T__9);
+				setState(337); literal();
 				}
 				}
-				setState(299); 
+				setState(343);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( _la==ID );
-			setState(301); match(WHERE);
-			setState(302); condition();
-			setState(303); match(T__5);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -2138,16 +2424,24 @@ public class sqlParser extends Parser {
 
 	public final Delete_valueContext delete_value() throws RecognitionException {
 		Delete_valueContext _localctx = new Delete_valueContext(_ctx, getState());
-		enterRule(_localctx, 62, RULE_delete_value);
+		enterRule(_localctx, 68, RULE_delete_value);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(305); match(DELETE);
-			setState(306); match(FROM);
-			setState(307); match(ID);
-			setState(308); match(WHERE);
-			setState(309); condition();
-			setState(310); match(T__5);
+			setState(344); match(DELETE);
+			setState(345); match(FROM);
+			setState(346); match(ID);
+			setState(349);
+			_la = _input.LA(1);
+			if (_la==WHERE) {
+				{
+				setState(347); match(WHERE);
+				setState(348); condition();
+				}
+			}
+
+			setState(351); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2162,16 +2456,19 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Select_valueContext extends ParserRuleContext {
-		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
-		public TerminalNode ASC() { return getToken(sqlParser.ASC, 0); }
 		public TerminalNode ORDER() { return getToken(sqlParser.ORDER, 0); }
+		public OrderContext order() {
+			return getRuleContext(OrderContext.class,0);
+		}
 		public TerminalNode WHERE() { return getToken(sqlParser.WHERE, 0); }
 		public TerminalNode FROM() { return getToken(sqlParser.FROM, 0); }
-		public TerminalNode ID(int i) {
-			return getToken(sqlParser.ID, i);
-		}
 		public TerminalNode SELECT() { return getToken(sqlParser.SELECT, 0); }
-		public TerminalNode DESC() { return getToken(sqlParser.DESC, 0); }
+		public LocalIDSContext localIDS() {
+			return getRuleContext(LocalIDSContext.class,0);
+		}
+		public NlocalIDSContext nlocalIDS() {
+			return getRuleContext(NlocalIDSContext.class,0);
+		}
 		public TerminalNode BY() { return getToken(sqlParser.BY, 0); }
 		public ConditionContext condition() {
 			return getRuleContext(ConditionContext.class,0);
@@ -2197,61 +2494,284 @@ public class sqlParser extends Parser {
 
 	public final Select_valueContext select_value() throws RecognitionException {
 		Select_valueContext _localctx = new Select_valueContext(_ctx, getState());
-		enterRule(_localctx, 64, RULE_select_value);
+		enterRule(_localctx, 70, RULE_select_value);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(312); match(SELECT);
-			setState(322);
+			setState(353); match(SELECT);
+			setState(356);
 			switch (_input.LA(1)) {
-			case T__7:
+			case T__3:
 				{
-				setState(313); match(T__7);
+				setState(354); match(T__3);
 				}
 				break;
 			case ID:
 				{
-				setState(314); match(ID);
-				setState(319);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				while (_la==T__3) {
-					{
-					{
-					setState(315); match(T__3);
-					setState(316); match(ID);
-					}
-					}
-					setState(321);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-				}
+				setState(355); nlocalIDS();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(324); match(FROM);
-			setState(325); match(ID);
-			setState(326); match(WHERE);
-			setState(327); condition();
-			setState(331);
+			setState(358); match(FROM);
+			setState(359); localIDS();
+			setState(362);
 			_la = _input.LA(1);
-			if (_la==ORDER) {
+			if (_la==WHERE) {
 				{
-				setState(328); match(ORDER);
-				setState(329); match(BY);
-				setState(330);
-				_la = _input.LA(1);
-				if ( !(_la==ASC || _la==DESC) ) {
-				_errHandler.recoverInline(this);
-				}
-				consume();
+				setState(360); match(WHERE);
+				setState(361); condition();
 				}
 			}
 
-			setState(333); match(T__5);
+			setState(367);
+			_la = _input.LA(1);
+			if (_la==ORDER) {
+				{
+				setState(364); match(ORDER);
+				setState(365); match(BY);
+				setState(366); order();
+				}
+			}
+
+			setState(369); match(T__11);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class NIDContext extends ParserRuleContext {
+		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
+		public TerminalNode ID(int i) {
+			return getToken(sqlParser.ID, i);
+		}
+		public NIDContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_nID; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterNID(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitNID(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitNID(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final NIDContext nID() throws RecognitionException {
+		NIDContext _localctx = new NIDContext(_ctx, getState());
+		enterRule(_localctx, 72, RULE_nID);
+		try {
+			setState(375);
+			switch ( getInterpreter().adaptivePredict(_input,23,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(371); match(ID);
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(372); match(ID);
+				setState(373); match(T__0);
+				setState(374); match(ID);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class NlocalIDSContext extends ParserRuleContext {
+		public NIDContext nID() {
+			return getRuleContext(NIDContext.class,0);
+		}
+		public NlocalIDSContext nlocalIDS() {
+			return getRuleContext(NlocalIDSContext.class,0);
+		}
+		public NlocalIDSContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_nlocalIDS; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterNlocalIDS(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitNlocalIDS(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitNlocalIDS(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final NlocalIDSContext nlocalIDS() throws RecognitionException {
+		NlocalIDSContext _localctx = new NlocalIDSContext(_ctx, getState());
+		enterRule(_localctx, 74, RULE_nlocalIDS);
+		try {
+			setState(382);
+			switch ( getInterpreter().adaptivePredict(_input,24,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(377); nID();
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(378); nID();
+				setState(379); match(T__2);
+				setState(380); nlocalIDS();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class OrderContext extends ParserRuleContext {
+		public OrderContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_order; }
+	 
+		public OrderContext() { }
+		public void copyFrom(OrderContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class OrderUniContext extends OrderContext {
+		public TerminalNode ASC() { return getToken(sqlParser.ASC, 0); }
+		public NIDContext nID() {
+			return getRuleContext(NIDContext.class,0);
+		}
+		public TerminalNode DESC() { return getToken(sqlParser.DESC, 0); }
+		public OrderUniContext(OrderContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterOrderUni(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitOrderUni(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitOrderUni(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class OrderMultiContext extends OrderContext {
+		public TerminalNode ASC() { return getToken(sqlParser.ASC, 0); }
+		public NIDContext nID() {
+			return getRuleContext(NIDContext.class,0);
+		}
+		public OrderContext order() {
+			return getRuleContext(OrderContext.class,0);
+		}
+		public TerminalNode DESC() { return getToken(sqlParser.DESC, 0); }
+		public OrderMultiContext(OrderContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterOrderMulti(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitOrderMulti(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitOrderMulti(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final OrderContext order() throws RecognitionException {
+		OrderContext _localctx = new OrderContext(_ctx, getState());
+		enterRule(_localctx, 76, RULE_order);
+		int _la;
+		try {
+			setState(395);
+			switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
+			case 1:
+				_localctx = new OrderUniContext(_localctx);
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(384); nID();
+				setState(386);
+				_la = _input.LA(1);
+				if (_la==ASC || _la==DESC) {
+					{
+					setState(385);
+					_la = _input.LA(1);
+					if ( !(_la==ASC || _la==DESC) ) {
+					_errHandler.recoverInline(this);
+					}
+					consume();
+					}
+				}
+
+				}
+				break;
+			case 2:
+				_localctx = new OrderMultiContext(_localctx);
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(388); nID();
+				setState(390);
+				_la = _input.LA(1);
+				if (_la==ASC || _la==DESC) {
+					{
+					setState(389);
+					_la = _input.LA(1);
+					if ( !(_la==ASC || _la==DESC) ) {
+					_errHandler.recoverInline(this);
+					}
+					consume();
+					}
+				}
+
+				setState(392); match(T__2);
+				setState(393); order();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -2266,83 +2786,145 @@ public class sqlParser extends Parser {
 	}
 
 	public static class ConditionContext extends ParserRuleContext {
-		public List<Logic_notContext> logic_not() {
-			return getRuleContexts(Logic_notContext.class);
-		}
-		public CompContext comp(int i) {
-			return getRuleContext(CompContext.class,i);
-		}
-		public List<LogicContext> logic() {
-			return getRuleContexts(LogicContext.class);
-		}
-		public Logic_notContext logic_not(int i) {
-			return getRuleContext(Logic_notContext.class,i);
-		}
-		public List<CompContext> comp() {
-			return getRuleContexts(CompContext.class);
-		}
-		public LogicContext logic(int i) {
-			return getRuleContext(LogicContext.class,i);
-		}
 		public ConditionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_condition; }
+	 
+		public ConditionContext() { }
+		public void copyFrom(ConditionContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class ConditionNotContext extends ConditionContext {
+		public Logic_notContext logic_not() {
+			return getRuleContext(Logic_notContext.class,0);
+		}
+		public ConditionContext condition() {
+			return getRuleContext(ConditionContext.class,0);
+		}
+		public ConditionNotContext(ConditionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterCondition(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConditionNot(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitCondition(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConditionNot(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitCondition(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConditionNot(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ConditionCondContext extends ConditionContext {
+		public ConditionContext condition(int i) {
+			return getRuleContext(ConditionContext.class,i);
+		}
+		public LogicContext logic() {
+			return getRuleContext(LogicContext.class,0);
+		}
+		public List<ConditionContext> condition() {
+			return getRuleContexts(ConditionContext.class);
+		}
+		public ConditionCondContext(ConditionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConditionCond(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConditionCond(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConditionCond(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ConditionCompContext extends ConditionContext {
+		public LogicContext logic() {
+			return getRuleContext(LogicContext.class,0);
+		}
+		public CompContext comp() {
+			return getRuleContext(CompContext.class,0);
+		}
+		public ConditionContext condition() {
+			return getRuleContext(ConditionContext.class,0);
+		}
+		public ConditionCompContext(ConditionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterConditionComp(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitConditionComp(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitConditionComp(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
 	public final ConditionContext condition() throws RecognitionException {
 		ConditionContext _localctx = new ConditionContext(_ctx, getState());
-		enterRule(_localctx, 66, RULE_condition);
+		enterRule(_localctx, 78, RULE_condition);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(336);
-			_la = _input.LA(1);
-			if (_la==RES_NOT) {
+			setState(414);
+			switch (_input.LA(1)) {
+			case T__5:
+				_localctx = new ConditionCondContext(_localctx);
+				enterOuterAlt(_localctx, 1);
 				{
-				setState(335); logic_not();
-				}
-			}
-
-			setState(338); comp();
-			setState(347);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==RES_AND || _la==RES_OR) {
-				{
-				{
-				setState(339); logic();
-				setState(341);
+				setState(397); match(T__5);
+				setState(398); condition();
+				setState(399); match(T__4);
+				setState(403);
 				_la = _input.LA(1);
-				if (_la==RES_NOT) {
+				if (_la==RES_AND || _la==RES_OR) {
 					{
-					setState(340); logic_not();
+					setState(400); logic();
+					setState(401); condition();
 					}
 				}
 
+				}
+				break;
+			case T__1:
+			case NULL:
+			case INT:
+			case ID:
+			case DATE:
+			case CHAR:
+				_localctx = new ConditionCompContext(_localctx);
+				enterOuterAlt(_localctx, 2);
 				{
-				setState(343); comp();
-				}
-				}
-				}
-				setState(349);
-				_errHandler.sync(this);
+				setState(405); comp();
+				setState(409);
 				_la = _input.LA(1);
-			}
+				if (_la==RES_AND || _la==RES_OR) {
+					{
+					setState(406); logic();
+					setState(407); condition();
+					}
+				}
+
+				}
+				break;
+			case RES_NOT:
+				_localctx = new ConditionNotContext(_localctx);
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(411); logic_not();
+				setState(412); condition();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2357,60 +2939,146 @@ public class sqlParser extends Parser {
 	}
 
 	public static class CompContext extends ParserRuleContext {
-		public List<TerminalNode> ID() { return getTokens(sqlParser.ID); }
+		public CompContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_comp; }
+	 
+		public CompContext() { }
+		public void copyFrom(CompContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class CompIdContext extends CompContext {
+		public NIDContext nID(int i) {
+			return getRuleContext(NIDContext.class,i);
+		}
+		public List<NIDContext> nID() {
+			return getRuleContexts(NIDContext.class);
+		}
 		public RelationalContext relational() {
 			return getRuleContext(RelationalContext.class,0);
 		}
 		public LiteralContext literal() {
 			return getRuleContext(LiteralContext.class,0);
 		}
-		public TerminalNode ID(int i) {
-			return getToken(sqlParser.ID, i);
-		}
-		public CompContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_comp; }
+		public CompIdContext(CompContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterComp(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterCompId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitComp(this);
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitCompId(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitComp(this);
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitCompId(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CompLitIdContext extends CompContext {
+		public RelationalContext relational() {
+			return getRuleContext(RelationalContext.class,0);
+		}
+		public NIDContext nID() {
+			return getRuleContext(NIDContext.class,0);
+		}
+		public LiteralContext literal() {
+			return getRuleContext(LiteralContext.class,0);
+		}
+		public CompLitIdContext(CompContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterCompLitId(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitCompLitId(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitCompLitId(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CompLitContext extends CompContext {
+		public LiteralContext literal(int i) {
+			return getRuleContext(LiteralContext.class,i);
+		}
+		public RelationalContext relational() {
+			return getRuleContext(RelationalContext.class,0);
+		}
+		public List<LiteralContext> literal() {
+			return getRuleContexts(LiteralContext.class);
+		}
+		public CompLitContext(CompContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterCompLit(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitCompLit(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitCompLit(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
 	public final CompContext comp() throws RecognitionException {
 		CompContext _localctx = new CompContext(_ctx, getState());
-		enterRule(_localctx, 68, RULE_comp);
+		enterRule(_localctx, 80, RULE_comp);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(350); match(ID);
-			setState(351); relational();
-			setState(354);
-			switch (_input.LA(1)) {
-			case ID:
+			setState(430);
+			switch ( getInterpreter().adaptivePredict(_input,32,_ctx) ) {
+			case 1:
+				_localctx = new CompIdContext(_localctx);
+				enterOuterAlt(_localctx, 1);
 				{
-				setState(352); match(ID);
+				setState(416); nID();
+				setState(417); relational();
+				setState(420);
+				switch (_input.LA(1)) {
+				case ID:
+					{
+					setState(418); nID();
+					}
+					break;
+				case T__1:
+				case NULL:
+				case INT:
+				case DATE:
+				case CHAR:
+					{
+					setState(419); literal();
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
+				}
 				}
 				break;
-			case NUM:
-			case CHAR:
-			case DATE:
+			case 2:
+				_localctx = new CompLitIdContext(_localctx);
+				enterOuterAlt(_localctx, 2);
 				{
-				setState(353); literal();
+				setState(422); literal();
+				setState(423); relational();
+				setState(424); nID();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
-			}
+			case 3:
+				_localctx = new CompLitContext(_localctx);
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(426); literal();
+				setState(427); relational();
+				setState(428); literal();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -2452,48 +3120,52 @@ public class sqlParser extends Parser {
 
 	public final ColumnsContext columns() throws RecognitionException {
 		ColumnsContext _localctx = new ColumnsContext(_ctx, getState());
-		enterRule(_localctx, 70, RULE_columns);
+		enterRule(_localctx, 82, RULE_columns);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(369);
+			setState(451);
 			switch (_input.LA(1)) {
 			case ID:
 				{
-				setState(357); 
+				setState(432); columna();
+				setState(437);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				do {
+				while (_la==T__2) {
 					{
 					{
-					setState(356); columna();
+					setState(433); match(T__2);
+					setState(434); columna();
 					}
 					}
-					setState(359); 
+					setState(439);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( _la==ID );
+				}
 				}
 				break;
-			case T__9:
+			case T__5:
 				{
 				{
-				setState(361); match(T__9);
-				setState(363); 
+				setState(440); match(T__5);
+				setState(441); columna();
+				setState(446);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				do {
+				while (_la==T__2) {
 					{
 					{
-					setState(362); columna();
+					setState(442); match(T__2);
+					setState(443); columna();
 					}
 					}
-					setState(365); 
+					setState(448);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( _la==ID );
-				setState(367); match(T__8);
+				}
+				setState(449); match(T__4);
 				}
 				}
 				break;
@@ -2536,11 +3208,11 @@ public class sqlParser extends Parser {
 
 	public final ColumnaContext columna() throws RecognitionException {
 		ColumnaContext _localctx = new ColumnaContext(_ctx, getState());
-		enterRule(_localctx, 72, RULE_columna);
+		enterRule(_localctx, 84, RULE_columna);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(371); match(ID);
+			setState(453); match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2555,8 +3227,11 @@ public class sqlParser extends Parser {
 	}
 
 	public static class ListContext extends ParserRuleContext {
-		public List_valuesContext list_values() {
-			return getRuleContext(List_valuesContext.class,0);
+		public LiteralContext literal(int i) {
+			return getRuleContext(LiteralContext.class,i);
+		}
+		public List<LiteralContext> literal() {
+			return getRuleContexts(LiteralContext.class);
 		}
 		public ListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2579,182 +3254,63 @@ public class sqlParser extends Parser {
 
 	public final ListContext list() throws RecognitionException {
 		ListContext _localctx = new ListContext(_ctx, getState());
-		enterRule(_localctx, 74, RULE_list);
+		enterRule(_localctx, 86, RULE_list);
+		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(378);
+			setState(474);
 			switch (_input.LA(1)) {
-			case NUM:
-			case CHAR:
+			case T__1:
+			case NULL:
+			case INT:
 			case DATE:
+			case CHAR:
+				enterOuterAlt(_localctx, 1);
 				{
-				setState(373); list_values();
+				{
+				setState(455); literal();
+				setState(460);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==T__2) {
+					{
+					{
+					setState(456); match(T__2);
+					setState(457); literal();
+					}
+					}
+					setState(462);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				}
 				}
 				break;
-			case T__9:
+			case T__5:
+				enterOuterAlt(_localctx, 2);
 				{
+				setState(463); match(T__5);
 				{
-				setState(374); match(T__9);
-				setState(375); list_values();
-				setState(376); match(T__8);
+				setState(464); literal();
+				setState(469);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==T__2) {
+					{
+					{
+					setState(465); match(T__2);
+					setState(466); literal();
+					}
+					}
+					setState(471);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
 				}
+				}
+				setState(472); match(T__4);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class List_valuesContext extends ParserRuleContext {
-		public List<ValueContext> value() {
-			return getRuleContexts(ValueContext.class);
-		}
-		public ValueContext value(int i) {
-			return getRuleContext(ValueContext.class,i);
-		}
-		public List_valuesContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_list_values; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterList_values(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitList_values(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitList_values(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final List_valuesContext list_values() throws RecognitionException {
-		List_valuesContext _localctx = new List_valuesContext(_ctx, getState());
-		enterRule(_localctx, 76, RULE_list_values);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			{
-			setState(380); value();
-			setState(385);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==T__3) {
-				{
-				{
-				setState(381); match(T__3);
-				{
-				setState(382); value();
-				}
-				}
-				}
-				setState(387);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class ValueContext extends ParserRuleContext {
-		public TipoContext tipo() {
-			return getRuleContext(TipoContext.class,0);
-		}
-		public ValueContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_value; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterValue(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitValue(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitValue(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final ValueContext value() throws RecognitionException {
-		ValueContext _localctx = new ValueContext(_ctx, getState());
-		enterRule(_localctx, 78, RULE_value);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(388); tipo();
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class TipoContext extends ParserRuleContext {
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
-		}
-		public TipoContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_tipo; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).enterTipo(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof sqlListener ) ((sqlListener)listener).exitTipo(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof sqlVisitor ) return ((sqlVisitor<? extends T>)visitor).visitTipo(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final TipoContext tipo() throws RecognitionException {
-		TipoContext _localctx = new TipoContext(_ctx, getState());
-		enterRule(_localctx, 80, RULE_tipo);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(390); literal();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2769,6 +3325,7 @@ public class sqlParser extends Parser {
 	}
 
 	public static class LiteralContext extends ParserRuleContext {
+		public TerminalNode NULL() { return getToken(sqlParser.NULL, 0); }
 		public Int_literalContext int_literal() {
 			return getRuleContext(Int_literalContext.class,0);
 		}
@@ -2802,32 +3359,38 @@ public class sqlParser extends Parser {
 
 	public final LiteralContext literal() throws RecognitionException {
 		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 82, RULE_literal);
+		enterRule(_localctx, 88, RULE_literal);
 		try {
-			setState(396);
-			switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
+			setState(481);
+			switch ( getInterpreter().adaptivePredict(_input,39,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(392); int_literal();
+				setState(476); int_literal();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(393); float_literal();
+				setState(477); float_literal();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(394); date_literal();
+				setState(478); date_literal();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(395); char_literal();
+				setState(479); char_literal();
+				}
+				break;
+			case 5:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(480); match(NULL);
 				}
 				break;
 			}
@@ -2844,7 +3407,7 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Int_literalContext extends ParserRuleContext {
-		public TerminalNode NUM() { return getToken(sqlParser.NUM, 0); }
+		public TerminalNode INT() { return getToken(sqlParser.INT, 0); }
 		public Int_literalContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2866,11 +3429,20 @@ public class sqlParser extends Parser {
 
 	public final Int_literalContext int_literal() throws RecognitionException {
 		Int_literalContext _localctx = new Int_literalContext(_ctx, getState());
-		enterRule(_localctx, 84, RULE_int_literal);
+		enterRule(_localctx, 90, RULE_int_literal);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(398); match(NUM);
+			setState(484);
+			_la = _input.LA(1);
+			if (_la==T__1) {
+				{
+				setState(483); match(T__1);
+				}
+			}
+
+			setState(486); match(INT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2885,8 +3457,10 @@ public class sqlParser extends Parser {
 	}
 
 	public static class Float_literalContext extends ParserRuleContext {
-		public TerminalNode NUM() { return getToken(sqlParser.NUM, 0); }
-		public TerminalNode INT() { return getToken(sqlParser.INT, 0); }
+		public TerminalNode INT(int i) {
+			return getToken(sqlParser.INT, i);
+		}
+		public List<TerminalNode> INT() { return getTokens(sqlParser.INT); }
 		public Float_literalContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2908,18 +3482,26 @@ public class sqlParser extends Parser {
 
 	public final Float_literalContext float_literal() throws RecognitionException {
 		Float_literalContext _localctx = new Float_literalContext(_ctx, getState());
-		enterRule(_localctx, 86, RULE_float_literal);
+		enterRule(_localctx, 92, RULE_float_literal);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(400); match(NUM);
-			setState(403);
+			setState(489);
 			_la = _input.LA(1);
 			if (_la==T__1) {
 				{
-				setState(401); match(T__1);
-				setState(402); match(INT);
+				setState(488); match(T__1);
+				}
+			}
+
+			setState(491); match(INT);
+			setState(494);
+			_la = _input.LA(1);
+			if (_la==T__0) {
+				{
+				setState(492); match(T__0);
+				setState(493); match(INT);
 				}
 			}
 
@@ -2959,11 +3541,11 @@ public class sqlParser extends Parser {
 
 	public final Date_literalContext date_literal() throws RecognitionException {
 		Date_literalContext _localctx = new Date_literalContext(_ctx, getState());
-		enterRule(_localctx, 88, RULE_date_literal);
+		enterRule(_localctx, 94, RULE_date_literal);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(405); match(DATE);
+			setState(496); match(DATE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3000,11 +3582,11 @@ public class sqlParser extends Parser {
 
 	public final Char_literalContext char_literal() throws RecognitionException {
 		Char_literalContext _localctx = new Char_literalContext(_ctx, getState());
-		enterRule(_localctx, 90, RULE_char_literal);
+		enterRule(_localctx, 96, RULE_char_literal);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(407); match(CHAR);
+			setState(498); match(CHAR);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3019,142 +3601,178 @@ public class sqlParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3=\u019c\4\2\t\2\4"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3>\u01f7\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
 		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\4+\t+\4"+
-		",\t,\4-\t-\4.\t.\4/\t/\3\2\6\2`\n\2\r\2\16\2a\3\3\3\3\5\3f\n\3\3\4\3\4"+
-		"\5\4j\n\4\3\5\3\5\5\5n\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6y\n"+
-		"\6\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u0089\n"+
-		"\t\f\t\16\t\u008c\13\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3\13"+
-		"\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3"+
-		"\16\3\16\3\16\3\16\3\17\3\17\3\17\3\17\3\17\3\20\3\20\3\20\5\20\u00b5"+
-		"\n\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00be\n\21\3\22\3\22\3\22"+
-		"\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23"+
-		"\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\5\23"+
-		"\u00de\n\23\3\24\3\24\3\25\3\25\3\25\3\25\5\25\u00e6\n\25\3\26\3\26\3"+
-		"\26\3\26\5\26\u00ec\n\26\3\27\3\27\3\27\5\27\u00f1\n\27\3\30\3\30\3\30"+
-		"\3\30\3\30\3\30\3\30\3\30\3\31\3\31\3\31\3\31\3\31\3\31\3\31\3\31\3\31"+
-		"\3\31\3\31\3\31\3\31\3\31\5\31\u0109\n\31\3\32\3\32\3\32\3\32\3\33\3\33"+
-		"\3\33\3\33\3\33\3\33\3\34\3\34\5\34\u0117\n\34\3\35\3\35\3\36\3\36\3\37"+
-		"\3\37\3\37\3\37\3\37\3\37\3\37\3\37\3 \3 \3 \3 \3 \3 \3 \6 \u012c\n \r"+
-		" \16 \u012d\3 \3 \3 \3 \3!\3!\3!\3!\3!\3!\3!\3\"\3\"\3\"\3\"\3\"\7\"\u0140"+
-		"\n\"\f\"\16\"\u0143\13\"\5\"\u0145\n\"\3\"\3\"\3\"\3\"\3\"\3\"\3\"\5\""+
-		"\u014e\n\"\3\"\3\"\3#\5#\u0153\n#\3#\3#\3#\5#\u0158\n#\3#\3#\7#\u015c"+
-		"\n#\f#\16#\u015f\13#\3$\3$\3$\3$\5$\u0165\n$\3%\6%\u0168\n%\r%\16%\u0169"+
-		"\3%\3%\6%\u016e\n%\r%\16%\u016f\3%\3%\5%\u0174\n%\3&\3&\3\'\3\'\3\'\3"+
-		"\'\3\'\5\'\u017d\n\'\3(\3(\3(\7(\u0182\n(\f(\16(\u0185\13(\3)\3)\3*\3"+
-		"*\3+\3+\3+\3+\5+\u018f\n+\3,\3,\3-\3-\3-\5-\u0196\n-\3.\3.\3/\3/\3/\2"+
-		"\2\60\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>"+
-		"@BDFHJLNPRTVXZ\\\2\4\7\2\3\4\b\b\n\n\f\f\16\16\3\2\65\66\u0199\2_\3\2"+
-		"\2\2\4e\3\2\2\2\6i\3\2\2\2\bm\3\2\2\2\nx\3\2\2\2\fz\3\2\2\2\16|\3\2\2"+
-		"\2\20\u0081\3\2\2\2\22\u0090\3\2\2\2\24\u0095\3\2\2\2\26\u009b\3\2\2\2"+
-		"\30\u00a0\3\2\2\2\32\u00a8\3\2\2\2\34\u00ac\3\2\2\2\36\u00b4\3\2\2\2 "+
-		"\u00bd\3\2\2\2\"\u00bf\3\2\2\2$\u00dd\3\2\2\2&\u00df\3\2\2\2(\u00e5\3"+
-		"\2\2\2*\u00eb\3\2\2\2,\u00f0\3\2\2\2.\u00f2\3\2\2\2\60\u0108\3\2\2\2\62"+
-		"\u010a\3\2\2\2\64\u010e\3\2\2\2\66\u0116\3\2\2\28\u0118\3\2\2\2:\u011a"+
-		"\3\2\2\2<\u011c\3\2\2\2>\u0124\3\2\2\2@\u0133\3\2\2\2B\u013a\3\2\2\2D"+
-		"\u0152\3\2\2\2F\u0160\3\2\2\2H\u0173\3\2\2\2J\u0175\3\2\2\2L\u017c\3\2"+
-		"\2\2N\u017e\3\2\2\2P\u0186\3\2\2\2R\u0188\3\2\2\2T\u018e\3\2\2\2V\u0190"+
-		"\3\2\2\2X\u0192\3\2\2\2Z\u0197\3\2\2\2\\\u0199\3\2\2\2^`\5\4\3\2_^\3\2"+
-		"\2\2`a\3\2\2\2a_\3\2\2\2ab\3\2\2\2b\3\3\2\2\2cf\5\6\4\2df\5\f\7\2ec\3"+
-		"\2\2\2ed\3\2\2\2f\5\3\2\2\2gj\5\b\5\2hj\5\n\6\2ig\3\2\2\2ih\3\2\2\2j\7"+
-		"\3\2\2\2kn\5\16\b\2ln\5\20\t\2mk\3\2\2\2ml\3\2\2\2n\t\3\2\2\2oy\5\22\n"+
-		"\2py\5\24\13\2qy\5\26\f\2ry\5\30\r\2sy\5\34\17\2ty\5\32\16\2uy\5.\30\2"+
-		"vy\5\62\32\2wy\5\64\33\2xo\3\2\2\2xp\3\2\2\2xq\3\2\2\2xr\3\2\2\2xs\3\2"+
-		"\2\2xt\3\2\2\2xu\3\2\2\2xv\3\2\2\2xw\3\2\2\2y\13\3\2\2\2z{\5B\"\2{\r\3"+
-		"\2\2\2|}\7\17\2\2}~\7\20\2\2~\177\78\2\2\177\u0080\7\t\2\2\u0080\17\3"+
-		"\2\2\2\u0081\u0082\7\17\2\2\u0082\u0083\7\22\2\2\u0083\u0084\78\2\2\u0084"+
-		"\u0085\7\5\2\2\u0085\u008a\5\36\20\2\u0086\u0087\7\13\2\2\u0087\u0089"+
-		"\5\36\20\2\u0088\u0086\3\2\2\2\u0089\u008c\3\2\2\2\u008a\u0088\3\2\2\2"+
-		"\u008a\u008b\3\2\2\2\u008b\u008d\3\2\2\2\u008c\u008a\3\2\2\2\u008d\u008e"+
-		"\7\6\2\2\u008e\u008f\7\t\2\2\u008f\21\3\2\2\2\u0090\u0091\7\24\2\2\u0091"+
-		"\u0092\7\20\2\2\u0092\u0093\78\2\2\u0093\u0094\7\t\2\2\u0094\23\3\2\2"+
-		"\2\u0095\u0096\7\25\2\2\u0096\u0097\7\22\2\2\u0097\u0098\78\2\2\u0098"+
-		"\u0099\5\60\31\2\u0099\u009a\7\t\2\2\u009a\25\3\2\2\2\u009b\u009c\7\24"+
-		"\2\2\u009c\u009d\7\22\2\2\u009d\u009e\78\2\2\u009e\u009f\7\t\2\2\u009f"+
-		"\27\3\2\2\2\u00a0\u00a1\7\25\2\2\u00a1\u00a2\7\20\2\2\u00a2\u00a3\78\2"+
-		"\2\u00a3\u00a4\7\26\2\2\u00a4\u00a5\7\27\2\2\u00a5\u00a6\78\2\2\u00a6"+
-		"\u00a7\7\t\2\2\u00a7\31\3\2\2\2\u00a8\u00a9\7\30\2\2\u00a9\u00aa\7\21"+
-		"\2\2\u00aa\u00ab\7\t\2\2\u00ab\33\3\2\2\2\u00ac\u00ad\7\31\2\2\u00ad\u00ae"+
-		"\7\20\2\2\u00ae\u00af\78\2\2\u00af\u00b0\7\t\2\2\u00b0\35\3\2\2\2\u00b1"+
-		"\u00b2\78\2\2\u00b2\u00b5\5 \21\2\u00b3\u00b5\5\"\22\2\u00b4\u00b1\3\2"+
-		"\2\2\u00b4\u00b3\3\2\2\2\u00b5\37\3\2\2\2\u00b6\u00be\7\32\2\2\u00b7\u00be"+
-		"\7\33\2\2\u00b8\u00b9\7\34\2\2\u00b9\u00ba\7\5\2\2\u00ba\u00bb\7\67\2"+
-		"\2\u00bb\u00be\7\6\2\2\u00bc\u00be\7\35\2\2\u00bd\u00b6\3\2\2\2\u00bd"+
-		"\u00b7\3\2\2\2\u00bd\u00b8\3\2\2\2\u00bd\u00bc\3\2\2\2\u00be!\3\2\2\2"+
-		"\u00bf\u00c0\7\36\2\2\u00c0\u00c1\5$\23\2\u00c1#\3\2\2\2\u00c2\u00c3\7"+
-		"8\2\2\u00c3\u00c4\7 \2\2\u00c4\u00c5\7\37\2\2\u00c5\u00c6\7\5\2\2\u00c6"+
-		"\u00c7\5(\25\2\u00c7\u00c8\7\6\2\2\u00c8\u00de\3\2\2\2\u00c9\u00ca\78"+
-		"\2\2\u00ca\u00cb\7!\2\2\u00cb\u00cc\7\37\2\2\u00cc\u00cd\7\5\2\2\u00cd"+
-		"\u00ce\5(\25\2\u00ce\u00cf\7\6\2\2\u00cf\u00d0\7\"\2\2\u00d0\u00d1\5&"+
-		"\24\2\u00d1\u00d2\7\5\2\2\u00d2\u00d3\5*\26\2\u00d3\u00d4\7\6\2\2\u00d4"+
-		"\u00de\3\2\2\2\u00d5\u00d6\78\2\2\u00d6\u00d7\7#\2\2\u00d7\u00d8\7\5\2"+
-		"\2\u00d8\u00d9\78\2\2\u00d9\u00da\5,\27\2\u00da\u00db\78\2\2\u00db\u00dc"+
-		"\7\6\2\2\u00dc\u00de\3\2\2\2\u00dd\u00c2\3\2\2\2\u00dd\u00c9\3\2\2\2\u00dd"+
-		"\u00d5\3\2\2\2\u00de%\3\2\2\2\u00df\u00e0\78\2\2\u00e0\'\3\2\2\2\u00e1"+
-		"\u00e6\78\2\2\u00e2\u00e3\78\2\2\u00e3\u00e4\7\13\2\2\u00e4\u00e6\5(\25"+
-		"\2\u00e5\u00e1\3\2\2\2\u00e5\u00e2\3\2\2\2\u00e6)\3\2\2\2\u00e7\u00ec"+
-		"\78\2\2\u00e8\u00e9\78\2\2\u00e9\u00ea\7\13\2\2\u00ea\u00ec\5*\26\2\u00eb"+
-		"\u00e7\3\2\2\2\u00eb\u00e8\3\2\2\2\u00ec+\3\2\2\2\u00ed\u00f1\5\66\34"+
-		"\2\u00ee\u00f1\58\35\2\u00ef\u00f1\5:\36\2\u00f0\u00ed\3\2\2\2\u00f0\u00ee"+
-		"\3\2\2\2\u00f0\u00ef\3\2\2\2\u00f1-\3\2\2\2\u00f2\u00f3\7\25\2\2\u00f3"+
-		"\u00f4\7\22\2\2\u00f4\u00f5\78\2\2\u00f5\u00f6\7\26\2\2\u00f6\u00f7\7"+
-		"\27\2\2\u00f7\u00f8\78\2\2\u00f8\u00f9\7\t\2\2\u00f9/\3\2\2\2\u00fa\u00fb"+
-		"\7$\2\2\u00fb\u00fc\7%\2\2\u00fc\u00fd\78\2\2\u00fd\u00fe\5 \21\2\u00fe"+
-		"\u00ff\5\"\22\2\u00ff\u0109\3\2\2\2\u0100\u0101\7$\2\2\u0101\u0109\5\""+
-		"\22\2\u0102\u0103\7\24\2\2\u0103\u0104\7%\2\2\u0104\u0109\78\2\2\u0105"+
-		"\u0106\7\24\2\2\u0106\u0107\7\36\2\2\u0107\u0109\78\2\2\u0108\u00fa\3"+
-		"\2\2\2\u0108\u0100\3\2\2\2\u0108\u0102\3\2\2\2\u0108\u0105\3\2\2\2\u0109"+
-		"\61\3\2\2\2\u010a\u010b\7\30\2\2\u010b\u010c\7\23\2\2\u010c\u010d\7\t"+
-		"\2\2\u010d\63\3\2\2\2\u010e\u010f\7\30\2\2\u010f\u0110\7&\2\2\u0110\u0111"+
-		"\7\'\2\2\u0111\u0112\78\2\2\u0112\u0113\7\t\2\2\u0113\65\3\2\2\2\u0114"+
-		"\u0117\7(\2\2\u0115\u0117\7)\2\2\u0116\u0114\3\2\2\2\u0116\u0115\3\2\2"+
-		"\2\u0117\67\3\2\2\2\u0118\u0119\7*\2\2\u01199\3\2\2\2\u011a\u011b\t\2"+
-		"\2\2\u011b;\3\2\2\2\u011c\u011d\7+\2\2\u011d\u011e\7,\2\2\u011e\u011f"+
-		"\78\2\2\u011f\u0120\5H%\2\u0120\u0121\7-\2\2\u0121\u0122\5L\'\2\u0122"+
-		"\u0123\7\t\2\2\u0123=\3\2\2\2\u0124\u0125\7.\2\2\u0125\u0126\78\2\2\u0126"+
-		"\u012b\7/\2\2\u0127\u0128\5J&\2\u0128\u0129\7\f\2\2\u0129\u012a\5P)\2"+
-		"\u012a\u012c\3\2\2\2\u012b\u0127\3\2\2\2\u012c\u012d\3\2\2\2\u012d\u012b"+
-		"\3\2\2\2\u012d\u012e\3\2\2\2\u012e\u012f\3\2\2\2\u012f\u0130\7\60\2\2"+
-		"\u0130\u0131\5D#\2\u0131\u0132\7\t\2\2\u0132?\3\2\2\2\u0133\u0134\7\61"+
-		"\2\2\u0134\u0135\7\'\2\2\u0135\u0136\78\2\2\u0136\u0137\7\60\2\2\u0137"+
-		"\u0138\5D#\2\u0138\u0139\7\t\2\2\u0139A\3\2\2\2\u013a\u0144\7\62\2\2\u013b"+
-		"\u0145\7\7\2\2\u013c\u0141\78\2\2\u013d\u013e\7\13\2\2\u013e\u0140\78"+
-		"\2\2\u013f\u013d\3\2\2\2\u0140\u0143\3\2\2\2\u0141\u013f\3\2\2\2\u0141"+
-		"\u0142\3\2\2\2\u0142\u0145\3\2\2\2\u0143\u0141\3\2\2\2\u0144\u013b\3\2"+
-		"\2\2\u0144\u013c\3\2\2\2\u0145\u0146\3\2\2\2\u0146\u0147\7\'\2\2\u0147"+
-		"\u0148\78\2\2\u0148\u0149\7\60\2\2\u0149\u014d\5D#\2\u014a\u014b\7\63"+
-		"\2\2\u014b\u014c\7\64\2\2\u014c\u014e\t\3\2\2\u014d\u014a\3\2\2\2\u014d"+
-		"\u014e\3\2\2\2\u014e\u014f\3\2\2\2\u014f\u0150\7\t\2\2\u0150C\3\2\2\2"+
-		"\u0151\u0153\58\35\2\u0152\u0151\3\2\2\2\u0152\u0153\3\2\2\2\u0153\u0154"+
-		"\3\2\2\2\u0154\u015d\5F$\2\u0155\u0157\5\66\34\2\u0156\u0158\58\35\2\u0157"+
-		"\u0156\3\2\2\2\u0157\u0158\3\2\2\2\u0158\u0159\3\2\2\2\u0159\u015a\5F"+
-		"$\2\u015a\u015c\3\2\2\2\u015b\u0155\3\2\2\2\u015c\u015f\3\2\2\2\u015d"+
-		"\u015b\3\2\2\2\u015d\u015e\3\2\2\2\u015eE\3\2\2\2\u015f\u015d\3\2\2\2"+
-		"\u0160\u0161\78\2\2\u0161\u0164\5:\36\2\u0162\u0165\78\2\2\u0163\u0165"+
-		"\5T+\2\u0164\u0162\3\2\2\2\u0164\u0163\3\2\2\2\u0165G\3\2\2\2\u0166\u0168"+
-		"\5J&\2\u0167\u0166\3\2\2\2\u0168\u0169\3\2\2\2\u0169\u0167\3\2\2\2\u0169"+
-		"\u016a\3\2\2\2\u016a\u0174\3\2\2\2\u016b\u016d\7\5\2\2\u016c\u016e\5J"+
-		"&\2\u016d\u016c\3\2\2\2\u016e\u016f\3\2\2\2\u016f\u016d\3\2\2\2\u016f"+
-		"\u0170\3\2\2\2\u0170\u0171\3\2\2\2\u0171\u0172\7\6\2\2\u0172\u0174\3\2"+
-		"\2\2\u0173\u0167\3\2\2\2\u0173\u016b\3\2\2\2\u0174I\3\2\2\2\u0175\u0176"+
-		"\78\2\2\u0176K\3\2\2\2\u0177\u017d\5N(\2\u0178\u0179\7\5\2\2\u0179\u017a"+
-		"\5N(\2\u017a\u017b\7\6\2\2\u017b\u017d\3\2\2\2\u017c\u0177\3\2\2\2\u017c"+
-		"\u0178\3\2\2\2\u017dM\3\2\2\2\u017e\u0183\5P)\2\u017f\u0180\7\13\2\2\u0180"+
-		"\u0182\5P)\2\u0181\u017f\3\2\2\2\u0182\u0185\3\2\2\2\u0183\u0181\3\2\2"+
-		"\2\u0183\u0184\3\2\2\2\u0184O\3\2\2\2\u0185\u0183\3\2\2\2\u0186\u0187"+
-		"\5R*\2\u0187Q\3\2\2\2\u0188\u0189\5T+\2\u0189S\3\2\2\2\u018a\u018f\5V"+
-		",\2\u018b\u018f\5X-\2\u018c\u018f\5Z.\2\u018d\u018f\5\\/\2\u018e\u018a"+
-		"\3\2\2\2\u018e\u018b\3\2\2\2\u018e\u018c\3\2\2\2\u018e\u018d\3\2\2\2\u018f"+
-		"U\3\2\2\2\u0190\u0191\79\2\2\u0191W\3\2\2\2\u0192\u0195\79\2\2\u0193\u0194"+
-		"\7\r\2\2\u0194\u0196\7\67\2\2\u0195\u0193\3\2\2\2\u0195\u0196\3\2\2\2"+
-		"\u0196Y\3\2\2\2\u0197\u0198\7;\2\2\u0198[\3\2\2\2\u0199\u019a\7:\2\2\u019a"+
-		"]\3\2\2\2\37aeimx\u008a\u00b4\u00bd\u00dd\u00e5\u00eb\u00f0\u0108\u0116"+
-		"\u012d\u0141\u0144\u014d\u0152\u0157\u015d\u0164\u0169\u016f\u0173\u017c"+
-		"\u0183\u018e\u0195";
+		",\t,\4-\t-\4.\t.\4/\t/\4\60\t\60\4\61\t\61\4\62\t\62\3\2\6\2f\n\2\r\2"+
+		"\16\2g\3\3\3\3\5\3l\n\3\3\4\3\4\5\4p\n\4\3\5\3\5\5\5t\n\5\3\6\3\6\3\6"+
+		"\3\6\3\6\3\6\3\6\3\6\3\6\5\6\177\n\6\3\7\3\7\3\7\3\7\5\7\u0085\n\7\3\b"+
+		"\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u0093\n\t\f\t\16\t\u0096"+
+		"\13\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3"+
+		"\13\3\13\5\13\u00a8\n\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13"+
+		"\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13"+
+		"\3\13\3\13\5\13\u00c3\n\13\3\f\3\f\3\r\3\r\3\16\3\16\3\17\3\17\3\17\3"+
+		"\17\3\17\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21\3"+
+		"\22\3\22\3\22\3\22\3\22\3\23\3\23\3\23\5\23\u00e4\n\23\3\24\3\24\3\24"+
+		"\3\24\3\24\3\24\3\24\5\24\u00ed\n\24\3\25\3\25\3\25\3\26\3\26\3\26\3\26"+
+		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26"+
+		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\5\26\u010b\n\26\3\27\3\27\3\30\3\30"+
+		"\3\30\3\30\5\30\u0113\n\30\3\31\3\31\3\31\3\31\5\31\u0119\n\31\3\32\3"+
+		"\32\3\32\5\32\u011e\n\32\3\33\3\33\3\33\3\33\3\33\3\33\3\33\3\33\3\34"+
+		"\3\34\3\34\3\34\3\35\3\35\3\35\3\35\3\35\3\35\3\36\3\36\5\36\u0134\n\36"+
+		"\3\37\3\37\3 \3 \3!\3!\3!\3!\5!\u013e\n!\3!\3!\3!\3!\3\"\3\"\3\"\3\"\3"+
+		"\"\3\"\5\"\u014a\n\"\3\"\3\"\3#\3#\3#\3#\3#\3#\3#\3#\7#\u0156\n#\f#\16"+
+		"#\u0159\13#\3$\3$\3$\3$\3$\5$\u0160\n$\3$\3$\3%\3%\3%\5%\u0167\n%\3%\3"+
+		"%\3%\3%\5%\u016d\n%\3%\3%\3%\5%\u0172\n%\3%\3%\3&\3&\3&\3&\5&\u017a\n"+
+		"&\3\'\3\'\3\'\3\'\3\'\5\'\u0181\n\'\3(\3(\5(\u0185\n(\3(\3(\5(\u0189\n"+
+		"(\3(\3(\3(\5(\u018e\n(\3)\3)\3)\3)\3)\3)\5)\u0196\n)\3)\3)\3)\3)\5)\u019c"+
+		"\n)\3)\3)\3)\5)\u01a1\n)\3*\3*\3*\3*\5*\u01a7\n*\3*\3*\3*\3*\3*\3*\3*"+
+		"\3*\5*\u01b1\n*\3+\3+\3+\7+\u01b6\n+\f+\16+\u01b9\13+\3+\3+\3+\3+\7+\u01bf"+
+		"\n+\f+\16+\u01c2\13+\3+\3+\5+\u01c6\n+\3,\3,\3-\3-\3-\7-\u01cd\n-\f-\16"+
+		"-\u01d0\13-\3-\3-\3-\3-\7-\u01d6\n-\f-\16-\u01d9\13-\3-\3-\5-\u01dd\n"+
+		"-\3.\3.\3.\3.\3.\5.\u01e4\n.\3/\5/\u01e7\n/\3/\3/\3\60\5\60\u01ec\n\60"+
+		"\3\60\3\60\3\60\5\60\u01f1\n\60\3\61\3\61\3\62\3\62\3\62\2\2\63\2\4\6"+
+		"\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFHJLNPRT"+
+		"VXZ\\^`b\2\4\4\2\3\3\5\t\3\2\66\67\u0204\2e\3\2\2\2\4k\3\2\2\2\6o\3\2"+
+		"\2\2\bs\3\2\2\2\n~\3\2\2\2\f\u0084\3\2\2\2\16\u0086\3\2\2\2\20\u008b\3"+
+		"\2\2\2\22\u009a\3\2\2\2\24\u00c2\3\2\2\2\26\u00c4\3\2\2\2\30\u00c6\3\2"+
+		"\2\2\32\u00c8\3\2\2\2\34\u00ca\3\2\2\2\36\u00cf\3\2\2\2 \u00d7\3\2\2\2"+
+		"\"\u00db\3\2\2\2$\u00e3\3\2\2\2&\u00ec\3\2\2\2(\u00ee\3\2\2\2*\u010a\3"+
+		"\2\2\2,\u010c\3\2\2\2.\u0112\3\2\2\2\60\u0118\3\2\2\2\62\u011d\3\2\2\2"+
+		"\64\u011f\3\2\2\2\66\u0127\3\2\2\28\u012b\3\2\2\2:\u0133\3\2\2\2<\u0135"+
+		"\3\2\2\2>\u0137\3\2\2\2@\u0139\3\2\2\2B\u0143\3\2\2\2D\u014d\3\2\2\2F"+
+		"\u015a\3\2\2\2H\u0163\3\2\2\2J\u0179\3\2\2\2L\u0180\3\2\2\2N\u018d\3\2"+
+		"\2\2P\u01a0\3\2\2\2R\u01b0\3\2\2\2T\u01c5\3\2\2\2V\u01c7\3\2\2\2X\u01dc"+
+		"\3\2\2\2Z\u01e3\3\2\2\2\\\u01e6\3\2\2\2^\u01eb\3\2\2\2`\u01f2\3\2\2\2"+
+		"b\u01f4\3\2\2\2df\5\4\3\2ed\3\2\2\2fg\3\2\2\2ge\3\2\2\2gh\3\2\2\2h\3\3"+
+		"\2\2\2il\5\6\4\2jl\5\f\7\2ki\3\2\2\2kj\3\2\2\2l\5\3\2\2\2mp\5\b\5\2np"+
+		"\5\n\6\2om\3\2\2\2on\3\2\2\2p\7\3\2\2\2qt\5\16\b\2rt\5\20\t\2sq\3\2\2"+
+		"\2sr\3\2\2\2t\t\3\2\2\2u\177\5\22\n\2v\177\5\24\13\2w\177\5\34\17\2x\177"+
+		"\5\36\20\2y\177\5\"\22\2z\177\5 \21\2{\177\5\64\33\2|\177\5\66\34\2}\177"+
+		"\58\35\2~u\3\2\2\2~v\3\2\2\2~w\3\2\2\2~x\3\2\2\2~y\3\2\2\2~z\3\2\2\2~"+
+		"{\3\2\2\2~|\3\2\2\2~}\3\2\2\2\177\13\3\2\2\2\u0080\u0085\5H%\2\u0081\u0085"+
+		"\5@!\2\u0082\u0085\5F$\2\u0083\u0085\5B\"\2\u0084\u0080\3\2\2\2\u0084"+
+		"\u0081\3\2\2\2\u0084\u0082\3\2\2\2\u0084\u0083\3\2\2\2\u0085\r\3\2\2\2"+
+		"\u0086\u0087\7\20\2\2\u0087\u0088\7\21\2\2\u0088\u0089\7:\2\2\u0089\u008a"+
+		"\7\4\2\2\u008a\17\3\2\2\2\u008b\u008c\7\20\2\2\u008c\u008d\7\23\2\2\u008d"+
+		"\u008e\7:\2\2\u008e\u008f\7\n\2\2\u008f\u0094\5$\23\2\u0090\u0091\7\r"+
+		"\2\2\u0091\u0093\5$\23\2\u0092\u0090\3\2\2\2\u0093\u0096\3\2\2\2\u0094"+
+		"\u0092\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0097\3\2\2\2\u0096\u0094\3\2"+
+		"\2\2\u0097\u0098\7\13\2\2\u0098\u0099\7\4\2\2\u0099\21\3\2\2\2\u009a\u009b"+
+		"\7\25\2\2\u009b\u009c\7\21\2\2\u009c\u009d\7:\2\2\u009d\u009e\7\4\2\2"+
+		"\u009e\23\3\2\2\2\u009f\u00a0\7\26\2\2\u00a0\u00a1\7\23\2\2\u00a1\u00a2"+
+		"\5\26\f\2\u00a2\u00a3\7%\2\2\u00a3\u00a4\7&\2\2\u00a4\u00a5\5\30\r\2\u00a5"+
+		"\u00a7\5&\24\2\u00a6\u00a8\5(\25\2\u00a7\u00a6\3\2\2\2\u00a7\u00a8\3\2"+
+		"\2\2\u00a8\u00a9\3\2\2\2\u00a9\u00aa\7\4\2\2\u00aa\u00c3\3\2\2\2\u00ab"+
+		"\u00ac\7\26\2\2\u00ac\u00ad\7\23\2\2\u00ad\u00ae\5\26\f\2\u00ae\u00af"+
+		"\7%\2\2\u00af\u00b0\5(\25\2\u00b0\u00b1\7\4\2\2\u00b1\u00c3\3\2\2\2\u00b2"+
+		"\u00b3\7\26\2\2\u00b3\u00b4\7\23\2\2\u00b4\u00b5\5\26\f\2\u00b5\u00b6"+
+		"\7\25\2\2\u00b6\u00b7\7&\2\2\u00b7\u00b8\5\30\r\2\u00b8\u00b9\7\4\2\2"+
+		"\u00b9\u00c3\3\2\2\2\u00ba\u00bb\7\26\2\2\u00bb\u00bc\7\23\2\2\u00bc\u00bd"+
+		"\5\26\f\2\u00bd\u00be\7\25\2\2\u00be\u00bf\7\37\2\2\u00bf\u00c0\5\32\16"+
+		"\2\u00c0\u00c1\7\4\2\2\u00c1\u00c3\3\2\2\2\u00c2\u009f\3\2\2\2\u00c2\u00ab"+
+		"\3\2\2\2\u00c2\u00b2\3\2\2\2\u00c2\u00ba\3\2\2\2\u00c3\25\3\2\2\2\u00c4"+
+		"\u00c5\7:\2\2\u00c5\27\3\2\2\2\u00c6\u00c7\7:\2\2\u00c7\31\3\2\2\2\u00c8"+
+		"\u00c9\7:\2\2\u00c9\33\3\2\2\2\u00ca\u00cb\7\25\2\2\u00cb\u00cc\7\23\2"+
+		"\2\u00cc\u00cd\7:\2\2\u00cd\u00ce\7\4\2\2\u00ce\35\3\2\2\2\u00cf\u00d0"+
+		"\7\26\2\2\u00d0\u00d1\7\21\2\2\u00d1\u00d2\7:\2\2\u00d2\u00d3\7\27\2\2"+
+		"\u00d3\u00d4\7\30\2\2\u00d4\u00d5\7:\2\2\u00d5\u00d6\7\4\2\2\u00d6\37"+
+		"\3\2\2\2\u00d7\u00d8\7\31\2\2\u00d8\u00d9\7\22\2\2\u00d9\u00da\7\4\2\2"+
+		"\u00da!\3\2\2\2\u00db\u00dc\7\32\2\2\u00dc\u00dd\7\21\2\2\u00dd\u00de"+
+		"\7:\2\2\u00de\u00df\7\4\2\2\u00df#\3\2\2\2\u00e0\u00e1\7:\2\2\u00e1\u00e4"+
+		"\5&\24\2\u00e2\u00e4\5(\25\2\u00e3\u00e0\3\2\2\2\u00e3\u00e2\3\2\2\2\u00e4"+
+		"%\3\2\2\2\u00e5\u00ed\7\33\2\2\u00e6\u00ed\7\34\2\2\u00e7\u00e8\7\35\2"+
+		"\2\u00e8\u00e9\7\n\2\2\u00e9\u00ea\79\2\2\u00ea\u00ed\7\13\2\2\u00eb\u00ed"+
+		"\7\36\2\2\u00ec\u00e5\3\2\2\2\u00ec\u00e6\3\2\2\2\u00ec\u00e7\3\2\2\2"+
+		"\u00ec\u00eb\3\2\2\2\u00ed\'\3\2\2\2\u00ee\u00ef\7\37\2\2\u00ef\u00f0"+
+		"\5*\26\2\u00f0)\3\2\2\2\u00f1\u00f2\7:\2\2\u00f2\u00f3\7!\2\2\u00f3\u00f4"+
+		"\7 \2\2\u00f4\u00f5\7\n\2\2\u00f5\u00f6\5.\30\2\u00f6\u00f7\7\13\2\2\u00f7"+
+		"\u010b\3\2\2\2\u00f8\u00f9\7:\2\2\u00f9\u00fa\7\"\2\2\u00fa\u00fb\7 \2"+
+		"\2\u00fb\u00fc\7\n\2\2\u00fc\u00fd\5.\30\2\u00fd\u00fe\7\13\2\2\u00fe"+
+		"\u00ff\7#\2\2\u00ff\u0100\5,\27\2\u0100\u0101\7\n\2\2\u0101\u0102\5\60"+
+		"\31\2\u0102\u0103\7\13\2\2\u0103\u010b\3\2\2\2\u0104\u0105\7:\2\2\u0105"+
+		"\u0106\7$\2\2\u0106\u0107\7\n\2\2\u0107\u0108\5P)\2\u0108\u0109\7\13\2"+
+		"\2\u0109\u010b\3\2\2\2\u010a\u00f1\3\2\2\2\u010a\u00f8\3\2\2\2\u010a\u0104"+
+		"\3\2\2\2\u010b+\3\2\2\2\u010c\u010d\7:\2\2\u010d-\3\2\2\2\u010e\u0113"+
+		"\7:\2\2\u010f\u0110\7:\2\2\u0110\u0111\7\r\2\2\u0111\u0113\5.\30\2\u0112"+
+		"\u010e\3\2\2\2\u0112\u010f\3\2\2\2\u0113/\3\2\2\2\u0114\u0119\7:\2\2\u0115"+
+		"\u0116\7:\2\2\u0116\u0117\7\r\2\2\u0117\u0119\5\60\31\2\u0118\u0114\3"+
+		"\2\2\2\u0118\u0115\3\2\2\2\u0119\61\3\2\2\2\u011a\u011e\5:\36\2\u011b"+
+		"\u011e\5<\37\2\u011c\u011e\5> \2\u011d\u011a\3\2\2\2\u011d\u011b\3\2\2"+
+		"\2\u011d\u011c\3\2\2\2\u011e\63\3\2\2\2\u011f\u0120\7\26\2\2\u0120\u0121"+
+		"\7\23\2\2\u0121\u0122\7:\2\2\u0122\u0123\7\27\2\2\u0123\u0124\7\30\2\2"+
+		"\u0124\u0125\7:\2\2\u0125\u0126\7\4\2\2\u0126\65\3\2\2\2\u0127\u0128\7"+
+		"\31\2\2\u0128\u0129\7\24\2\2\u0129\u012a\7\4\2\2\u012a\67\3\2\2\2\u012b"+
+		"\u012c\7\31\2\2\u012c\u012d\7\'\2\2\u012d\u012e\7(\2\2\u012e\u012f\7:"+
+		"\2\2\u012f\u0130\7\4\2\2\u01309\3\2\2\2\u0131\u0134\7)\2\2\u0132\u0134"+
+		"\7*\2\2\u0133\u0131\3\2\2\2\u0133\u0132\3\2\2\2\u0134;\3\2\2\2\u0135\u0136"+
+		"\7+\2\2\u0136=\3\2\2\2\u0137\u0138\t\2\2\2\u0138?\3\2\2\2\u0139\u013a"+
+		"\7,\2\2\u013a\u013b\7-\2\2\u013b\u013d\7:\2\2\u013c\u013e\5T+\2\u013d"+
+		"\u013c\3\2\2\2\u013d\u013e\3\2\2\2\u013e\u013f\3\2\2\2\u013f\u0140\7."+
+		"\2\2\u0140\u0141\5X-\2\u0141\u0142\7\4\2\2\u0142A\3\2\2\2\u0143\u0144"+
+		"\7/\2\2\u0144\u0145\7:\2\2\u0145\u0146\7\60\2\2\u0146\u0149\5D#\2\u0147"+
+		"\u0148\7\61\2\2\u0148\u014a\5P)\2\u0149\u0147\3\2\2\2\u0149\u014a\3\2"+
+		"\2\2\u014a\u014b\3\2\2\2\u014b\u014c\7\4\2\2\u014cC\3\2\2\2\u014d\u014e"+
+		"\5V,\2\u014e\u014f\7\6\2\2\u014f\u0157\5Z.\2\u0150\u0151\7\r\2\2\u0151"+
+		"\u0152\5V,\2\u0152\u0153\7\6\2\2\u0153\u0154\5Z.\2\u0154\u0156\3\2\2\2"+
+		"\u0155\u0150\3\2\2\2\u0156\u0159\3\2\2\2\u0157\u0155\3\2\2\2\u0157\u0158"+
+		"\3\2\2\2\u0158E\3\2\2\2\u0159\u0157\3\2\2\2\u015a\u015b\7\62\2\2\u015b"+
+		"\u015c\7(\2\2\u015c\u015f\7:\2\2\u015d\u015e\7\61\2\2\u015e\u0160\5P)"+
+		"\2\u015f\u015d\3\2\2\2\u015f\u0160\3\2\2\2\u0160\u0161\3\2\2\2\u0161\u0162"+
+		"\7\4\2\2\u0162G\3\2\2\2\u0163\u0166\7\63\2\2\u0164\u0167\7\f\2\2\u0165"+
+		"\u0167\5L\'\2\u0166\u0164\3\2\2\2\u0166\u0165\3\2\2\2\u0167\u0168\3\2"+
+		"\2\2\u0168\u0169\7(\2\2\u0169\u016c\5.\30\2\u016a\u016b\7\61\2\2\u016b"+
+		"\u016d\5P)\2\u016c\u016a\3\2\2\2\u016c\u016d\3\2\2\2\u016d\u0171\3\2\2"+
+		"\2\u016e\u016f\7\64\2\2\u016f\u0170\7\65\2\2\u0170\u0172\5N(\2\u0171\u016e"+
+		"\3\2\2\2\u0171\u0172\3\2\2\2\u0172\u0173\3\2\2\2\u0173\u0174\7\4\2\2\u0174"+
+		"I\3\2\2\2\u0175\u017a\7:\2\2\u0176\u0177\7:\2\2\u0177\u0178\7\17\2\2\u0178"+
+		"\u017a\7:\2\2\u0179\u0175\3\2\2\2\u0179\u0176\3\2\2\2\u017aK\3\2\2\2\u017b"+
+		"\u0181\5J&\2\u017c\u017d\5J&\2\u017d\u017e\7\r\2\2\u017e\u017f\5L\'\2"+
+		"\u017f\u0181\3\2\2\2\u0180\u017b\3\2\2\2\u0180\u017c\3\2\2\2\u0181M\3"+
+		"\2\2\2\u0182\u0184\5J&\2\u0183\u0185\t\3\2\2\u0184\u0183\3\2\2\2\u0184"+
+		"\u0185\3\2\2\2\u0185\u018e\3\2\2\2\u0186\u0188\5J&\2\u0187\u0189\t\3\2"+
+		"\2\u0188\u0187\3\2\2\2\u0188\u0189\3\2\2\2\u0189\u018a\3\2\2\2\u018a\u018b"+
+		"\7\r\2\2\u018b\u018c\5N(\2\u018c\u018e\3\2\2\2\u018d\u0182\3\2\2\2\u018d"+
+		"\u0186\3\2\2\2\u018eO\3\2\2\2\u018f\u0190\7\n\2\2\u0190\u0191\5P)\2\u0191"+
+		"\u0195\7\13\2\2\u0192\u0193\5:\36\2\u0193\u0194\5P)\2\u0194\u0196\3\2"+
+		"\2\2\u0195\u0192\3\2\2\2\u0195\u0196\3\2\2\2\u0196\u01a1\3\2\2\2\u0197"+
+		"\u019b\5R*\2\u0198\u0199\5:\36\2\u0199\u019a\5P)\2\u019a\u019c\3\2\2\2"+
+		"\u019b\u0198\3\2\2\2\u019b\u019c\3\2\2\2\u019c\u01a1\3\2\2\2\u019d\u019e"+
+		"\5<\37\2\u019e\u019f\5P)\2\u019f\u01a1\3\2\2\2\u01a0\u018f\3\2\2\2\u01a0"+
+		"\u0197\3\2\2\2\u01a0\u019d\3\2\2\2\u01a1Q\3\2\2\2\u01a2\u01a3\5J&\2\u01a3"+
+		"\u01a6\5> \2\u01a4\u01a7\5J&\2\u01a5\u01a7\5Z.\2\u01a6\u01a4\3\2\2\2\u01a6"+
+		"\u01a5\3\2\2\2\u01a7\u01b1\3\2\2\2\u01a8\u01a9\5Z.\2\u01a9\u01aa\5> \2"+
+		"\u01aa\u01ab\5J&\2\u01ab\u01b1\3\2\2\2\u01ac\u01ad\5Z.\2\u01ad\u01ae\5"+
+		"> \2\u01ae\u01af\5Z.\2\u01af\u01b1\3\2\2\2\u01b0\u01a2\3\2\2\2\u01b0\u01a8"+
+		"\3\2\2\2\u01b0\u01ac\3\2\2\2\u01b1S\3\2\2\2\u01b2\u01b7\5V,\2\u01b3\u01b4"+
+		"\7\r\2\2\u01b4\u01b6\5V,\2\u01b5\u01b3\3\2\2\2\u01b6\u01b9\3\2\2\2\u01b7"+
+		"\u01b5\3\2\2\2\u01b7\u01b8\3\2\2\2\u01b8\u01c6\3\2\2\2\u01b9\u01b7\3\2"+
+		"\2\2\u01ba\u01bb\7\n\2\2\u01bb\u01c0\5V,\2\u01bc\u01bd\7\r\2\2\u01bd\u01bf"+
+		"\5V,\2\u01be\u01bc\3\2\2\2\u01bf\u01c2\3\2\2\2\u01c0\u01be\3\2\2\2\u01c0"+
+		"\u01c1\3\2\2\2\u01c1\u01c3\3\2\2\2\u01c2\u01c0\3\2\2\2\u01c3\u01c4\7\13"+
+		"\2\2\u01c4\u01c6\3\2\2\2\u01c5\u01b2\3\2\2\2\u01c5\u01ba\3\2\2\2\u01c6"+
+		"U\3\2\2\2\u01c7\u01c8\7:\2\2\u01c8W\3\2\2\2\u01c9\u01ce\5Z.\2\u01ca\u01cb"+
+		"\7\r\2\2\u01cb\u01cd\5Z.\2\u01cc\u01ca\3\2\2\2\u01cd\u01d0\3\2\2\2\u01ce"+
+		"\u01cc\3\2\2\2\u01ce\u01cf\3\2\2\2\u01cf\u01dd\3\2\2\2\u01d0\u01ce\3\2"+
+		"\2\2\u01d1\u01d2\7\n\2\2\u01d2\u01d7\5Z.\2\u01d3\u01d4\7\r\2\2\u01d4\u01d6"+
+		"\5Z.\2\u01d5\u01d3\3\2\2\2\u01d6\u01d9\3\2\2\2\u01d7\u01d5\3\2\2\2\u01d7"+
+		"\u01d8\3\2\2\2\u01d8\u01da\3\2\2\2\u01d9\u01d7\3\2\2\2\u01da\u01db\7\13"+
+		"\2\2\u01db\u01dd\3\2\2\2\u01dc\u01c9\3\2\2\2\u01dc\u01d1\3\2\2\2\u01dd"+
+		"Y\3\2\2\2\u01de\u01e4\5\\/\2\u01df\u01e4\5^\60\2\u01e0\u01e4\5`\61\2\u01e1"+
+		"\u01e4\5b\62\2\u01e2\u01e4\78\2\2\u01e3\u01de\3\2\2\2\u01e3\u01df\3\2"+
+		"\2\2\u01e3\u01e0\3\2\2\2\u01e3\u01e1\3\2\2\2\u01e3\u01e2\3\2\2\2\u01e4"+
+		"[\3\2\2\2\u01e5\u01e7\7\16\2\2\u01e6\u01e5\3\2\2\2\u01e6\u01e7\3\2\2\2"+
+		"\u01e7\u01e8\3\2\2\2\u01e8\u01e9\79\2\2\u01e9]\3\2\2\2\u01ea\u01ec\7\16"+
+		"\2\2\u01eb\u01ea\3\2\2\2\u01eb\u01ec\3\2\2\2\u01ec\u01ed\3\2\2\2\u01ed"+
+		"\u01f0\79\2\2\u01ee\u01ef\7\17\2\2\u01ef\u01f1\79\2\2\u01f0\u01ee\3\2"+
+		"\2\2\u01f0\u01f1\3\2\2\2\u01f1_\3\2\2\2\u01f2\u01f3\7;\2\2\u01f3a\3\2"+
+		"\2\2\u01f4\u01f5\7<\2\2\u01f5c\3\2\2\2-gkos~\u0084\u0094\u00a7\u00c2\u00e3"+
+		"\u00ec\u010a\u0112\u0118\u011d\u0133\u013d\u0149\u0157\u015f\u0166\u016c"+
+		"\u0171\u0179\u0180\u0184\u0188\u018d\u0195\u019b\u01a0\u01a6\u01b0\u01b7"+
+		"\u01c0\u01c5\u01ce\u01d7\u01dc\u01e3\u01e6\u01eb\u01f0";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

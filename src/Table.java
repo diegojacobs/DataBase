@@ -13,6 +13,8 @@ public class Table implements Serializable {
 	private ArrayList<Constraint> PrimaryKeys;
 	private ArrayList<Constraint> ForeignKey;
 	private ArrayList<Constraint> Checks;
+	private ArrayList<ArrayList<String>> data;
+	private ArrayList<String> othersIds;
 	
 	public Table()
 	{
@@ -21,6 +23,8 @@ public class Table implements Serializable {
 		this.PrimaryKeys = new ArrayList<Constraint>();
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
+		this.data = new ArrayList<ArrayList<String>>();
+		this.setOthersIds(new ArrayList<String>()); 
 	}
 
 	public Table(String name) {		
@@ -29,6 +33,8 @@ public class Table implements Serializable {
 		this.PrimaryKeys = new ArrayList<Constraint>();
 		this.ForeignKey = new ArrayList<Constraint>();
 		this.Checks = new ArrayList<Constraint>();
+		this.data = new ArrayList<ArrayList<String>>();
+		this.setOthersIds(new ArrayList<String>());
 	}	
 
 	public Table(String name, ArrayList<Atributo> atributos, ArrayList<Constraint> primaryKeys, ArrayList<Constraint> foreignKey, ArrayList<Constraint> checks) {
@@ -37,6 +43,23 @@ public class Table implements Serializable {
 		PrimaryKeys = primaryKeys;
 		ForeignKey = foreignKey;
 		this.Checks = checks;
+		this.data = new ArrayList<ArrayList<String>>();
+		this.setOthersIds(new ArrayList<String>());
+		for (Atributo atr : this.atributos)
+		{
+			String col = name+"."+atr.getId();
+			this.getOthersIds().add(col);
+		}
+	}
+	
+	public Table(Table table){
+		name = table.getName();
+		atributos = table.getAtributos();
+		PrimaryKeys = table.getPrimaryKeys();
+		ForeignKey = table.getForeignKey();
+		Checks = table.getChecks();
+		data = table.getData();
+		othersIds = table.getOthersIds();
 	}
 
 	/**
@@ -65,6 +88,19 @@ public class Table implements Serializable {
 	 */
 	public ArrayList<Atributo> getAtributos() {
 		return atributos;
+	}
+	
+	/**
+	 * @return the name of the atributos
+	 */
+	public ArrayList<String> getAtributosNames() {
+		ArrayList<String> ret = new ArrayList<String>();
+		for (Atributo i: this.atributos)
+			ret.add(i.getId());
+		
+		for (String name : this.getOthersIds())
+			ret.add(name);
+		return ret;
 	}
 
 	/**
@@ -108,6 +144,13 @@ public class Table implements Serializable {
 	public void setForeignKey(ArrayList<Constraint> foreignKey) {
 		ForeignKey = foreignKey;
 	}
+	
+	public void renameRefIdFK(String oldName, String new_name)
+	{
+		for (Constraint i: this.ForeignKey)
+			if (i.getId_ref().equals(oldName))
+				i.setId_ref(new_name);
+	}
 
 	public boolean hasAtributo(String id)
 	{
@@ -119,6 +162,14 @@ public class Table implements Serializable {
 				flag = true;
 				break;
 			}
+		
+		if (!flag)
+			for (String name : this.getOthersIds())
+				if (id.equals(name))
+				{
+					flag=true;
+					break;
+				}
 		
 		return flag;
 	}
@@ -135,9 +186,256 @@ public class Table implements Serializable {
 			}
 		}
 		
+		if (atr ==null)
+		{
+			for (String name : this.getOthersIds())
+			{
+				//System.out.println(name);
+				if (name.equals(id))
+				{
+					//System.out.println("Table: si lo encontro");
+					int index = this.getOthersIds().indexOf(name);
+					atr = this.atributos.get(index);
+				}
+			}
+		}
+		
 		return atr;
 	}
 	
+	public Constraint getConstraint(String id)
+	{
+		Constraint res = new Constraint();
+		int cont = 0;
+		
+		for (Constraint i: this.PrimaryKeys)
+			if (i.getId().equals(id))
+			{
+				res = i;
+				cont++;
+				break;
+			}
+		
+		if (cont == 0)
+		{
+			for (Constraint i: this.ForeignKey)
+				if (i.getId().equals(id))
+				{
+					res = i;
+					cont++;
+					break;
+				}
+			
+			if (cont == 0)
+			{
+				for (Constraint i: this.Checks)
+					if (i.getId().equals(id))
+					{
+						res = i;
+						cont++;
+						break;
+					}				
+			}
+		}	
+		
+		return res;
+	}
+	
+	/*
+	 * Return false si ya existe un atributo con el mismo nombre 
+	 */
+	public boolean canAddAtributo(Atributo a)
+	{		
+		int cont = 0;
+		
+		for(Atributo i: this.atributos)
+			if (i.getId().equals(a.getId()))
+			{
+				cont++;
+				break;
+			}
+		
+		return (cont == 0);
+	}
+	
+	public void addAtributo(Atributo a)
+	{
+		this.atributos.add(a);
+		for (ArrayList<String> tupla: data){
+			if (tupla.size()==atributos.size()-1){
+				tupla.add("null");
+			}
+		}
+	}
+	
+	public void deleteAtributo(String id)
+	{
+		int index = -1;
+		int cont = 0;
+		
+		for (Atributo i: this.atributos)
+		{
+			if (i.getId().equals(id))
+			{
+				index = cont;
+				break;
+			}
+			cont++;
+		}
+		
+		if (index != -1)
+			for (ArrayList<String> tupla: data){
+				if (tupla.size()>index){
+					tupla.remove(index);
+				}
+			}
+			this.atributos.remove(index);
+	}
+	
+	public void deleteConstraint(Constraint c)
+	{
+		switch (c.getTipo())
+		{
+			case "Primary Key":
+				this.PrimaryKeys.remove(0);
+				break;
+			case "Foreign Key":
+				int index = -1;
+				int cont = 0;
+				for (Constraint i: this.ForeignKey)
+				{
+					if (i.getId().equals(c.getId()))
+					{
+						index = cont;
+						break;
+					}
+					cont++;
+				}
+				if (index != -1)
+					this.ForeignKey.remove(index);
+						
+				break;
+			case "Check":
+				index = -1;
+				cont = 0;
+				for (Constraint i: this.Checks)
+				{
+					if (i.getId().equals(c.getId()))
+					{
+						index = cont;
+						break;
+					}
+					cont++;
+				}
+				if (index != -1)
+					this.Checks.remove(index);
+						
+				break;
+		}
+	}
+	
+	/*
+	 * Return false si ya existe una constraint con el mismo nombre 
+	 */
+	public boolean canAddConstraint(Constraint c)
+	{
+		int cont = 0;
+		
+		for (Constraint i: this.PrimaryKeys)
+			if (i.getId().equals(c.getId()))
+			{
+				cont++;
+				break;
+			}
+		
+		if (cont == 0)
+		{
+			for (Constraint i: this.ForeignKey)
+				if (i.getId().equals(c.getId()))
+				{
+					cont++;
+					break;
+				}
+			
+			if (cont == 0)
+			{
+				for (Constraint i: this.Checks)
+					if (i.getId().equals(c.getId()))
+					{
+						cont++;
+						break;
+					}				
+			}
+		}	
+		
+		return (cont == 0);
+	}
+	
+	public void addConstraint(Constraint c)
+	{
+		switch (c.getTipo())
+		{
+			case "Primary Key":
+				this.PrimaryKeys.add(c);
+				break;
+			case "Foreign Key":
+				this.ForeignKey.add(c);
+				break;
+			case "Check":
+				this.Checks.add(c);
+				break;
+		}
+	}
+	
+	/*
+	 * Return true if exist the Constraint
+	 */
+	public boolean existeConstraint(String c)
+	{
+		int cont = 0;
+		
+		for (Constraint i: this.PrimaryKeys)
+			if (i.getId().equals(c))
+			{
+				cont++;
+				break;
+			}
+		
+		if (cont == 0)
+		{
+			for (Constraint i: this.ForeignKey)
+				if (i.getId().equals(c))
+				{
+					cont++;
+					break;
+				}
+			
+			if (cont == 0)
+			{
+				for (Constraint i: this.Checks)
+					if (i.getId().equals(c))
+					{
+						cont++;
+						break;
+					}				
+			}
+		}	
+		
+		return (cont > 0);
+	}
+	
+	public void addData(ArrayList<String> data){
+		this.data.add(data);
+	}
+	
+	public ArrayList<ArrayList<String>> getData() {
+		return data;
+	}
+
+	public void setData(ArrayList<ArrayList<String>> data) {
+		this.data = data;
+	}
+
 	public String toString()
 	{
 		String ret = "Table " + this.name + "\n";
@@ -184,6 +482,95 @@ public class Table implements Serializable {
 				ret += i.toString();
 			cont++;
 		}
+		return ret;
+	}
+	
+	public boolean isAmbiguous(String id){
+		int contador = 0;
+		for (String st: getOthersIds()){
+			if (st.equals(id))
+				contador ++;
+		}
+		if (contador>1) return true;
+		
+		for (Atributo at: atributos){
+			if (at.getId().equals(id))
+				contador ++;
+		}
+		
+		if (contador > 1) return true;
+		
+		return false;
+		
+	}
+	
+	/**
+	 * agrega a othersIds los nombres de tal forma que sea:
+	 * nombreTabla.nombreAtributo al momento de hacer el select
+	 */
+	public void setNamesByTable(){
+		ArrayList<String> st = new ArrayList();
+		for (Atributo at: atributos)
+			st.add(getName()+"."+at.getId());
+		this.setOthersIds(st);
+	}
+
+	public ArrayList<String> getOthersIds() {
+		return othersIds;
+	}
+
+	public void setOthersIds(ArrayList<String> othersIds) {
+		this.othersIds = othersIds;
+	}
+	
+	public String IDtoString(String id)
+	{
+		String ret = this.getID(id).toString() + "\n"; // id y tipo
+		// Verificar si esta en alguna constraint
+		// PK
+		if (! this.PrimaryKeys.isEmpty())
+			for (String i: this.PrimaryKeys.get(0).getIDS_local())
+				if (i.equals(id))
+					ret += PrimaryKeys.toString() + "\n";
+		// FK
+		for (Constraint i: this.ForeignKey)
+			for (String j: i.getIDS_local())
+				if (j.equals(id))
+					ret += i.toString() + "\n";
+		// CHK
+		for (Constraint i: this.Checks)
+			for (String j: i.getIDS_local())
+				if (j.equals(id))
+					ret += i.toString() + "\n";
+		//System.out.println("esto es ret "+ret);
+		return ret;
+	}
+	
+	public ArrayList<String> dataColumnI(int pos)
+	{
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		if (! this.data.isEmpty())
+			if (pos < this.data.get(0).size())
+			{
+				for (int i = 0; i < this.data.size(); i++)
+					ret.add(this.data.get(i).get(pos));
+			}
+		
+		return ret;
+	}
+	
+	public ArrayList<String> dataColumnIWithIndexs(int pos, ArrayList<Integer> indexes)
+	{
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		if (! this.data.isEmpty())
+			if (pos < this.data.get(0).size())
+			{
+				for (Integer i: indexes)
+					ret.add(this.data.get(i).get(pos));
+			}
+		
 		return ret;
 	}
 
